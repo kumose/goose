@@ -11,6 +11,28 @@ include(CMakeFindDependencyMacro)
 find_dependency(Threads)
 
 find_dependency(ICU COMPONENTS i18n uc data)
+find_package(turbo REQUIRED)
+find_package(xre2 REQUIRED)
+find_package(xfsst REQUIRED)
+find_package(lz4 REQUIRED)
+find_package(Snappy CONFIG REQUIRED)
+find_package(unofficial-brotli CONFIG REQUIRED)
+find_package(MbedTLS CONFIG REQUIRED)
+find_package(zstd CONFIG REQUIRED)
+find_package(cantor CONFIG REQUIRED)
+
+set(goose_DEPS_LIB
+        xre2::xre2_static
+        turbo::turbo_static
+        xfsst::xfsst_static
+        lz4::lz4
+        Snappy::snappy
+        zstd::libzstd
+        MbedTLS::mbedtls
+        unofficial::brotli::brotlidec
+        unofficial::brotli::brotlienc
+        cantor::cantor_static
+)
 
 # Compute paths
 get_filename_component(goose_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)

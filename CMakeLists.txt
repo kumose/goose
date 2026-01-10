@@ -24,8 +24,6 @@ project(goose)
 
 find_package(Threads REQUIRED)
 
-find_package(marksim REQUIRED)
-find_package(turbo REQUIRED)
 
 set(GOOSE_MODULE_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}")
 
