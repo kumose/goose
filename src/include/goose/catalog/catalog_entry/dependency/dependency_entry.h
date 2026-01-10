@@ -1,0 +1,75 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/common/common.h>
+#include <goose/common/enums/catalog_type.h>
+#include <goose/common/exception.h>
+#include <goose/common/types-import.h>
+#include <goose/common/optional_ptr.h>
+#include <goose/catalog/catalog_entry.h>
+#include <goose/catalog/catalog_set.h>
+#include <goose/catalog/dependency.h>
+#include <goose/catalog/dependency_manager.h>
+#include <memory>
+
+namespace goose {
+
+class DependencyManager;
+
+class DependencySetCatalogEntry;
+
+//! Resembles a connection between an object and the CatalogEntry that can be retrieved from the Catalog using the
+//! identifiers listed here
+
+enum class DependencyEntryType : uint8_t { SUBJECT, DEPENDENT };
+
+class DependencyEntry : public InCatalogEntry {
+public:
+	~DependencyEntry() override;
+
+protected:
+	DependencyEntry(Catalog &catalog, DependencyEntryType type, const MangledDependencyName &name,
+	                const DependencyInfo &info);
+
+public:
+	const MangledEntryName &SubjectMangledName() const;
+	const DependencySubject &Subject() const;
+
+	const MangledEntryName &DependentMangledName() const;
+	const DependencyDependent &Dependent() const;
+
+	virtual const CatalogEntryInfo &EntryInfo() const = 0;
+	virtual const MangledEntryName &EntryMangledName() const = 0;
+	virtual const CatalogEntryInfo &SourceInfo() const = 0;
+	virtual const MangledEntryName &SourceMangledName() const = 0;
+
+public:
+	DependencyEntryType Side() const;
+
+protected:
+	const MangledEntryName dependent_name;
+	const MangledEntryName subject_name;
+	const DependencyDependent dependent;
+	const DependencySubject subject;
+
+private:
+	DependencyEntryType side;
+};
+
+} // namespace goose

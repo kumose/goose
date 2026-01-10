@@ -1,0 +1,19 @@
+add_library_unity(
+  goose_bind_tableref
+  OBJECT
+  bind_basetableref.cc
+  bind_bound_table_ref.cc
+  bind_delimgetref.cc
+  bind_emptytableref.cc
+  bind_expressionlistref.cc
+  bind_column_data_ref.cc
+  bind_joinref.cc
+  bind_pivot.cc
+  bind_showref.cc
+  bind_subqueryref.cc
+  bind_table_function.cc
+  bind_named_parameters.cc
+  plan_joinref.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_bind_tableref>
+    PARENT_SCOPE)

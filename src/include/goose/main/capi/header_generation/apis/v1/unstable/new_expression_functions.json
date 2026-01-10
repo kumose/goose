@@ -1,0 +1,10 @@
+{
+  "version": "unstable_new_expression_functions",
+  "description": "API to create and manipulate expressions",
+  "entries": [
+    "goose_destroy_expression",
+    "goose_expression_return_type",
+    "goose_expression_is_foldable",
+    "goose_expression_fold"
+  ]
+}

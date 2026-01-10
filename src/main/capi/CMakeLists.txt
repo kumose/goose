@@ -1,0 +1,39 @@
+add_subdirectory(cast)
+
+add_library_unity(
+        goose_main_capi
+        OBJECT
+        aggregate_function-c.cc
+        appender-c.cc
+        arrow-c.cc
+        cast_function-c.cc
+        catalog-c.cc
+        config-c.cc
+        data_chunk-c.cc
+        datetime-c.cc
+        goose-c.cc
+        goose_value-c.cc
+        error_data-c.cc
+        expression-c.cc
+        helper-c.cc
+        hugeint-c.cc
+        logging-c.cc
+        logical_types-c.cc
+        pending-c.cc
+        prepared-c.cc
+        profiling_info-c.cc
+        replacement_scan-c.cc
+        result-c.cc
+        scalar_function-c.cc
+        stream-c.cc
+        table_description-c.cc
+        table_function-c.cc
+        threading-c.cc
+        value-c.cc
+        file_system-c.cc
+        config_options-c.cc
+        copy_function-c.cc)
+
+set(ALL_OBJECT_FILES
+        ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_main_capi>
+        PARENT_SCOPE)

@@ -1,0 +1,47 @@
+add_library_unity(
+  goose_transformer_statement
+  OBJECT
+  transform_alter_table.cc
+  transform_alter_database.cc
+  transform_attach.cc
+  transform_detach.cc
+  transform_call.cc
+  transform_checkpoint.cc
+  transform_create_function.cc
+  transform_comment_on.cc
+  transform_copy.cc
+  transform_copy_database.cc
+  transform_create_table_as.cc
+  transform_create_index.cc
+  transform_create_schema.cc
+  transform_create_table.cc
+  transform_create_view.cc
+  transform_create_type.cc
+  transform_delete.cc
+  transform_explain.cc
+  transform_export.cc
+  transform_drop.cc
+  transform_import.cc
+  transform_insert.cc
+  transform_load.cc
+  transform_merge_into.cc
+  transform_pragma.cc
+  transform_rename.cc
+  transform_secret.cc
+  transform_select.cc
+  transform_select_node.cc
+  transform_set.cc
+  transform_pivot_stmt.cc
+  transform_prepare.cc
+  transform_show.cc
+  transform_show_select.cc
+  transform_transaction.cc
+  transform_update.cc
+  transform_upsert.cc
+  transform_use.cc
+  transform_create_sequence.cc
+  transform_vacuum.cc
+  transform_alter_sequence.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_transformer_statement>
+    PARENT_SCOPE)

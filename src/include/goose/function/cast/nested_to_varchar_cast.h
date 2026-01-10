@@ -1,0 +1,10 @@
+#pragma once
+
+namespace goose {
+
+struct NestedToVarcharCast {
+public:
+	static const bool LOOKUP_TABLE[256];
+};
+
+} // namespace goose

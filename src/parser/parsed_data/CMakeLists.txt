@@ -1,0 +1,40 @@
+add_library_unity(
+  goose_parsed_data
+  OBJECT
+  alter_info.cc
+  alter_scalar_function_info.cc
+  alter_table_function_info.cc
+  alter_table_info.cc
+  alter_database_info.cc
+  attach_info.cc
+  comment_on_column_info.cc
+  copy_info.cc
+  create_info.cc
+  create_function_info.cc
+  create_index_info.cc
+  create_aggregate_function_info.cc
+  create_collation_info.cc
+  create_copy_function_info.cc
+  create_macro_info.cc
+  create_pragma_function_info.cc
+  create_secret_info.cc
+  create_sequence_info.cc
+  create_schema_info.cc
+  create_scalar_function_info.cc
+  create_table_function_info.cc
+  create_table_info.cc
+  create_type_info.cc
+  create_view_info.cc
+  detach_info.cc
+  drop_info.cc
+  exported_table_data.cc
+  extra_drop_info.cc
+  load_info.cc
+  sample_options.cc
+  parse_info.cc
+  transaction_info.cc
+  pragma_info.cc
+  vacuum_info.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_parsed_data>
+    PARENT_SCOPE)

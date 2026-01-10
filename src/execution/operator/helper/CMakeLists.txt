@@ -1,0 +1,29 @@
+add_library_unity(
+  goose_operator_helper
+  OBJECT
+  physical_batch_collector.cc
+  physical_buffered_collector.cc
+  physical_buffered_batch_collector.cc
+  physical_create_secret.cc
+  physical_execute.cc
+  physical_explain_analyze.cc
+  physical_limit.cc
+  physical_limit_percent.cc
+  physical_load.cc
+  physical_materialized_collector.cc
+  physical_pragma.cc
+  physical_prepare.cc
+  physical_reservoir_sample.cc
+  physical_result_collector.cc
+  physical_set.cc
+  physical_set_variable.cc
+  physical_reset.cc
+  physical_streaming_limit.cc
+  physical_streaming_sample.cc
+  physical_transaction.cc
+  physical_update_extensions.cc
+  physical_vacuum.cc
+  physical_verify_vector.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_operator_helper>
+    PARENT_SCOPE)

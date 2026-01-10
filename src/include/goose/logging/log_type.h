@@ -1,0 +1,171 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/logging/logging.h>
+#include <goose/common/string_util.h>
+
+namespace goose {
+
+struct FileHandle;
+struct BaseRequest;
+struct HTTPResponse;
+class PhysicalOperator;
+class AttachedDatabase;
+class RowGroup;
+struct DataTableInfo;
+enum class MetricType : uint8_t;
+
+//! Log types provide some structure to the formats that the different log messages can have
+//! For now, this holds a type that the VARCHAR value will be auto-cast into.
+class LogType {
+public:
+	//! Construct an unstructured type
+	LogType(const string &name_p, const LogLevel &level_p)
+	    : name(name_p), level(level_p), is_structured(false), type(LogicalType::VARCHAR) {
+	}
+	//! Construct a structured type
+	LogType(const string &name_p, const LogLevel &level_p, LogicalType structured_type)
+	    : name(name_p), level(level_p), is_structured(true), type(std::move(structured_type)) {
+		if (!type.IsNested()) {
+			throw InternalException("LogType must be nested if the type is explicitly set");
+		}
+	}
+
+	string name;
+	LogLevel level;
+
+	bool is_structured;
+	LogicalType type;
+};
+
+class DefaultLogType : public LogType {
+public:
+	static constexpr const char *NAME = "";
+	static constexpr LogLevel LEVEL = LogLevel::LOG_INFO;
+
+	DefaultLogType() : LogType(NAME, LEVEL) {
+	}
+};
+
+class QueryLogType : public LogType {
+public:
+	static constexpr const char *NAME = "QueryLog";
+	static constexpr LogLevel LEVEL = LogLevel::LOG_INFO;
+
+	QueryLogType() : LogType(NAME, LEVEL) {};
+
+	static string ConstructLogMessage(const string &str);
+};
+
+class FileSystemLogType : public LogType {
+public:
+	static constexpr const char *NAME = "FileSystem";
+	static constexpr LogLevel LEVEL = LogLevel::LOG_TRACE;
+
+	//! Construct the log type
+	FileSystemLogType();
+
+	static LogicalType GetLogType();
+
+	static string ConstructLogMessage(const FileHandle &handle, const string &op, int64_t bytes, idx_t pos);
+	static string ConstructLogMessage(const FileHandle &handle, const string &op);
+};
+
+class HTTPLogType : public LogType {
+public:
+	static constexpr const char *NAME = "HTTP";
+	static constexpr LogLevel LEVEL = LogLevel::LOG_DEBUG;
+
+	//! Construct the log types
+	HTTPLogType();
+
+	static LogicalType GetLogType();
+
+	static string ConstructLogMessage(BaseRequest &request, optional_ptr<HTTPResponse> response);
+
+	// FIXME: HTTPLogType should be structured probably
+	static string ConstructLogMessage(const string &str) {
+		return str;
+	}
+};
+
+class PhysicalOperatorLogType : public LogType {
+public:
+	static constexpr const char *NAME = "PhysicalOperator";
+	static constexpr LogLevel LEVEL = LogLevel::LOG_DEBUG;
+
+	//! Construct the log type
+	PhysicalOperatorLogType();
+
+	static LogicalType GetLogType();
+
+	static string ConstructLogMessage(const PhysicalOperator &op, const string &class_p, const string &event,
+	                                  const vector<pair<string, string>> &info);
+};
+
+class MetricsLogType : public LogType {
+public:
+	static constexpr const char *NAME = "Metrics";
+	static constexpr LogLevel LEVEL = LogLevel::LOG_INFO;
+
+	//! Construct the log type
+	MetricsLogType();
+
+	static LogicalType GetLogType();
+
+	static string ConstructLogMessage(const MetricType &type, const Value &value);
+};
+
+class CheckpointLogType : public LogType {
+public:
+	static constexpr const char *NAME = "Checkpoint";
+	static constexpr LogLevel LEVEL = LogLevel::LOG_DEBUG;
+
+	//! Construct the log type
+	CheckpointLogType();
+
+	static LogicalType GetLogType();
+
+	//! Vacuum
+	static string ConstructLogMessage(const AttachedDatabase &db, DataTableInfo &table, idx_t segment_idx,
+	                                  idx_t merge_count, idx_t target_count, idx_t merge_rows, idx_t row_start);
+	//! Checkpoint
+	static string ConstructLogMessage(const AttachedDatabase &db, DataTableInfo &table, idx_t segment_idx,
+	                                  RowGroup &row_group, idx_t row_group_start);
+
+private:
+	static string CreateLog(const AttachedDatabase &db, DataTableInfo &table, const char *op, vector<Value> map_keys,
+	                        vector<Value> map_values);
+};
+
+class TransactionLogType : public LogType {
+public:
+	static constexpr const char *NAME = "Transaction";
+	static constexpr LogLevel LEVEL = LogLevel::LOG_DEBUG;
+
+	//! Construct the log type
+	TransactionLogType();
+
+	static LogicalType GetLogType();
+
+	static string ConstructLogMessage(const AttachedDatabase &db, const char *log_type,
+	                                  transaction_t transaction_id = MAX_TRANSACTION_ID);
+};
+
+} // namespace goose

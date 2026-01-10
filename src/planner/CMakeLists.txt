@@ -1,0 +1,31 @@
+add_subdirectory(expression)
+add_subdirectory(binder)
+add_subdirectory(expression_binder)
+add_subdirectory(filter)
+add_subdirectory(operator)
+add_subdirectory(subquery)
+
+add_library_unity(
+  goose_planner
+  OBJECT
+  binding_alias.cc
+  bound_result_modifier.cc
+  bound_parameter_map.cc
+  collation_binding.cc
+  expression_iterator.cc
+  expression.cc
+  table_binding.cc
+  expression_binder.cc
+  joinside.cc
+  logical_operator.cc
+  binder.cc
+  bind_context.cc
+  planner.cc
+  pragma_handler.cc
+  logical_operator_deep_copy.cc
+  logical_operator_visitor.cc
+  table_filter.cc
+  table_filter_state.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_planner>
+    PARENT_SCOPE)

@@ -1,0 +1,27 @@
+# Config file for Goose package
+# It defines the following variables
+#
+#  goose_INCLUDE_DIRS - include directories for Goose
+#  goose_LIBRARIES    - libraries to link against
+#  goose_EXTENSIONS   - names of extensions included in this installation
+
+set(goose_EXTENSIONS "@GOOSE_EXTENSION_NAMES@")
+
+include(CMakeFindDependencyMacro)
+find_dependency(Threads)
+
+find_dependency(ICU COMPONENTS i18n uc data)
+
+# Compute paths
+get_filename_component(goose_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(goose_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+
+if(NOT TARGET goose AND NOT goose_BINARY_DIR)
+    include("${goose_CMAKE_DIR}/gooseExports.cmake")
+endif()
+
+if(goose_USE_STATIC_LIBS)
+    set(goose_LIBRARIES goose_static)
+else()
+    set(goose_LIBRARIES goose)
+endif()

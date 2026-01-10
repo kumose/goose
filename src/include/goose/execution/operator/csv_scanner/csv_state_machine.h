@@ -1,0 +1,160 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/execution/operator/csv_scanner/csv_reader_options.h>
+#include <goose/execution/operator/csv_scanner/csv_buffer_manager.h>
+#include <goose/execution/operator/csv_scanner/csv_state_machine_cache.h>
+#include <goose/common/printer.h>
+
+namespace goose {
+
+//! State of necessary CSV States to parse file
+//! Current, previous, and state before the previous
+struct CSVStates {
+	void Initialize(CSVState initial_state = CSVState::NOT_SET) {
+		states[0] = initial_state;
+		states[1] = initial_state;
+	}
+	inline bool NewValue() const {
+		return states[1] == CSVState::DELIMITER;
+	}
+
+	inline bool NewRow() const {
+		// It is a new row, if the previous state is not a record separator, and the current one is
+		return states[0] != CSVState::RECORD_SEPARATOR && states[0] != CSVState::CARRIAGE_RETURN &&
+		       (states[1] == CSVState::RECORD_SEPARATOR || states[1] == CSVState::CARRIAGE_RETURN);
+	}
+
+	inline bool WasStandard() const {
+		return states[0] == CSVState::STANDARD;
+	}
+
+	inline bool EmptyLastValue() const {
+		// It is a new row, if the previous state is not a record separator, and the current one is
+		return (states[0] == CSVState::DELIMITER &&
+		        (states[1] == CSVState::RECORD_SEPARATOR || states[1] == CSVState::CARRIAGE_RETURN ||
+		         states[1] == CSVState::DELIMITER)) ||
+		       (states[0] == CSVState::STANDARD && states[1] == CSVState::DELIMITER);
+	}
+
+	inline bool EmptyLine() const {
+		return (states[1] == CSVState::CARRIAGE_RETURN || states[1] == CSVState::RECORD_SEPARATOR) &&
+		       (states[0] == CSVState::RECORD_SEPARATOR || states[0] == CSVState::NOT_SET);
+	}
+
+	inline bool IsDelimiterBytes() const {
+		return states[0] == CSVState::DELIMITER_FIRST_BYTE || states[0] == CSVState::DELIMITER_SECOND_BYTE ||
+		       states[0] == CSVState::DELIMITER_THIRD_BYTE;
+	}
+
+	inline bool IsDelimiter() const {
+		return states[1] == CSVState::DELIMITER;
+	}
+
+	inline bool IsNotSet() const {
+		return states[1] == CSVState::NOT_SET;
+	}
+
+	inline bool IsComment() const {
+		return states[1] == CSVState::COMMENT;
+	}
+
+	inline bool IsCurrentNewRow() const {
+		return states[1] == CSVState::RECORD_SEPARATOR || states[1] == CSVState::CARRIAGE_RETURN;
+	}
+
+	inline bool IsCarriageReturn() const {
+		return states[1] == CSVState::CARRIAGE_RETURN;
+	}
+
+	inline bool IsInvalid() const {
+		return states[1] == CSVState::INVALID;
+	}
+
+	inline bool IsQuoted() const {
+		return states[0] == CSVState::QUOTED;
+	}
+	inline bool IsUnquoted() const {
+		return states[0] == CSVState::UNQUOTED;
+	}
+	inline bool IsEscaped() const {
+		switch (states[1]) {
+		case CSVState::ESCAPE:
+		case CSVState::UNQUOTED_ESCAPE:
+		case CSVState::ESCAPED_RETURN:
+			return true;
+		case CSVState::QUOTED:
+			return states[0] == CSVState::UNQUOTED || states[0] == CSVState::MAYBE_QUOTED;
+		case CSVState::UNQUOTED:
+			return states[0] == CSVState::MAYBE_QUOTED;
+		default:
+			return false;
+		}
+	}
+	inline bool IsQuotedCurrent() const {
+		return states[1] == CSVState::QUOTED || states[1] == CSVState::QUOTED_NEW_LINE;
+	}
+	inline bool IsState(const CSVState state) const {
+		return states[1] == state;
+	}
+	inline bool WasState(const CSVState state) const {
+		return states[0] == state;
+	}
+	CSVState states[2];
+};
+
+//! The CSV State Machine comprises a state transition array (STA).
+//! The STA indicates the current state of parsing based on both the current and preceding characters.
+//! This reveals whether we are dealing with a Field, a New Line, a Delimiter, and so forth.
+//! The STA's creation depends on the provided quote, character, and delimiter options for that state machine.
+//! The motivation behind implementing an STA is to remove branching in regular CSV parsing by predicting and detecting
+//! the states. Note: The State Machine is currently utilized solely in the CSV Sniffer.
+class CSVStateMachine {
+public:
+	explicit CSVStateMachine(CSVReaderOptions &options_p, const CSVStateMachineOptions &state_machine_options,
+	                         CSVStateMachineCache &csv_state_machine_cache_p);
+
+	explicit CSVStateMachine(const StateMachine &transition_array, const CSVReaderOptions &options);
+
+	//! Transition all states to next state, that depends on the current char
+	inline void Transition(CSVStates &states, char current_char) const {
+		states.states[0] = states.states[1];
+		states.states[1] = transition_array[static_cast<uint8_t>(current_char)][static_cast<uint8_t>(states.states[1])];
+	}
+
+	void Print() const {
+		Printer::Print(OutputStream::STREAM_STDOUT, string("State Machine Options"));
+		Printer::Print(OutputStream::STREAM_STDOUT, string("Delim: ") + state_machine_options.delimiter.FormatValue());
+		Printer::Print(OutputStream::STREAM_STDOUT, string("Quote: ") + state_machine_options.quote.FormatValue());
+		Printer::Print(OutputStream::STREAM_STDOUT, string("Escape: ") + state_machine_options.escape.FormatValue());
+		Printer::Print(OutputStream::STREAM_STDOUT, string("Comment: ") + state_machine_options.comment.FormatValue());
+		Printer::Print(OutputStream::STREAM_STDOUT, string("---------------------"));
+	}
+	//! The Transition Array is a Finite State Machine
+	//! It holds the transitions of all states, on all 256 possible different characters
+	const StateMachine &transition_array;
+	//! Options of this state machine
+	const CSVStateMachineOptions state_machine_options;
+	//! CSV Reader Options
+	const CSVReaderOptions &options;
+	//! Dialect options resulting from sniffing
+	DialectOptions dialect_options;
+};
+
+} // namespace goose

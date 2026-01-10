@@ -1,0 +1,174 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/main/config.h>
+#include <goose/catalog/catalog_entry.h>
+
+namespace goose {
+class Catalog;
+class DatabaseInstance;
+class StorageManager;
+class TransactionManager;
+class StorageExtension;
+class DatabaseManager;
+
+struct AttachInfo;
+struct StoredDatabasePath;
+
+enum class AttachedDatabaseType {
+	READ_WRITE_DATABASE,
+	READ_ONLY_DATABASE,
+	SYSTEM_DATABASE,
+	TEMP_DATABASE,
+};
+
+enum class AttachVisibility { SHOWN, HIDDEN };
+
+//! DEFAULT is the standard ACID crash recovery mode.
+//! NO_WAL_WRITES disables the WAL for the attached database, i.e., disabling the D in ACID.
+//! Use this mode with caution, as it disables recovery from crashes for the file.
+enum class RecoveryMode : uint8_t { DEFAULT = 0, NO_WAL_WRITES = 1 };
+
+//! CHECKPOINT: Throws, if the checkpoint fails. Always cleans up.
+//! TRY_CHECKPOINT: Does not throw when failing a checkpoint. Always cleans up.
+enum class DatabaseCloseAction { CHECKPOINT, TRY_CHECKPOINT };
+
+class DatabaseFilePathManager;
+
+struct StoredDatabasePath {
+	StoredDatabasePath(DatabaseManager &db_manager, DatabaseFilePathManager &manager, string path, const string &name);
+	~StoredDatabasePath();
+
+	DatabaseManager &db_manager;
+	DatabaseFilePathManager &manager;
+	string path;
+
+	void OnDetach();
+};
+
+//! AttachOptions holds information about a database we plan to attach. These options are generalized, i.e.,
+//! they have to apply to any database file type (goose, sqlite, etc.).
+struct AttachOptions {
+	//! Constructor for databases we attach outside of the ATTACH DATABASE statement.
+	explicit AttachOptions(const DBConfigOptions &options);
+	//! Constructor for databases we attach when using ATTACH DATABASE.
+	AttachOptions(const unordered_map<string, Value> &options, const AccessMode default_access_mode);
+
+	//! Defaults to the access mode configured in the DBConfig, unless specified otherwise.
+	AccessMode access_mode;
+	//! The recovery type of the database.
+	RecoveryMode recovery_mode = RecoveryMode::DEFAULT;
+	//! The file format type. The default type is a goose database file, but other file formats are possible.
+	string db_type;
+	//! Set of remaining (key, value) options
+	unordered_map<string, Value> options;
+	//! (optionally) a catalog can be provided with a default table
+	QualifiedName default_table;
+	//! Whether this is the main database.
+	bool is_main_database = false;
+	//! The visibility of the attached database
+	AttachVisibility visibility = AttachVisibility::SHOWN;
+	//! The stored database path (in the path manager)
+	unique_ptr<StoredDatabasePath> stored_database_path;
+};
+
+//! The AttachedDatabase represents an attached database instance.
+class AttachedDatabase : public CatalogEntry, public enable_shared_from_this<AttachedDatabase> {
+public:
+	//! Create the built-in system database (without storage).
+	explicit AttachedDatabase(DatabaseInstance &db, AttachedDatabaseType type = AttachedDatabaseType::SYSTEM_DATABASE);
+	//! Create an attached database instance with the specified name and storage.
+	AttachedDatabase(DatabaseInstance &db, Catalog &catalog, string name, string file_path, AttachOptions &options);
+	//! Create an attached database instance with the specified storage extension.
+	AttachedDatabase(DatabaseInstance &db, Catalog &catalog, StorageExtension &ext, ClientContext &context, string name,
+	                 AttachInfo &info, AttachOptions &options);
+	~AttachedDatabase() override;
+
+	//! Initializes the catalog and storage of the attached database.
+	void Initialize(optional_ptr<ClientContext> context = nullptr);
+	void FinalizeLoad(optional_ptr<ClientContext> context);
+	//! Close the database before shutting it down.
+	void Close(const DatabaseCloseAction action);
+
+	Catalog &ParentCatalog() override;
+	const Catalog &ParentCatalog() const override;
+	bool HasStorageManager() const;
+	StorageManager &GetStorageManager();
+	Catalog &GetCatalog();
+	TransactionManager &GetTransactionManager();
+	DatabaseInstance &GetDatabase() {
+		return db;
+	}
+
+	optional_ptr<StorageExtension> GetStorageExtension() {
+		return storage_extension;
+	}
+
+	const string &GetName() const {
+		return name;
+	}
+	void SetName(const string &new_name) {
+		name = new_name;
+	}
+	bool IsSystem() const;
+	bool IsTemporary() const;
+	bool IsReadOnly() const;
+	bool IsInitialDatabase() const;
+	void SetInitialDatabase();
+	void SetReadOnlyDatabase();
+	void OnDetach(ClientContext &context);
+	RecoveryMode GetRecoveryMode() const {
+		return recovery_mode;
+	}
+	AttachVisibility GetVisibility() const {
+		return visibility;
+	}
+	const unordered_map<string, Value> &GetAttachOptions() const {
+		return attach_options;
+	}
+	string StoredPath() const;
+
+	static bool NameIsReserved(const string &name);
+	static string ExtractDatabaseName(const string &dbpath, FileSystem &fs);
+	// Invoke Close() on an attached database, if its use count is 1.
+	// Only call this in places where you know that the (last) shared pointer is about to go out of scope.
+	static void InvokeCloseIfLastReference(shared_ptr<AttachedDatabase> &attached_database);
+
+private:
+	DatabaseInstance &db;
+	unique_ptr<StoredDatabasePath> stored_database_path;
+	unique_ptr<StorageManager> storage;
+	unique_ptr<Catalog> catalog;
+	unique_ptr<TransactionManager> transaction_manager;
+	AttachedDatabaseType type;
+	optional_ptr<Catalog> parent_catalog;
+	optional_ptr<StorageExtension> storage_extension;
+	RecoveryMode recovery_mode = RecoveryMode::DEFAULT;
+	AttachVisibility visibility = AttachVisibility::SHOWN;
+	bool is_initial_database = false;
+	bool is_closed = false;
+	mutex close_lock;
+	unordered_map<string, Value> attach_options;
+
+private:
+	//! Clean any (shared) resources held by the database.
+	void Cleanup();
+};
+
+} // namespace goose

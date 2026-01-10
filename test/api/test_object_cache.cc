@@ -1,0 +1,62 @@
+#include "catch.h"
+#include "test_helpers.h"
+
+#include <goose/storage/object_cache.h>
+
+using namespace goose;
+using namespace std;
+
+struct TestObject : public ObjectCacheEntry {
+	int value;
+	TestObject(int value) : value(value) {
+	}
+	~TestObject() override = default;
+	string GetObjectType() override {
+		return ObjectType();
+	}
+	static string ObjectType() {
+		return "TestObject";
+	}
+	optional_idx GetEstimatedCacheMemory() const override {
+		return optional_idx {};
+	}
+};
+
+struct AnotherTestObject : public ObjectCacheEntry {
+	int value;
+	AnotherTestObject(int value) : value(value) {
+	}
+	~AnotherTestObject() override = default;
+	string GetObjectType() override {
+		return ObjectType();
+	}
+	static string ObjectType() {
+		return "AnotherTestObject";
+	}
+	optional_idx GetEstimatedCacheMemory() const override {
+		return optional_idx {};
+	}
+};
+
+TEST_CASE("Test ObjectCache", "[api]") {
+	Goose db;
+	Connection con(db);
+	auto &context = *con.context;
+
+	auto &cache = ObjectCache::GetObjectCache(context);
+
+	REQUIRE(cache.GetObject("test") == nullptr);
+	cache.Put("test", make_shared_ptr<TestObject>(42));
+
+	REQUIRE(cache.GetObject("test") != nullptr);
+
+	cache.Delete("test");
+	REQUIRE(cache.GetObject("test") == nullptr);
+
+	REQUIRE(cache.GetOrCreate<TestObject>("test", 42) != nullptr);
+	REQUIRE(cache.Get<TestObject>("test") != nullptr);
+	REQUIRE(cache.GetOrCreate<TestObject>("test", 1337)->value == 42);
+	REQUIRE(cache.Get<TestObject>("test")->value == 42);
+
+	REQUIRE(cache.GetOrCreate<AnotherTestObject>("test", 13) == nullptr);
+}

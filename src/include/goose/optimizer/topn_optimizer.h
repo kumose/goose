@@ -1,0 +1,44 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/main/client_context.h>
+#include <goose/common/constants.h>
+
+namespace goose {
+class LogicalOperator;
+class LogicalTopN;
+class Optimizer;
+
+class TopN {
+public:
+	explicit TopN(ClientContext &context);
+
+	//! Optimize ORDER BY + LIMIT to TopN
+	unique_ptr<LogicalOperator> Optimize(unique_ptr<LogicalOperator> op);
+	//! Whether we can perform the optimization on this operator
+	static bool CanOptimize(LogicalOperator &op, optional_ptr<ClientContext> context = nullptr);
+
+private:
+	void PushdownDynamicFilters(LogicalTopN &op);
+
+private:
+	ClientContext &context;
+};
+
+} // namespace goose

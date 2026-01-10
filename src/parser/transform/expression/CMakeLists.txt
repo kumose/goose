@@ -1,0 +1,25 @@
+add_library_unity(
+  goose_transformer_expression
+  OBJECT
+  transform_array_access.cc
+  transform_bool_expr.cc
+  transform_boolean_test.cc
+  transform_case.cc
+  transform_cast.cc
+  transform_coalesce.cc
+  transform_columnref.cc
+  transform_constant.cc
+  transform_expression.cc
+  transform_function.cc
+  transform_grouping_function.cc
+  transform_lambda.cc
+  transform_interval.cc
+  transform_is_null.cc
+  transform_operator.cc
+  transform_param_ref.cc
+  transform_positional_reference.cc
+  transform_subquery.cc
+  transform_multi_assign_reference.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_transformer_expression>
+    PARENT_SCOPE)

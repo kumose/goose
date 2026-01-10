@@ -1,0 +1,75 @@
+{
+    "group": "hugeint_and_uhugeint_helpers",
+    "deprecated": false,
+    "description": "Functions to convert from and to `goose_[hugeint, uhugeint]`.",
+    "entries": [
+        {
+            "name": "goose_hugeint_to_double",
+            "return_type": "double",
+            "params": [
+                {
+                    "type": "goose_hugeint",
+                    "name": "val"
+                }
+            ],
+            "comment": {
+                "description": "Converts a goose_hugeint object (as obtained from a `GOOSE_TYPE_HUGEINT` column) into a double.\n\n",
+                "param_comments": {
+                    "val": "The hugeint value."
+                },
+                "return_value": "The converted `double` element."
+            }
+        },
+        {
+            "name": "goose_double_to_hugeint",
+            "return_type": "goose_hugeint",
+            "params": [
+                {
+                    "type": "double",
+                    "name": "val"
+                }
+            ],
+            "comment": {
+                "description": "Converts a double value to a goose_hugeint object.\n\nIf the conversion fails because the double value is too big the result will be 0.\n\n",
+                "param_comments": {
+                    "val": "The double value."
+                },
+                "return_value": "The converted `goose_hugeint` element."
+            }
+        },
+        {
+            "name": "goose_uhugeint_to_double",
+            "return_type": "double",
+            "params": [
+                {
+                    "type": "goose_uhugeint",
+                    "name": "val"
+                }
+            ],
+            "comment": {
+                "description": "Converts a goose_uhugeint object (as obtained from a `GOOSE_TYPE_UHUGEINT` column) into a double.\n\n",
+                "param_comments": {
+                    "val": "The uhugeint value."
+                },
+                "return_value": "The converted `double` element."
+            }
+        },
+        {
+            "name": "goose_double_to_uhugeint",
+            "return_type": "goose_uhugeint",
+            "params": [
+                {
+                    "type": "double",
+                    "name": "val"
+                }
+            ],
+            "comment": {
+                "description": "Converts a double value to a goose_uhugeint object.\n\nIf the conversion fails because the double value is too big the result will be 0.\n\n",
+                "param_comments": {
+                    "val": "The double value."
+                },
+                "return_value": "The converted `goose_uhugeint` element."
+            }
+        }
+    ]
+}

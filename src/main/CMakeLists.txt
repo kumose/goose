@@ -1,0 +1,54 @@
+if(NOT CLANG_TIDY)
+  add_subdirectory(capi)
+endif()
+add_subdirectory(extension)
+add_subdirectory(http)
+add_subdirectory(relation)
+add_subdirectory(secret)
+add_subdirectory(settings)
+add_subdirectory(buffered_data)
+add_subdirectory(chunk_scan_state)
+
+if(FORCE_QUERY_LOG)
+  add_definitions(-DGOOSE_FORCE_QUERY_LOG="\""${FORCE_QUERY_LOG}"\"")
+endif()
+
+add_library_unity(
+        goose_main
+  OBJECT
+  appender.cc
+  attached_database.cc
+  client_config.cc
+  client_context_file_opener.cc
+  client_context.cc
+  client_context_wrapper.cc
+  client_data.cc
+  client_verify.cc
+  connection_manager.cc
+  chunk_scan_state.cc
+  config.cc
+  connection.cc
+  database.cc
+  database_file_path_manager.cc
+  database_path_and_type.cc
+  database_manager.cc
+  db_instance_cache.cc
+  error_manager.cc
+  extension.cc
+  extension_install_info.cc
+  extension_manager.cc
+  materialized_query_result.cc
+  pending_query_result.cc
+  prepared_statement.cc
+  prepared_statement_data.cc
+  profiling_info.cc
+  profiling_utils.cc
+  relation.cc
+  query_profiler.cc
+  query_result.cc
+  result_set_manager.cc
+  stream_query_result.cc
+  valid_checker.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_main>
+    PARENT_SCOPE)

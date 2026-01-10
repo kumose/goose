@@ -1,0 +1,24 @@
+add_subdirectory(regexp)
+add_library_unity(
+  goose_func_string_main
+  OBJECT
+  caseconvert.cc
+  concat.cc
+  concat_ws.cc
+  length.cc
+  like.cc
+  md5.cc
+  nfc_normalize.cc
+  regexp.cc
+  substring.cc
+  prefix.cc
+  regexp_escape.cc
+  sha1.cc
+  sha256.cc
+  strip_accents.cc
+  string_split.cc
+  suffix.cc
+  contains.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_func_string_main>
+    PARENT_SCOPE)

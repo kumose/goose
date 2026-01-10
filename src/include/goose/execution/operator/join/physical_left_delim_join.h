@@ -1,0 +1,49 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/execution/operator/join/physical_delim_join.h>
+
+namespace goose {
+
+//! PhysicalLeftDelimJoin represents a join where the LHS will be duplicate eliminated and pushed into a
+//! PhysicalColumnDataScan in the RHS.
+class PhysicalLeftDelimJoin : public PhysicalDelimJoin {
+public:
+	static constexpr const PhysicalOperatorType TYPE = PhysicalOperatorType::LEFT_DELIM_JOIN;
+
+public:
+	PhysicalLeftDelimJoin(PhysicalPlan &physical_plan, PhysicalPlanGenerator &planner, vector<LogicalType> types,
+	                      PhysicalOperator &original_join, PhysicalOperator &distinct,
+	                      const vector<const_reference<PhysicalOperator>> &delim_scans, idx_t estimated_cardinality,
+	                      optional_idx delim_idx);
+
+public:
+	unique_ptr<GlobalSinkState> GetGlobalSinkState(ClientContext &context) const override;
+	unique_ptr<LocalSinkState> GetLocalSinkState(ExecutionContext &context) const override;
+	SinkResultType Sink(ExecutionContext &context, DataChunk &chunk, OperatorSinkInput &input) const override;
+	SinkCombineResultType Combine(ExecutionContext &context, OperatorSinkCombineInput &input) const override;
+	void PrepareFinalize(ClientContext &context, GlobalSinkState &sink_state) const override;
+	SinkFinalizeType Finalize(Pipeline &pipeline, Event &event, ClientContext &context,
+	                          OperatorSinkFinalizeInput &input) const override;
+
+public:
+	void BuildPipelines(Pipeline &current, MetaPipeline &meta_pipeline) override;
+};
+
+} // namespace goose

@@ -1,0 +1,11 @@
+# name: test/sql/table_function/goose_optimizers.test
+# description: Test goose_optimizers function
+# group: [table_function]
+
+statement ok
+SELECT * FROM goose_optimizers();
+
+query I
+SELECT name FROM goose_optimizers() WHERE name='join_order';
+----
+join_order

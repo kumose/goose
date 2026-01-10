@@ -1,0 +1,26 @@
+add_library_unity(
+  goose_bind_expression
+  OBJECT
+  bind_aggregate_expression.cc
+  bind_between_expression.cc
+  bind_case_expression.cc
+  bind_cast_expression.cc
+  bind_collate_expression.cc
+  bind_columnref_expression.cc
+  bind_comparison_expression.cc
+  bind_conjunction_expression.cc
+  bind_constant_expression.cc
+  bind_function_expression.cc
+  bind_lambda.cc
+  bind_macro_expression.cc
+  bind_operator_expression.cc
+  bind_parameter_expression.cc
+  bind_positional_reference_expression.cc
+  bind_unpacked_star_expression.cc
+  bind_star_expression.cc
+  bind_subquery_expression.cc
+  bind_unnest_expression.cc
+  bind_window_expression.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_bind_expression>
+    PARENT_SCOPE)

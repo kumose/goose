@@ -1,0 +1,10 @@
+{
+  "version": "unstable_new_prepared_statement_functions",
+  "description": "API to get information about the results of a prepared statement",
+  "entries": [
+    "goose_prepared_statement_column_count",
+    "goose_prepared_statement_column_name",
+    "goose_prepared_statement_column_logical_type",
+    "goose_prepared_statement_column_type"
+  ]
+}

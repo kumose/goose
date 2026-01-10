@@ -1,0 +1,88 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/common/column_index.h>
+#include <goose/common/optional_ptr.h>
+#include <goose/function/scalar/strftime_format.h>
+#include "json_common.h"
+
+namespace goose {
+
+struct DateFormatMap;
+class JSONReader;
+
+//! Options for error handling while transforming JSON
+struct JSONTransformOptions {
+public:
+	JSONTransformOptions();
+	JSONTransformOptions(bool strict_cast, bool error_duplicate_key, bool error_missing_key, bool error_unkown_key);
+
+public:
+	//! Throws an error if the cast doesn't work (instead of NULL-ing it)
+	bool strict_cast = false;
+	//! Throws an error if there is a duplicate key (instead of ignoring it)
+	bool error_duplicate_key = false;
+	//! Throws an error if a key is missing (instead of NULL-ing it)
+	bool error_missing_key = false;
+	//! Throws an error if an object has a key we didn't know about
+	bool error_unknown_key = false;
+
+	//! Whether to delay the error when transforming (e.g., when non-strict casting or reading from file)
+	bool delay_error = false;
+	//! Date format used for parsing (can be NULL)
+	optional_ptr<const DateFormatMap> date_format_map = nullptr;
+	//! String to store errors in
+	string error_message;
+	//! Index of the object where the error occurred
+	idx_t object_index = DConstants::INVALID_INDEX;
+	//! Cast parameters
+	CastParameters parameters;
+
+public:
+	void Serialize(Serializer &serializer) const;
+	static JSONTransformOptions Deserialize(Deserializer &deserializer);
+};
+
+struct TryParseDate {
+	template <class T>
+	static inline bool Operation(const StrpTimeFormat &format, const string_t &input, T &result,
+	                             string &error_message) {
+		return format.TryParseDate(input, result, error_message);
+	}
+};
+
+struct TryParseTimeStamp {
+	template <class T>
+	static inline bool Operation(const StrpTimeFormat &format, const string_t &input, T &result,
+	                             string &error_message) {
+		return format.TryParseTimestamp(input, result, error_message);
+	}
+};
+
+struct JSONTransform {
+	static bool Transform(yyjson_val *vals[], yyjson_alc *alc, Vector &result, const idx_t count,
+	                      JSONTransformOptions &options, optional_ptr<const ColumnIndex> column_index);
+	static bool TransformObject(yyjson_val *objects[], yyjson_alc *alc, const idx_t count, const vector<string> &names,
+	                            const vector<Vector *> &result_vectors, JSONTransformOptions &options,
+	                            optional_ptr<const vector<ColumnIndex>> column_indices, bool error_unknown_key);
+	static bool GetStringVector(yyjson_val *vals[], const idx_t count, const LogicalType &target, Vector &string_vector,
+	                            JSONTransformOptions &options);
+};
+
+} // namespace goose

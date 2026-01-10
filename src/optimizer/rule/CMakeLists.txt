@@ -1,0 +1,26 @@
+add_library_unity(
+  goose_optimizer_rules
+  OBJECT
+  arithmetic_simplification.cc
+  case_simplification.cc
+  comparison_simplification.cc
+  conjunction_simplification.cc
+  constant_folding.cc
+  date_part_simplification.cc
+  date_trunc_simplification.cc
+  distinct_aggregate_optimizer.cc
+  distributivity.cc
+  empty_needle_removal.cc
+  enum_comparison.cc
+  equal_or_null_simplification.cc
+  in_clause_simplification_rule.cc
+  join_dependent_filter.cc
+  like_optimizations.cc
+  move_constants.cc
+  ordered_aggregate_optimizer.cc
+  regex_optimizations.cc
+  timestamp_comparison.cc
+  constant_order_normalization.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_optimizer_rules>
+    PARENT_SCOPE)

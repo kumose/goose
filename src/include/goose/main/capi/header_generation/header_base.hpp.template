@@ -1,0 +1,914 @@
+// !!!!!!!
+// WARNING: this file is used for header generation by scripts/generate_c_api.py after modifying the code below, rerun
+//          the script to apply changes to the generated files
+// !!!!!!!
+
+// GOOSE_START_OF_HEADER
+
+#pragma once
+
+#ifndef GOOSE_C_API
+#ifdef _WIN32
+#ifdef GOOSE_STATIC_BUILD
+#define GOOSE_C_API
+#else
+#if defined(GOOSE_BUILD_LIBRARY) && !defined(GOOSE_BUILD_LOADABLE_EXTENSION)
+#define GOOSE_C_API __declspec(dllexport)
+#else
+#define GOOSE_C_API __declspec(dllimport)
+#endif
+#endif
+#else
+#define GOOSE_C_API
+#endif
+#endif
+
+//! duplicate of goose/main/winapi.hpp
+#ifndef GOOSE_EXTENSION_API
+#ifdef _WIN32
+#ifdef GOOSE_STATIC_BUILD
+#define GOOSE_EXTENSION_API
+#else
+#define GOOSE_EXTENSION_API __declspec(dllexport)
+#endif
+#else
+#define GOOSE_EXTENSION_API __attribute__((visibility("default")))
+#endif
+#endif
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <stddef.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+//===--------------------------------------------------------------------===//
+// Enums
+//===--------------------------------------------------------------------===//
+
+//! WARNING: The numbers of these enums should not be changed, as changing the numbers breaks ABI compatibility.
+//! Always add enums at the END of the enum
+
+//! An enum over Goose's internal types.
+typedef enum GOOSE_TYPE {
+	GOOSE_TYPE_INVALID = 0,
+	// bool
+	GOOSE_TYPE_BOOLEAN = 1,
+	// int8_t
+	GOOSE_TYPE_TINYINT = 2,
+	// int16_t
+	GOOSE_TYPE_SMALLINT = 3,
+	// int32_t
+	GOOSE_TYPE_INTEGER = 4,
+	// int64_t
+	GOOSE_TYPE_BIGINT = 5,
+	// uint8_t
+	GOOSE_TYPE_UTINYINT = 6,
+	// uint16_t
+	GOOSE_TYPE_USMALLINT = 7,
+	// uint32_t
+	GOOSE_TYPE_UINTEGER = 8,
+	// uint64_t
+	GOOSE_TYPE_UBIGINT = 9,
+	// float
+	GOOSE_TYPE_FLOAT = 10,
+	// double
+	GOOSE_TYPE_DOUBLE = 11,
+	// goose_timestamp (microseconds)
+	GOOSE_TYPE_TIMESTAMP = 12,
+	// goose_date
+	GOOSE_TYPE_DATE = 13,
+	// goose_time
+	GOOSE_TYPE_TIME = 14,
+	// goose_interval
+	GOOSE_TYPE_INTERVAL = 15,
+	// goose_hugeint
+	GOOSE_TYPE_HUGEINT = 16,
+	// goose_uhugeint
+	GOOSE_TYPE_UHUGEINT = 32,
+	// const char*
+	GOOSE_TYPE_VARCHAR = 17,
+	// goose_blob
+	GOOSE_TYPE_BLOB = 18,
+	// goose_decimal
+	GOOSE_TYPE_DECIMAL = 19,
+	// goose_timestamp_s (seconds)
+	GOOSE_TYPE_TIMESTAMP_S = 20,
+	// goose_timestamp_ms (milliseconds)
+	GOOSE_TYPE_TIMESTAMP_MS = 21,
+	// goose_timestamp_ns (nanoseconds)
+	GOOSE_TYPE_TIMESTAMP_NS = 22,
+	// enum type, only useful as logical type
+	GOOSE_TYPE_ENUM = 23,
+	// list type, only useful as logical type
+	GOOSE_TYPE_LIST = 24,
+	// struct type, only useful as logical type
+	GOOSE_TYPE_STRUCT = 25,
+	// map type, only useful as logical type
+	GOOSE_TYPE_MAP = 26,
+	// goose_array, only useful as logical type
+	GOOSE_TYPE_ARRAY = 33,
+	// goose_hugeint
+	GOOSE_TYPE_UUID = 27,
+	// union type, only useful as logical type
+	GOOSE_TYPE_UNION = 28,
+	// goose_bit
+	GOOSE_TYPE_BIT = 29,
+	// goose_time_tz
+	GOOSE_TYPE_TIME_TZ = 30,
+	// goose_timestamp (microseconds)
+	GOOSE_TYPE_TIMESTAMP_TZ = 31,
+	// enum type, only useful as logical type
+	GOOSE_TYPE_ANY = 34,
+	// goose_bignum
+	GOOSE_TYPE_BIGNUM = 35,
+	// enum type, only useful as logical type
+	GOOSE_TYPE_SQLNULL = 36,
+	// enum type, only useful as logical type
+	GOOSE_TYPE_STRING_LITERAL = 37,
+	// enum type, only useful as logical type
+	GOOSE_TYPE_INTEGER_LITERAL = 38,
+	// goose_time_ns (nanoseconds)
+	GOOSE_TYPE_TIME_NS = 39,
+} goose_type;
+
+//! An enum over the returned state of different functions.
+typedef enum goose_state {
+	GooseSuccess = 0,
+	GooseError = 1
+} goose_state;
+
+//! An enum over the pending state of a pending query result.
+typedef enum goose_pending_state {
+	GOOSE_PENDING_RESULT_READY = 0,
+	GOOSE_PENDING_RESULT_NOT_READY = 1,
+	GOOSE_PENDING_ERROR = 2,
+	GOOSE_PENDING_NO_TASKS_AVAILABLE = 3
+} goose_pending_state;
+
+//! An enum over Goose's different result types.
+typedef enum goose_result_type {
+	GOOSE_RESULT_TYPE_INVALID = 0,
+	GOOSE_RESULT_TYPE_CHANGED_ROWS = 1,
+	GOOSE_RESULT_TYPE_NOTHING = 2,
+	GOOSE_RESULT_TYPE_QUERY_RESULT = 3,
+} goose_result_type;
+
+//! An enum over Goose's different statement types.
+typedef enum goose_statement_type {
+	GOOSE_STATEMENT_TYPE_INVALID = 0,
+	GOOSE_STATEMENT_TYPE_SELECT = 1,
+	GOOSE_STATEMENT_TYPE_INSERT = 2,
+	GOOSE_STATEMENT_TYPE_UPDATE = 3,
+	GOOSE_STATEMENT_TYPE_EXPLAIN = 4,
+	GOOSE_STATEMENT_TYPE_DELETE = 5,
+	GOOSE_STATEMENT_TYPE_PREPARE = 6,
+	GOOSE_STATEMENT_TYPE_CREATE = 7,
+	GOOSE_STATEMENT_TYPE_EXECUTE = 8,
+	GOOSE_STATEMENT_TYPE_ALTER = 9,
+	GOOSE_STATEMENT_TYPE_TRANSACTION = 10,
+	GOOSE_STATEMENT_TYPE_COPY = 11,
+	GOOSE_STATEMENT_TYPE_ANALYZE = 12,
+	GOOSE_STATEMENT_TYPE_VARIABLE_SET = 13,
+	GOOSE_STATEMENT_TYPE_CREATE_FUNC = 14,
+	GOOSE_STATEMENT_TYPE_DROP = 15,
+	GOOSE_STATEMENT_TYPE_EXPORT = 16,
+	GOOSE_STATEMENT_TYPE_PRAGMA = 17,
+	GOOSE_STATEMENT_TYPE_VACUUM = 18,
+	GOOSE_STATEMENT_TYPE_CALL = 19,
+	GOOSE_STATEMENT_TYPE_SET = 20,
+	GOOSE_STATEMENT_TYPE_LOAD = 21,
+	GOOSE_STATEMENT_TYPE_RELATION = 22,
+	GOOSE_STATEMENT_TYPE_EXTENSION = 23,
+	GOOSE_STATEMENT_TYPE_LOGICAL_PLAN = 24,
+	GOOSE_STATEMENT_TYPE_ATTACH = 25,
+	GOOSE_STATEMENT_TYPE_DETACH = 26,
+	GOOSE_STATEMENT_TYPE_MULTI = 27,
+} goose_statement_type;
+
+//! An enum over Goose's different error types.
+typedef enum goose_error_type {
+	GOOSE_ERROR_INVALID = 0,
+	GOOSE_ERROR_OUT_OF_RANGE = 1,
+	GOOSE_ERROR_CONVERSION = 2,
+	GOOSE_ERROR_UNKNOWN_TYPE = 3,
+	GOOSE_ERROR_DECIMAL = 4,
+	GOOSE_ERROR_MISMATCH_TYPE = 5,
+	GOOSE_ERROR_DIVIDE_BY_ZERO = 6,
+	GOOSE_ERROR_OBJECT_SIZE = 7,
+	GOOSE_ERROR_INVALID_TYPE = 8,
+	GOOSE_ERROR_SERIALIZATION = 9,
+	GOOSE_ERROR_TRANSACTION = 10,
+	GOOSE_ERROR_NOT_IMPLEMENTED = 11,
+	GOOSE_ERROR_EXPRESSION = 12,
+	GOOSE_ERROR_CATALOG = 13,
+	GOOSE_ERROR_PARSER = 14,
+	GOOSE_ERROR_PLANNER = 15,
+	GOOSE_ERROR_SCHEDULER = 16,
+	GOOSE_ERROR_EXECUTOR = 17,
+	GOOSE_ERROR_CONSTRAINT = 18,
+	GOOSE_ERROR_INDEX = 19,
+	GOOSE_ERROR_STAT = 20,
+	GOOSE_ERROR_CONNECTION = 21,
+	GOOSE_ERROR_SYNTAX = 22,
+	GOOSE_ERROR_SETTINGS = 23,
+	GOOSE_ERROR_BINDER = 24,
+	GOOSE_ERROR_NETWORK = 25,
+	GOOSE_ERROR_OPTIMIZER = 26,
+	GOOSE_ERROR_NULL_POINTER = 27,
+	GOOSE_ERROR_IO = 28,
+	GOOSE_ERROR_INTERRUPT = 29,
+	GOOSE_ERROR_FATAL = 30,
+	GOOSE_ERROR_INTERNAL = 31,
+	GOOSE_ERROR_INVALID_INPUT = 32,
+	GOOSE_ERROR_OUT_OF_MEMORY = 33,
+	GOOSE_ERROR_PERMISSION = 34,
+	GOOSE_ERROR_PARAMETER_NOT_RESOLVED = 35,
+	GOOSE_ERROR_PARAMETER_NOT_ALLOWED = 36,
+	GOOSE_ERROR_DEPENDENCY = 37,
+	GOOSE_ERROR_HTTP = 38,
+	GOOSE_ERROR_MISSING_EXTENSION = 39,
+	GOOSE_ERROR_AUTOLOAD = 40,
+	GOOSE_ERROR_SEQUENCE = 41,
+	GOOSE_INVALID_CONFIGURATION = 42
+} goose_error_type;
+
+//! An enum over Goose's different cast modes.
+typedef enum goose_cast_mode {
+	GOOSE_CAST_NORMAL = 0,
+	GOOSE_CAST_TRY = 1
+} goose_cast_mode;
+
+typedef enum goose_file_flag {
+	GOOSE_FILE_FLAG_INVALID = 0,
+	// Open the file with "read" capabilities.
+	GOOSE_FILE_FLAG_READ = 1,
+	// Open the file with "write" capabilities.
+	GOOSE_FILE_FLAG_WRITE = 2,
+	// Create a new file, or open if it already exists.
+	GOOSE_FILE_FLAG_CREATE = 3,
+	// Create a new file, or fail if it already exists.
+	GOOSE_FILE_FLAG_CREATE_NEW = 4,
+	// Open the file in "append" mode.
+	GOOSE_FILE_FLAG_APPEND = 5,
+} goose_file_flag;
+
+//! An enum over Goose's configuration option scopes.
+//! This enum can be used to specify the default scope when creating a custom configuration option,
+//! but it is also be used to determine the scope in which a configuration option is set when it is
+//! changed or retrieved.
+typedef enum goose_config_option_scope {
+	GOOSE_CONFIG_OPTION_SCOPE_INVALID = 0,
+	// The option is set for the duration of the current transaction only.
+	// !! CURRENTLY NOT IMPLEMENTED !!
+	GOOSE_CONFIG_OPTION_SCOPE_LOCAL = 1,
+	// The option is set for the current session/connection only.
+	GOOSE_CONFIG_OPTION_SCOPE_SESSION = 2,
+	// Set the option globally for all sessions/connections.
+	GOOSE_CONFIG_OPTION_SCOPE_GLOBAL = 3,
+} goose_config_option_scope;
+
+//! An enum over Goose's catalog entry types.
+typedef enum goose_catalog_entry_type {
+	GOOSE_CATALOG_ENTRY_TYPE_INVALID = 0,
+	GOOSE_CATALOG_ENTRY_TYPE_TABLE = 1,
+	GOOSE_CATALOG_ENTRY_TYPE_SCHEMA = 2,
+	GOOSE_CATALOG_ENTRY_TYPE_VIEW = 3,
+	GOOSE_CATALOG_ENTRY_TYPE_INDEX = 4,
+	GOOSE_CATALOG_ENTRY_TYPE_PREPARED_STATEMENT = 5,
+	GOOSE_CATALOG_ENTRY_TYPE_SEQUENCE = 6,
+	GOOSE_CATALOG_ENTRY_TYPE_COLLATION = 7,
+	GOOSE_CATALOG_ENTRY_TYPE_TYPE = 8,
+	GOOSE_CATALOG_ENTRY_TYPE_DATABASE = 9,
+} goose_catalog_entry_type;
+
+//===--------------------------------------------------------------------===//
+// General type definitions
+//===--------------------------------------------------------------------===//
+
+//! Goose's index type.
+typedef uint64_t idx_t;
+
+//! Type definition for the data pointers of selection vectors.
+typedef uint32_t sel_t;
+
+//! The callback to destroy data, e.g.,
+//! bind data (if any), init data (if any), extra data for replacement scans (if any), etc.
+typedef void (*goose_delete_callback_t)(void *data);
+
+//! The callback to copy data, e.g., bind data (if any).
+typedef void *(*goose_copy_callback_t)(void *data);
+
+//! Used for threading, contains a task state.
+//! Must be destroyed with `goose_destroy_task_state`.
+typedef void *goose_task_state;
+
+//===--------------------------------------------------------------------===//
+// Types (no explicit freeing)
+//===--------------------------------------------------------------------===//
+
+//! DATE is stored as days since 1970-01-01.
+//! Use the `goose_from_date` and `goose_to_date` functions to extract individual information.
+typedef struct {
+	int32_t days;
+} goose_date;
+
+typedef struct {
+	int32_t year;
+	int8_t month;
+	int8_t day;
+} goose_date_struct;
+
+//! TIME is stored as microseconds since 00:00:00.
+//! Use the `goose_from_time` and `goose_to_time` functions to extract individual information.
+typedef struct {
+	int64_t micros;
+} goose_time;
+
+typedef struct {
+	int8_t hour;
+	int8_t min;
+	int8_t sec;
+	int32_t micros;
+} goose_time_struct;
+
+//! TIME_NS is stored as nanoseconds since 00:00:00.
+typedef struct {
+	int64_t nanos;
+} goose_time_ns;
+
+//! TIME_TZ is stored as 40 bits for the int64_t microseconds, and 24 bits for the int32_t offset.
+//! Use the `goose_from_time_tz` function to extract individual information.
+typedef struct {
+	uint64_t bits;
+} goose_time_tz;
+
+typedef struct {
+	goose_time_struct time;
+	int32_t offset;
+} goose_time_tz_struct;
+
+//! TIMESTAMP is stored as microseconds since 1970-01-01.
+//! Use the `goose_from_timestamp` and `goose_to_timestamp` functions to extract individual information.
+typedef struct {
+	int64_t micros;
+} goose_timestamp;
+
+typedef struct {
+	goose_date_struct date;
+	goose_time_struct time;
+} goose_timestamp_struct;
+
+//! TIMESTAMP_S is stored as seconds since 1970-01-01.
+typedef struct {
+	int64_t seconds;
+} goose_timestamp_s;
+
+//! TIMESTAMP_MS is stored as milliseconds since 1970-01-01.
+typedef struct {
+	int64_t millis;
+} goose_timestamp_ms;
+
+//! TIMESTAMP_NS is stored as nanoseconds since 1970-01-01.
+typedef struct {
+	int64_t nanos;
+} goose_timestamp_ns;
+
+//! INTERVAL is stored in months, days, and micros.
+typedef struct {
+	int32_t months;
+	int32_t days;
+	int64_t micros;
+} goose_interval;
+
+//! HUGEINT is composed of a lower and upper component.
+//! Its value is upper * 2^64 + lower.
+//! For simplified usage, use `goose_hugeint_to_double` and `goose_double_to_hugeint`.
+typedef struct {
+	uint64_t lower;
+	int64_t upper;
+} goose_hugeint;
+
+//! UHUGEINT is composed of a lower and upper component.
+//! Its value is upper * 2^64 + lower.
+//! For simplified usage, use `goose_uhugeint_to_double` and `goose_double_to_uhugeint`.
+typedef struct {
+	uint64_t lower;
+	uint64_t upper;
+} goose_uhugeint;
+
+//! DECIMAL is composed of a width and a scale.
+//! Their value is stored in a HUGEINT.
+typedef struct {
+	uint8_t width;
+	uint8_t scale;
+	goose_hugeint value;
+} goose_decimal;
+
+//! A type holding information about the query execution progress.
+typedef struct {
+	double percentage;
+	uint64_t rows_processed;
+	uint64_t total_rows_to_process;
+} goose_query_progress_type;
+
+//! The internal representation of a VARCHAR (string_t). If the VARCHAR does not
+//! exceed 12 characters, then we inline it. Otherwise, we inline a four-byte prefix for faster
+//! string comparisons and store a pointer to the remaining characters. This is a non-
+//! owning structure, i.e., it does not have to be freed.
+typedef struct {
+	union {
+		struct {
+			uint32_t length;
+			char prefix[4];
+			char *ptr;
+		} pointer;
+		struct {
+			uint32_t length;
+			char inlined[12];
+		} inlined;
+	} value;
+} goose_string_t;
+
+//! Goose's LISTs are composed of a 'parent' vector holding metadata of each list,
+//! and a child vector holding the entries of the lists.
+//! The `goose_list_entry` struct contains the internal representation of a LIST metadata entry.
+//! A metadata entry contains the length of the list, and its offset in the child vector.
+typedef struct {
+	uint64_t offset;
+	uint64_t length;
+} goose_list_entry;
+
+//! A column consists of a pointer to its internal data. Don't operate on this type directly.
+//! Instead, use functions such as `goose_column_data`, `goose_nullmask_data`,
+//! `goose_column_type`, and `goose_column_name`.
+typedef struct {
+	// Deprecated, use `goose_column_data`.
+	void *deprecated_data;
+	// Deprecated, use `goose_nullmask_data`.
+	bool *deprecated_nullmask;
+	// Deprecated, use `goose_column_type`.
+	goose_type deprecated_type;
+	// Deprecated, use `goose_column_name`.
+	char *deprecated_name;
+	void *internal_data;
+} goose_column;
+
+//! 1. A standalone vector that must be destroyed, or
+//! 2. A vector to a column in a data chunk that lives as long as the data chunk lives.
+typedef struct _goose_vector {
+	void *internal_ptr;
+} * goose_vector;
+
+//! A selection vector is a vector of indices, which usually refer to values in a vector.
+//! Can be used to slice vectors, changing their length and the order of their entries.
+//! Standalone selection vectors must be destroyed.
+typedef struct _goose_selection_vector {
+	void *internal_ptr;
+} * goose_selection_vector;
+
+//===--------------------------------------------------------------------===//
+// Types (explicit freeing/destroying)
+//===--------------------------------------------------------------------===//
+
+//! Strings are composed of a `char` pointer and a size.
+//! You must free `string.data` with `goose_free`.
+typedef struct {
+	char *data;
+	idx_t size;
+} goose_string;
+
+//! BLOBs are composed of a byte pointer and a size.
+//! You must free `blob.data` with `goose_free`.
+typedef struct {
+	void *data;
+	idx_t size;
+} goose_blob;
+
+//! BITs are composed of a byte pointer and a size.
+//! BIT byte data has 0 to 7 bits of padding.
+//! The first byte contains the number of padding bits.
+//! The padding bits of the second byte are set to 1, starting from the MSB.
+//! You must free `data` with `goose_free`.
+typedef struct {
+	uint8_t *data;
+	idx_t size;
+} goose_bit;
+
+//! BIGNUMs are composed of a byte pointer, a size, and an `is_negative` bool.
+//! The absolute value of the number is stored in `data` in little endian format.
+//! You must free `data` with `goose_free`.
+typedef struct {
+	uint8_t *data;
+	idx_t size;
+	bool is_negative;
+} goose_bignum;
+
+//! A query result consists of a pointer to its internal data.
+//! Must be freed with 'goose_destroy_result'.
+typedef struct {
+	// Deprecated, use `goose_column_count`.
+	idx_t deprecated_column_count;
+	// Deprecated, use `goose_row_count`.
+	idx_t deprecated_row_count;
+	// Deprecated, use `goose_rows_changed`.
+	idx_t deprecated_rows_changed;
+	// Deprecated, use `goose_column_*`-family of functions.
+	goose_column *deprecated_columns;
+	// Deprecated, use `goose_result_error`.
+	char *deprecated_error_message;
+	void *internal_data;
+} goose_result;
+
+//! A database instance cache object. Must be destroyed with `goose_destroy_instance_cache`.
+typedef struct _goose_instance_cache {
+	void *internal_ptr;
+} * goose_instance_cache;
+
+//! A database object. Must be closed with `goose_close`.
+typedef struct _goose_database {
+	void *internal_ptr;
+} * goose_database;
+
+//! A connection to a goose database. Must be closed with `goose_disconnect`.
+typedef struct _goose_connection {
+	void *internal_ptr;
+} * goose_connection;
+
+//! A client context of a goose connection. Must be destroyed with `goose_destroy_context`.
+typedef struct _goose_client_context {
+	void *internal_ptr;
+} * goose_client_context;
+
+//! A prepared statement is a parameterized query that allows you to bind parameters to it.
+//! Must be destroyed with `goose_destroy_prepare`.
+typedef struct _goose_prepared_statement {
+	void *internal_ptr;
+} * goose_prepared_statement;
+
+//! Extracted statements. Must be destroyed with `goose_destroy_extracted`.
+typedef struct _goose_extracted_statements {
+	void *internal_ptr;
+} * goose_extracted_statements;
+
+//! The pending result represents an intermediate structure for a query that is not yet fully executed.
+//! Must be destroyed with `goose_destroy_pending`.
+typedef struct _goose_pending_result {
+	void *internal_ptr;
+} * goose_pending_result;
+
+//! The appender enables fast data loading into Goose.
+//! Must be destroyed with `goose_appender_destroy`.
+typedef struct _goose_appender {
+	void *internal_ptr;
+} * goose_appender;
+
+//! The table description allows querying information about the table.
+//! Must be destroyed with `goose_table_description_destroy`.
+typedef struct _goose_table_description {
+	void *internal_ptr;
+} * goose_table_description;
+
+//! The configuration can be used to provide start-up options for a database.
+//! Must be destroyed with `goose_destroy_config`.
+typedef struct _goose_config {
+	void *internal_ptr;
+} * goose_config;
+
+//! A custom configuration option instance. Used to register custom options that can be set on a goose_config.
+//! or by the user in SQL using `SET <option_name> = <value>`.
+typedef struct _goose_config_option {
+	void *internal_ptr;
+} * goose_config_option;
+
+//! A logical type.
+//! Must be destroyed with `goose_destroy_logical_type`.
+typedef struct _goose_logical_type {
+	void *internal_ptr;
+} * goose_logical_type;
+
+//! Holds extra information to register a custom logical type.
+//! Reserved for future use.
+typedef struct _goose_create_type_info {
+	void *internal_ptr;
+} * goose_create_type_info;
+
+//! Contains a data chunk of a goose_result.
+//! Must be destroyed with `goose_destroy_data_chunk`.
+typedef struct _goose_data_chunk {
+	void *internal_ptr;
+} * goose_data_chunk;
+
+//! A value of a logical type.
+//! Must be destroyed with `goose_destroy_value`.
+typedef struct _goose_value {
+	void *internal_ptr;
+} * goose_value;
+
+//! Holds a recursive tree containing profiling metrics.
+//! The tree matches the query plan, and has a top-level node.
+typedef struct _goose_profiling_info {
+	void *internal_ptr;
+} * goose_profiling_info;
+
+//! Holds error data.
+//! Must be destroyed with `goose_destroy_error_data`.
+typedef struct _goose_error_data {
+	void *internal_ptr;
+} * goose_error_data;
+
+//! Holds a bound expression.
+//! Must be destroyed with `goose_destroy_expression`.
+typedef struct _goose_expression {
+	void *internal_ptr;
+} * goose_expression;
+
+//===--------------------------------------------------------------------===//
+// C API extension information
+//===--------------------------------------------------------------------===//
+
+//! Holds the state of the C API extension initialization process.
+typedef struct _goose_extension_info {
+	void *internal_ptr;
+} * goose_extension_info;
+
+//===--------------------------------------------------------------------===//
+// Function types
+//===--------------------------------------------------------------------===//
+
+//! Additional function info.
+//! When setting this info, it is necessary to pass a destroy-callback function.
+typedef struct _goose_function_info {
+	void *internal_ptr;
+} * goose_function_info;
+
+//! The bind info of a function.
+//! When setting this info, it is necessary to pass a destroy-callback function.
+typedef struct _goose_bind_info {
+	void *internal_ptr;
+} * goose_bind_info;
+
+//! Additional function initialization info.
+//! When setting this info, it is necessary to pass a destroy-callback function.
+typedef struct _goose_init_info {
+	void *internal_ptr;
+} * goose_init_info;
+
+//===--------------------------------------------------------------------===//
+// Scalar function types
+//===--------------------------------------------------------------------===//
+
+//! A scalar function. Must be destroyed with `goose_destroy_scalar_function`.
+typedef struct _goose_scalar_function {
+	void *internal_ptr;
+} * goose_scalar_function;
+
+//! A scalar function set. Must be destroyed with `goose_destroy_scalar_function_set`.
+typedef struct _goose_scalar_function_set {
+	void *internal_ptr;
+} * goose_scalar_function_set;
+
+//! The bind function callback of the scalar function.
+typedef void (*goose_scalar_function_bind_t)(goose_bind_info info);
+
+//! The thread-local initialization function of the scalar function.
+typedef void (*goose_scalar_function_init_t)(goose_init_info info);
+
+//! The function to execute the scalar function on an input chunk.
+typedef void (*goose_scalar_function_t)(goose_function_info info, goose_data_chunk input, goose_vector output);
+
+//===--------------------------------------------------------------------===//
+// Aggregate function types
+//===--------------------------------------------------------------------===//
+
+//! An aggregate function. Must be destroyed with `goose_destroy_aggregate_function`.
+typedef struct _goose_aggregate_function {
+	void *internal_ptr;
+} * goose_aggregate_function;
+
+//! A aggregate function set. Must be destroyed with `goose_destroy_aggregate_function_set`.
+typedef struct _goose_aggregate_function_set {
+	void *internal_ptr;
+} * goose_aggregate_function_set;
+
+//! The state of an aggregate function.
+typedef struct _goose_aggregate_state {
+	void *internal_ptr;
+} * goose_aggregate_state;
+
+//! A function to return the aggregate state's size.
+typedef idx_t (*goose_aggregate_state_size)(goose_function_info info);
+
+//! A function to initialize an aggregate state.
+typedef void (*goose_aggregate_init_t)(goose_function_info info, goose_aggregate_state state);
+
+//! An optional function to destroy an aggregate state.
+typedef void (*goose_aggregate_destroy_t)(goose_aggregate_state *states, idx_t count);
+
+//! A function to update a set of aggregate states with new values.
+typedef void (*goose_aggregate_update_t)(goose_function_info info, goose_data_chunk input,
+                                          goose_aggregate_state *states);
+
+//! A function to combine aggregate states.
+typedef void (*goose_aggregate_combine_t)(goose_function_info info, goose_aggregate_state *source,
+                                           goose_aggregate_state *target, idx_t count);
+
+//! A function to finalize aggregate states into a result vector.
+typedef void (*goose_aggregate_finalize_t)(goose_function_info info, goose_aggregate_state *source,
+                                            goose_vector result, idx_t count, idx_t offset);
+
+//===--------------------------------------------------------------------===//
+// Table function types
+//===--------------------------------------------------------------------===//
+
+//! A table function. Must be destroyed with `goose_destroy_table_function`.
+typedef struct _goose_table_function {
+	void *internal_ptr;
+} * goose_table_function;
+
+//! The bind function of the table function.
+typedef void (*goose_table_function_bind_t)(goose_bind_info info);
+
+//! The possibly thread-local initialization function of the table function.
+typedef void (*goose_table_function_init_t)(goose_init_info info);
+
+//! The function to generate an output chunk during table function execution.
+typedef void (*goose_table_function_t)(goose_function_info info, goose_data_chunk output);
+
+//===--------------------------------------------------------------------===//
+// Copy function types
+//===--------------------------------------------------------------------===//
+
+//! A COPY function. Must be destroyed with `goose_destroy_copy_function`.
+typedef struct _goose_copy_function {
+	void *internal_ptr;
+} * goose_copy_function;
+
+//! Info for the bind function of a COPY function.
+typedef struct _goose_copy_function_bind_info {
+	void *internal_ptr;
+} * goose_copy_function_bind_info;
+
+//! Info for the global initialization function of a COPY function.
+typedef struct _goose_copy_function_global_init_info {
+	void *internal_ptr;
+} * goose_copy_function_global_init_info;
+
+//! Info for the sink function of a COPY function.
+typedef struct _goose_copy_function_sink_info {
+	void *internal_ptr;
+} * goose_copy_function_sink_info;
+
+//! Info for the finalize function of a COPY function.
+typedef struct _goose_copy_function_finalize_info {
+	void *internal_ptr;
+} * goose_copy_function_finalize_info;
+
+//! The bind function to use when binding a COPY ... TO function.
+typedef void (*goose_copy_function_bind_t)(goose_copy_function_bind_info info);
+
+//! The initialization function to use when initializing a COPY ... TO function.
+typedef void (*goose_copy_function_global_init_t)(goose_copy_function_global_init_info info);
+
+//! The function to sink an input chunk into during execution of a COPY ... TO function.
+typedef void (*goose_copy_function_sink_t)(goose_copy_function_sink_info info, goose_data_chunk input);
+
+//! The function to finalize the COPY ... TO function execution.
+typedef void (*goose_copy_function_finalize_t)(goose_copy_function_finalize_info info);
+
+//===--------------------------------------------------------------------===//
+// Cast types
+//===--------------------------------------------------------------------===//
+
+//! A cast function. Must be destroyed with `goose_destroy_cast_function`.
+typedef struct _goose_cast_function {
+	void *internal_ptr;
+} * goose_cast_function;
+
+//! The function to cast from an input vector to an output vector.
+typedef bool (*goose_cast_function_t)(goose_function_info info, idx_t count, goose_vector input, goose_vector output);
+
+//===--------------------------------------------------------------------===//
+// Replacement scan types
+//===--------------------------------------------------------------------===//
+
+//! Additional replacement scan info. When setting this info, it is necessary to pass a destroy-callback function.
+typedef struct _goose_replacement_scan_info {
+	void *internal_ptr;
+} * goose_replacement_scan_info;
+
+//! A replacement scan function.
+typedef void (*goose_replacement_callback_t)(goose_replacement_scan_info info, const char *table_name, void *data);
+
+//===--------------------------------------------------------------------===//
+// Arrow-related types
+//===--------------------------------------------------------------------===//
+
+//! Forward declare Arrow structs
+//! It is important to notice that these structs are not defined by Goose but are actually Arrow external objects.
+//! They're defined by the C Data Interface Arrow spec: https://arrow.apache.org/docs/format/CDataInterface.html
+
+struct ArrowArray;
+
+struct ArrowSchema;
+
+//! Holds an arrow query result. Must be destroyed with `goose_destroy_arrow`.
+typedef struct _goose_arrow {
+	void *internal_ptr;
+} * goose_arrow;
+
+//! Holds an arrow array stream. Must be destroyed with `goose_destroy_arrow_stream`.
+typedef struct _goose_arrow_stream {
+	void *internal_ptr;
+} * goose_arrow_stream;
+
+//! Holds an arrow schema. Remember to release the respective ArrowSchema object.
+typedef struct _goose_arrow_schema {
+	void *internal_ptr;
+} * goose_arrow_schema;
+
+//! Holds an arrow converted schema (i.e., goose::ArrowTableSchema).
+//! In practice, this object holds the information necessary to do proper conversion between Arrow Types and Goose Types.
+//! Check goose/function/table/arrow/arrow_goose_schema.hpp for more details!
+//! Must be destroyed with `goose_destroy_arrow_converted_schema`
+typedef struct _goose_arrow_converted_schema {
+	void *internal_ptr;
+} * goose_arrow_converted_schema;
+
+//! Holds an arrow array. Remember to release the respective ArrowSchema object.
+typedef struct _goose_arrow_array {
+	void *internal_ptr;
+} * goose_arrow_array;
+
+//! The arrow options used when transforming the Goose schema and datachunks into Arrow schema and arrays.
+//! Used in `goose_to_arrow_schema` and `goose_data_chunk_to_arrow`
+typedef struct _goose_arrow_options {
+	void *internal_ptr;
+} * goose_arrow_options;
+
+//===--------------------------------------------------------------------===//
+// Virtual File System Access
+//===--------------------------------------------------------------------===//
+
+typedef struct _goose_file_open_options {
+	void *internal_ptr;
+} * goose_file_open_options;
+
+typedef struct _goose_file_system {
+	void *internal_ptr;
+} * goose_file_system;
+
+typedef struct _goose_file_handle {
+	void *internal_ptr;
+} * goose_file_handle;
+
+
+//===--------------------------------------------------------------------===//
+// Catalog Interface
+//===--------------------------------------------------------------------===//
+
+//! A handle to a database catalog.
+//! Must be destroyed with `goose_destroy_catalog`.
+typedef struct _goose_catalog {
+	void *internal_ptr;
+} * goose_catalog;
+
+//! A handle to a catalog entry (e.g., table, view, index, etc.).
+//! Must be destroyed with `goose_destroy_catalog_entry`.
+typedef struct _goose_catalog_entry {
+	void *internal_ptr;
+} * goose_catalog_entry;
+
+//===--------------------------------------------------------------------===//
+// Logging Types
+//===--------------------------------------------------------------------===//
+
+//! Holds a log storage object.
+typedef struct _goose_log_storage {
+	void *internal_ptr;
+} * goose_log_storage;
+
+//! This function is missing the logging context, which will be added later.
+typedef void (*goose_logger_write_log_entry_t)(void *extra_data, goose_timestamp *timestamp, const char *level, const char *log_type, const char *log_message);
+
+//===--------------------------------------------------------------------===//
+// Goose extension access
+//===--------------------------------------------------------------------===//
+
+//! Passed to C API extension as a parameter to the entrypoint.
+struct goose_extension_access {
+	//! Indicate that an error has occurred.
+	void (*set_error)(goose_extension_info info, const char *error);
+	//! Fetch the database on which to register the extension.
+	goose_database (*get_database)(goose_extension_info info);
+	//! Fetch the API struct pointer.
+	const void *(*get_api)(goose_extension_info info, const char *version);
+};
+
+// FILE_CONTENT_SECTION
+
+#ifdef __cplusplus
+}
+#endif

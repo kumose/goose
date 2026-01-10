@@ -1,0 +1,19 @@
+add_library_unity(
+        goose_common_enums
+  OBJECT
+  catalog_type.cc
+  compression_type.cc
+  date_part_specifier.cc
+  expression_type.cc
+  file_compression_type.cc
+  http_status_code.cc
+  join_type.cc
+  logical_operator_type.cc
+  metric_type.cc
+  optimizer_type.cc
+  physical_operator_type.cc
+  statement_type.cc
+  relation_type.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_common_enums>
+    PARENT_SCOPE)

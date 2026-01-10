@@ -1,0 +1,36 @@
+add_library_unity(
+  test_sql_capi
+  OBJECT
+  capi_aggregate_functions.cc
+  capi_catalog.cc
+  capi_config_options.cc
+  capi_copy_function.cc
+  capi_custom_type.cc
+  capi_file_system.cc
+  capi_scalar_functions.cc
+  capi_table_functions.cc
+  test_capi.cc
+  test_capi_any_invalid_type.cc
+  test_capi_append_data_chunk.cc
+  test_starting_database.cc
+  test_capi_appender.cc
+  test_capi_arrow.cc
+  test_capi_data_chunk.cc
+  test_capi_extract.cc
+  test_capi_instance_cache.cc
+  test_capi_logging.cc
+  test_capi_pending.cc
+  test_capi_prepared.cc
+  test_capi_profiling.cc
+  test_capi_website.cc
+  test_capi_complex_types.cc
+  test_capi_to_decimal.cc
+  test_capi_values.cc
+  test_capi_vector.cc
+  test_capi_replacement_scan.cc
+  test_capi_streaming.cc
+  test_capi_table_description.cc
+  test_without_disabled_functions.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:test_sql_capi>
+    PARENT_SCOPE)

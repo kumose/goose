@@ -1,0 +1,32 @@
+add_library_unity(
+  goose_statement
+  OBJECT
+  alter_statement.cc
+  attach_statement.cc
+  call_statement.cc
+  copy_statement.cc
+  copy_database_statement.cc
+  create_statement.cc
+  detach_statement.cc
+  delete_statement.cc
+  drop_statement.cc
+  execute_statement.cc
+  explain_statement.cc
+  export_statement.cc
+  extension_statement.cc
+  insert_statement.cc
+  load_statement.cc
+  merge_into_statement.cc
+  multi_statement.cc
+  pragma_statement.cc
+  prepare_statement.cc
+  relation_statement.cc
+  select_statement.cc
+  set_statement.cc
+  transaction_statement.cc
+  update_statement.cc
+  update_extensions_statement.cc
+  vacuum_statement.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_statement>
+    PARENT_SCOPE)

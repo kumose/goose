@@ -1,0 +1,9 @@
+{
+  "version": "unstable_instance_cache",
+  "description": "Exposing the instance cache",
+  "entries": [
+    "goose_create_instance_cache",
+    "goose_get_or_create_from_cache",
+    "goose_destroy_instance_cache"
+  ]
+}

@@ -1,0 +1,25 @@
+add_library_unity(
+  goose_json_functions
+  OBJECT
+  copy_json.cc
+  json_array_length.cc
+  json_contains.cc
+  json_create.cc
+  json_exists.cc
+  json_extract.cc
+  json_keys.cc
+  json_merge_patch.cc
+  json_pretty.cc
+  json_structure.cc
+  json_table_in_out.cc
+  json_transform.cc
+  json_type.cc
+  json_valid.cc
+  json_value.cc
+  json_serialize_plan.cc
+  json_serialize_sql.cc
+  read_json.cc
+  read_json_objects.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_json_functions>
+    PARENT_SCOPE)

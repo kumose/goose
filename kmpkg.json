@@ -1,0 +1,21 @@
+{
+  "dependencies": [
+    "brotli",
+    "cantor",
+    "lz4",
+    "marksim",
+    "mbedtls",
+    {
+      "name": "snappy",
+      "features": [
+        "rtti"
+      ]
+    },
+    "snowball",
+    "turbo",
+    "xfsst",
+    "xre2",
+    "zstd",
+    "icu"
+  ]
+}

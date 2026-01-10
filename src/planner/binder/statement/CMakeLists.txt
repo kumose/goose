@@ -1,0 +1,33 @@
+add_library_unity(
+  goose_bind_statement
+  OBJECT
+  bind_attach.cc
+  bind_call.cc
+  bind_copy.cc
+  bind_copy_database.cc
+  bind_create.cc
+  bind_create_table.cc
+  bind_delete.cc
+  bind_detach.cc
+  bind_drop.cc
+  bind_execute.cc
+  bind_explain.cc
+  bind_export.cc
+  bind_extension.cc
+  bind_insert.cc
+  bind_load.cc
+  bind_logical_plan.cc
+  bind_merge_into.cc
+  bind_pragma.cc
+  bind_prepare.cc
+  bind_relation.cc
+  bind_select.cc
+  bind_set.cc
+  bind_simple.cc
+  bind_summarize.cc
+  bind_update.cc
+  bind_update_extensions.cc
+  bind_vacuum.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_bind_statement>
+    PARENT_SCOPE)

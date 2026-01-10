@@ -1,0 +1,96 @@
+{
+    "group": "helpers",
+    "deprecated": false,
+    "description": "Generic and `goose_string_t` helper functions.",
+    "entries": [
+        {
+            "name": "goose_malloc",
+            "return_type": "void *",
+            "params": [
+                {
+                    "type": "size_t",
+                    "name": "size"
+                }
+            ],
+            "comment": {
+                "description": "Allocate `size` bytes of memory using the goose internal malloc function. Any memory allocated in this manner\nshould be freed using `goose_free`.\n\n",
+                "param_comments": {
+                    "size": "The number of bytes to allocate."
+                },
+                "return_value": "A pointer to the allocated memory region."
+            }
+        },
+        {
+            "name": "goose_free",
+            "return_type": "void",
+            "params": [
+                {
+                    "type": "void *",
+                    "name": "ptr"
+                }
+            ],
+            "comment": {
+                "description": "Free a value returned from `goose_malloc`, `goose_value_varchar`, `goose_value_blob`, or\n`goose_value_string`.\n\n",
+                "param_comments": {
+                    "ptr": "The memory region to de-allocate."
+                }
+            }
+        },
+        {
+            "name": "goose_vector_size",
+            "return_type": "idx_t",
+            "params": [],
+            "comment": {
+                "description": "The internal vector size used by Goose.\nThis is the amount of tuples that will fit into a data chunk created by `goose_create_data_chunk`.\n\n",
+                "return_value": "The vector size."
+            }
+        },
+        {
+            "name": "goose_string_is_inlined",
+            "return_type": "bool",
+            "params": [
+                {
+                    "type": "goose_string_t",
+                    "name": "string"
+                }
+            ],
+            "comment": {
+                "description": "Whether or not the goose_string_t value is inlined.\nThis means that the data of the string does not have a separate allocation.\n\n"
+            }
+        },
+        {
+            "name": "goose_string_t_length",
+            "return_type": "uint32_t",
+            "params": [
+                {
+                    "type": "goose_string_t",
+                    "name": "string"
+                }
+            ],
+            "comment": {
+                "description": "Get the string length of a string_t\n\n",
+                "return_value": "The length.",
+                "param_comments": {
+                    "string": "The string to get the length of."
+                }
+            }
+        },
+        {
+            "name": "goose_string_t_data",
+            "return_type": "const char *",
+            "params": [
+                {
+                    "type": "goose_string_t *",
+                    "name": "string"
+                }
+            ],
+            "comment": {
+                "description": "Get a pointer to the string data of a string_t\n\n",
+                "return_value": "The pointer.",
+                "param_comments": {
+                    "string": "The string to get the pointer to."
+                }
+            }
+        }
+    ]
+}

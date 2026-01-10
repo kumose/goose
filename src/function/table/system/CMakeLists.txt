@@ -1,0 +1,44 @@
+add_library_unity(
+  goose_table_func_system
+  OBJECT
+  goose_connection_count.cc
+  goose_approx_database_count.cc
+  goose_columns.cc
+  goose_constraints.cc
+  goose_databases.cc
+  goose_dependencies.cc
+  goose_extensions.cc
+  goose_external_file_cache.cc
+  goose_functions.cc
+  goose_keywords.cc
+  goose_log.cc
+  goose_log_contexts.cc
+  goose_indexes.cc
+  goose_memory.cc
+  goose_optimizers.cc
+  goose_schemas.cc
+  goose_secrets.cc
+  goose_prepared_statements.cc
+  goose_which_secret.cc
+  goose_secret_types.cc
+  goose_sequences.cc
+  goose_settings.cc
+  goose_tables.cc
+  goose_temporary_files.cc
+  goose_types.cc
+  goose_variables.cc
+  goose_views.cc
+  enable_profiling.cc
+  logging_utils.cc
+  pragma_collations.cc
+  pragma_database_size.cc
+  pragma_metadata_info.cc
+  pragma_storage_info.cc
+  pragma_table_info.cc
+  pragma_table_sample.cc
+  pragma_user_agent.cc
+  test_all_types.cc
+  test_vector_types.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_table_func_system>
+    PARENT_SCOPE)

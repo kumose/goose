@@ -1,0 +1,182 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/common/types-import.h>
+#include <goose/execution/expression_executor_state.h>
+#include <goose/planner/bound_tokens.h>
+#include <goose/planner/expression.h>
+#include <goose/main/client_context.h>
+#include <goose/common/enums/debug_vector_verification.h>
+
+namespace goose {
+class Allocator;
+class ExecutionContext;
+
+//! ExpressionExecutor is responsible for executing a set of expressions and storing the result in a data chunk
+class ExpressionExecutor {
+	friend class BoundIndex;
+
+public:
+	GOOSE_API explicit ExpressionExecutor(ClientContext &context);
+	GOOSE_API ExpressionExecutor(ClientContext &context, const Expression *expression);
+	GOOSE_API ExpressionExecutor(ClientContext &context, const Expression &expression);
+	GOOSE_API ExpressionExecutor(ClientContext &context, const vector<unique_ptr<Expression>> &expressions);
+	ExpressionExecutor(ExpressionExecutor &&) = delete;
+
+	//! The expressions of the executor
+	vector<const Expression *> expressions;
+	//! The data chunk of the current physical operator, used to resolve
+	//! column references and determines the output cardinality
+	DataChunk *chunk = nullptr;
+
+public:
+	bool HasContext();
+	ClientContext &GetContext();
+	Allocator &GetAllocator();
+
+	//! Add an expression to the set of to-be-executed expressions of the executor
+	GOOSE_API void AddExpression(const Expression &expr);
+	void ClearExpressions();
+
+	//! Execute the set of expressions with the given input chunk and store the result in the output chunk
+	GOOSE_API void Execute(DataChunk *input, DataChunk &result);
+	inline void Execute(DataChunk &input, DataChunk &result) {
+		Execute(&input, result);
+	}
+	inline void Execute(DataChunk &result) {
+		Execute(nullptr, result);
+	}
+
+	//! Execute the ExpressionExecutor and put the result in the result vector; this should only be used for expression
+	//! executors with a single expression
+	GOOSE_API void ExecuteExpression(DataChunk &input, Vector &result);
+	//! Execute the ExpressionExecutor and put the result in the result vector; this should only be used for expression
+	//! executors with a single expression
+	GOOSE_API void ExecuteExpression(Vector &result);
+	//! Execute the ExpressionExecutor and generate a selection vector from all true values in the result; this should
+	//! only be used with a single boolean expression
+	GOOSE_API idx_t SelectExpression(DataChunk &input, SelectionVector &sel);
+
+	GOOSE_API idx_t SelectExpression(DataChunk &input, SelectionVector &result_sel,
+	                                  optional_ptr<SelectionVector> current_sel, idx_t current_count);
+
+	GOOSE_API idx_t SelectExpression(DataChunk &input, optional_ptr<SelectionVector> true_sel,
+	                                  optional_ptr<SelectionVector> false_sel,
+	                                  optional_ptr<SelectionVector> current_sel, idx_t current_count);
+
+	//! Execute the expression with index `expr_idx` and store the result in the result vector
+	GOOSE_API void ExecuteExpression(idx_t expr_idx, Vector &result);
+	//! Evaluate a scalar expression and fold it into a single value
+	GOOSE_API static Value EvaluateScalar(ClientContext &context, const Expression &expr,
+	                                       bool allow_unfoldable = false);
+	//! Try to evaluate a scalar expression and fold it into a single value, returns false if an exception is thrown
+	GOOSE_API static bool TryEvaluateScalar(ClientContext &context, const Expression &expr, Value &result);
+
+	//! Initialize the state of a given expression
+	static unique_ptr<ExpressionState> InitializeState(const Expression &expr, ExpressionExecutorState &state);
+
+	inline void SetChunk(DataChunk *chunk) {
+		this->chunk = chunk;
+	}
+	inline void SetChunk(DataChunk &chunk) {
+		SetChunk(&chunk);
+	}
+
+	GOOSE_API vector<unique_ptr<ExpressionExecutorState>> &GetStates();
+
+protected:
+	void Initialize(const Expression &expr, ExpressionExecutorState &state);
+
+	static unique_ptr<ExpressionState> InitializeState(const BoundReferenceExpression &expr,
+	                                                   ExpressionExecutorState &state);
+	static unique_ptr<ExpressionState> InitializeState(const BoundBetweenExpression &expr,
+	                                                   ExpressionExecutorState &state);
+	static unique_ptr<ExpressionState> InitializeState(const BoundCaseExpression &expr, ExpressionExecutorState &state);
+	static unique_ptr<ExpressionState> InitializeState(const BoundCastExpression &expr, ExpressionExecutorState &state);
+	static unique_ptr<ExpressionState> InitializeState(const BoundComparisonExpression &expr,
+	                                                   ExpressionExecutorState &state);
+	static unique_ptr<ExpressionState> InitializeState(const BoundConjunctionExpression &expr,
+	                                                   ExpressionExecutorState &state);
+	static unique_ptr<ExpressionState> InitializeState(const BoundConstantExpression &expr,
+	                                                   ExpressionExecutorState &state);
+	static unique_ptr<ExpressionState> InitializeState(const BoundFunctionExpression &expr,
+	                                                   ExpressionExecutorState &state);
+	static unique_ptr<ExpressionState> InitializeState(const BoundOperatorExpression &expr,
+	                                                   ExpressionExecutorState &state);
+	static unique_ptr<ExpressionState> InitializeState(const BoundParameterExpression &expr,
+	                                                   ExpressionExecutorState &state);
+
+	void Execute(const Expression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             Vector &result);
+
+	void Execute(const BoundBetweenExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             Vector &result);
+	void Execute(const BoundCaseExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             Vector &result);
+	void Execute(const BoundCastExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             Vector &result);
+
+	void Execute(const BoundComparisonExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             Vector &result);
+	void Execute(const BoundConjunctionExpression &expr, ExpressionState *state, const SelectionVector *sel,
+	             idx_t count, Vector &result);
+	void Execute(const BoundConstantExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             Vector &result);
+	void Execute(const BoundFunctionExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             Vector &result);
+	void Execute(const BoundOperatorExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             Vector &result);
+	void Execute(const BoundParameterExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             Vector &result);
+	void Execute(const BoundReferenceExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             Vector &result);
+
+	//! Execute the (boolean-returning) expression and generate a selection vector with all entries that are "true" in
+	//! the result
+	idx_t Select(const Expression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             SelectionVector *true_sel, SelectionVector *false_sel);
+	idx_t DefaultSelect(const Expression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	                    SelectionVector *true_sel, SelectionVector *false_sel);
+
+	idx_t Select(const BoundBetweenExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             SelectionVector *true_sel, SelectionVector *false_sel);
+	idx_t Select(const BoundComparisonExpression &expr, ExpressionState *state, const SelectionVector *sel, idx_t count,
+	             SelectionVector *true_sel, SelectionVector *false_sel);
+	idx_t Select(const BoundConjunctionExpression &expr, ExpressionState *state, const SelectionVector *sel,
+	             idx_t count, SelectionVector *true_sel, SelectionVector *false_sel);
+
+	//! Verify that the output of a step in the ExpressionExecutor is correct
+	void Verify(const Expression &expr, Vector &result, idx_t count);
+
+	void FillSwitch(Vector &vector, Vector &result, const SelectionVector &sel, sel_t count);
+
+private:
+	//! Client context
+	optional_ptr<ClientContext> context;
+	//! The states of the expression executor; this holds any intermediates and temporary states of expressions
+	vector<unique_ptr<ExpressionExecutorState>> states;
+	//! The vector verification (debug setting)
+	DebugVectorVerification debug_vector_verification = DebugVectorVerification::NONE;
+
+private:
+	// it is possible to create an expression executor without a ClientContext - but it should be avoided
+	GOOSE_API ExpressionExecutor();
+	GOOSE_API explicit ExpressionExecutor(const vector<unique_ptr<Expression>> &exprs);
+};
+} // namespace goose

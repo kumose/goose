@@ -1,0 +1,15 @@
+{
+  "version": "unstable_new_scalar_function_functions",
+  "description": "New functions around scalar function binding",
+  "entries": [
+    "goose_scalar_function_set_bind",
+    "goose_scalar_function_bind_set_error",
+    "goose_scalar_function_get_client_context",
+    "goose_scalar_function_set_bind_data",
+    "goose_scalar_function_get_bind_data",
+    "goose_scalar_function_bind_get_extra_info",
+    "goose_scalar_function_bind_get_argument_count",
+    "goose_scalar_function_bind_get_argument",
+    "goose_scalar_function_set_bind_data_copy"
+  ]
+}

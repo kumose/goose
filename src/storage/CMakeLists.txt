@@ -1,0 +1,41 @@
+add_subdirectory(buffer)
+add_subdirectory(checkpoint)
+add_subdirectory(compression)
+add_subdirectory(metadata)
+add_subdirectory(serialization)
+add_subdirectory(statistics)
+add_subdirectory(table)
+
+add_library_unity(
+  goose_storage
+  OBJECT
+  arena_allocator.cc
+  buffer_manager.cc
+  caching_file_system.cc
+  caching_file_system_wrapper.cc
+  checkpoint_manager.cc
+  temporary_memory_manager.cc
+  block.cc
+  block_allocator.cc
+  data_pointer.cc
+  data_table.cc
+  external_file_cache.cc
+  external_file_cache_util.cc
+  index.cc
+  local_storage.cc
+  magic_bytes.cc
+  storage_manager.cc
+  standard_buffer_manager.cc
+  temporary_file_manager.cc
+  table_index_list.cc
+  write_ahead_log.cc
+  open_file_storage_extension.cc
+  optimistic_data_writer.cc
+  partial_block_manager.cc
+  single_file_block_manager.cc
+  storage_info.cc
+  storage_lock.cc
+  wal_replay.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_storage>
+    PARENT_SCOPE)

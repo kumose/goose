@@ -1,0 +1,14 @@
+{
+  "version": "unstable_new_catalog_interface",
+  "description": "New functions for interacting with catalog entries",
+  "entries": [
+    "goose_client_context_get_catalog",
+    "goose_catalog_get_type_name",
+    "goose_catalog_get_entry",
+    "goose_destroy_catalog",
+
+    "goose_catalog_entry_get_type",
+    "goose_catalog_entry_get_name",
+    "goose_destroy_catalog_entry"
+  ]
+}

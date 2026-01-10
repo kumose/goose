@@ -1,0 +1,86 @@
+#include "parquet_file_metadata_cache.h"
+#include <goose/common/enums/cache_validation_mode.h>
+#include <goose/storage/external_file_cache.h>
+#include <goose/storage/external_file_cache_util.h>
+#include <goose/storage/caching_file_system.h>
+
+namespace goose {
+
+ParquetFileMetadataCache::ParquetFileMetadataCache(unique_ptr<goose_parquet::FileMetaData> file_metadata,
+                                                   CachingFileHandle &handle,
+                                                   unique_ptr<GeoParquetFileMetadata> geo_metadata,
+                                                   unique_ptr<FileCryptoMetaData> crypto_metadata, idx_t footer_size)
+    : metadata(std::move(file_metadata)), geo_metadata(std::move(geo_metadata)),
+      crypto_metadata(std::move(crypto_metadata)), footer_size(footer_size), validate(handle.Validate()),
+      last_modified(handle.GetLastModifiedTime()), version_tag(handle.GetVersionTag()) {
+}
+
+string ParquetFileMetadataCache::ObjectType() {
+	return "parquet_metadata";
+}
+
+string ParquetFileMetadataCache::GetObjectType() {
+	return ObjectType();
+}
+
+optional_idx ParquetFileMetadataCache::GetEstimatedCacheMemory() const {
+	// Base memory consumption
+	idx_t memory = sizeof(*this);
+
+	if (metadata) {
+		const auto num_cols = metadata->schema.size();
+		memory += sizeof(goose_parquet::FileMetaData);
+		memory += num_cols * sizeof(goose_parquet::SchemaElement);
+		memory += metadata->row_groups.size() * sizeof(goose_parquet::RowGroup) +
+		          num_cols * sizeof(goose_parquet::ColumnChunk);
+	}
+	if (geo_metadata) {
+		memory +=
+		    sizeof(GeoParquetFileMetadata) + geo_metadata->GetColumnMeta().size() * sizeof(GeoParquetColumnMetadata);
+	}
+	if (crypto_metadata) {
+		memory += sizeof(FileCryptoMetaData);
+	}
+
+	memory += footer_size;
+	memory += version_tag.size();
+
+	return memory;
+}
+
+bool ParquetFileMetadataCache::IsValid(CachingFileHandle &new_handle) const {
+	return ExternalFileCache::IsValid(validate, version_tag, last_modified, new_handle.GetVersionTag(),
+	                                  new_handle.GetLastModifiedTime());
+}
+
+ParquetCacheValidity ParquetFileMetadataCache::IsValid(const OpenFileInfo &info, ClientContext &context) const {
+	CacheValidationMode validation_mode = ExternalFileCacheUtil::GetCacheValidationMode(info, &context, *context.db);
+	if (validation_mode == CacheValidationMode::NO_VALIDATION) {
+		return ParquetCacheValidity::VALID;
+	}
+	if (validation_mode == CacheValidationMode::VALIDATE_REMOTE && FileSystem::IsRemoteFile(info.path)) {
+		return ParquetCacheValidity::VALID;
+	}
+	if (info.extended_info == nullptr) {
+		return ParquetCacheValidity::UNKNOWN;
+	}
+
+	const auto &open_options = info.extended_info->options;
+	const auto lm_entry = open_options.find("last_modified");
+	if (lm_entry == open_options.end()) {
+		return ParquetCacheValidity::UNKNOWN;
+	}
+	auto new_last_modified = lm_entry->second.GetValue<timestamp_t>();
+	string new_etag;
+	const auto etag_entry = open_options.find("etag");
+	if (etag_entry != open_options.end()) {
+		new_etag = StringValue::Get(etag_entry->second);
+	}
+
+	if (ExternalFileCache::IsValid(/*validate=*/true, version_tag, last_modified, new_etag, new_last_modified)) {
+		return ParquetCacheValidity::VALID;
+	}
+	return ParquetCacheValidity::INVALID;
+}
+
+} // namespace goose

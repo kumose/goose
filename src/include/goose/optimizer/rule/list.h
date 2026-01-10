@@ -1,0 +1,16 @@
+#include <goose/optimizer/rule/arithmetic_simplification.h>
+#include <goose/optimizer/rule/case_simplification.h>
+#include <goose/optimizer/rule/constant_order_normalization.h>
+#include <goose/optimizer/rule/comparison_simplification.h>
+#include <goose/optimizer/rule/conjunction_simplification.h>
+#include <goose/optimizer/rule/constant_folding.h>
+#include <goose/optimizer/rule/date_part_simplification.h>
+#include <goose/optimizer/rule/date_trunc_simplification.h>
+#include <goose/optimizer/rule/distributivity.h>
+#include <goose/optimizer/rule/empty_needle_removal.h>
+#include <goose/optimizer/rule/like_optimizations.h>
+#include <goose/optimizer/rule/move_constants.h>
+#include <goose/optimizer/rule/enum_comparison.h>
+#include <goose/optimizer/rule/regex_optimizations.h>
+#include <goose/optimizer/rule/ordered_aggregate_optimizer.h>
+#include <goose/optimizer/rule/timestamp_comparison.h>

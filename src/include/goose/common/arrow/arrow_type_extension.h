@@ -1,0 +1,155 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/main/query_result.h>
+#include <goose/common/arrow/arrow_wrapper.h>
+#include <goose/main/chunk_scan_state.h>
+#include <goose/function/table/arrow/arrow_goose_schema.h>
+#include <mutex>
+
+namespace goose {
+class ArrowSchemaMetadata;
+struct GooseArrowSchemaHolder;
+
+struct DBConfig;
+struct ArrowExtensionMetadata {
+public:
+	ArrowExtensionMetadata() {
+	}
+
+	ArrowExtensionMetadata(string extension_name, string vendor_name, string type_name, string arrow_format);
+
+	hash_t GetHash() const;
+
+	string ToString() const;
+
+	string GetExtensionName() const;
+
+	string GetVendorName() const;
+
+	string GetTypeName() const;
+
+	string GetArrowFormat() const;
+
+	void SetArrowFormat(string arrow_format);
+
+	bool IsCanonical() const;
+
+	bool operator==(const ArrowExtensionMetadata &other) const;
+
+	//! Arrow Extension for non-canonical types.
+	static constexpr const char *ARROW_EXTENSION_NON_CANONICAL = "arrow.opaque";
+
+private:
+	//! The extension name (e.g., 'arrow.uuid', 'arrow.opaque',...)
+	string extension_name {};
+	//! If the extension name is 'arrow.opaque' a vendor and type must be defined.
+	//! The vendor_name is the system that produced the type (e.g., Goose)
+	string vendor_name {};
+	//! The type_name is the name of the type produced by the vendor (e.g., hugeint)
+	string type_name {};
+	//! The arrow format (e.g., z)
+	string arrow_format {};
+};
+
+class ArrowTypeExtension;
+
+typedef void (*populate_arrow_schema_t)(GooseArrowSchemaHolder &root_holder, ArrowSchema &child,
+                                        const LogicalType &type, ClientContext &context,
+                                        const ArrowTypeExtension &extension);
+
+typedef unique_ptr<ArrowType> (*get_type_t)(const ArrowSchema &schema, const ArrowSchemaMetadata &schema_metadata);
+
+class ArrowTypeExtension {
+public:
+	ArrowTypeExtension() {};
+	//! This type is not registered, so we just use whatever is the format and hope for the best
+	explicit ArrowTypeExtension(ArrowExtensionMetadata &extension_metadata, unique_ptr<ArrowType> type);
+	//! We either have simple extensions where we only return one type
+	ArrowTypeExtension(string extension_name, string arrow_format, shared_ptr<ArrowTypeExtensionData> type);
+	ArrowTypeExtension(string vendor_name, string type_name, string arrow_format,
+	                   shared_ptr<ArrowTypeExtensionData> type);
+
+	//! We have complex extensions, where we can return multiple types, hence we must have callback functions to do so
+	ArrowTypeExtension(string extension_name, populate_arrow_schema_t populate_arrow_schema, get_type_t get_type,
+	                   shared_ptr<ArrowTypeExtensionData> type);
+	ArrowTypeExtension(string vendor_name, string type_name, populate_arrow_schema_t populate_arrow_schema,
+	                   get_type_t get_type, shared_ptr<ArrowTypeExtensionData> type, cast_arrow_goose_t arrow_to_goose,
+	                   cast_goose_arrow_t goose_to_arrow);
+
+	ArrowExtensionMetadata GetInfo() const;
+
+	unique_ptr<ArrowType> GetType(const ArrowSchema &schema, const ArrowSchemaMetadata &schema_metadata) const;
+
+	shared_ptr<ArrowTypeExtensionData> GetTypeExtension() const;
+
+	LogicalTypeId GetLogicalTypeId() const;
+
+	LogicalType GetLogicalType() const;
+
+	bool HasType() const;
+
+	static void PopulateArrowSchema(GooseArrowSchemaHolder &root_holder, ArrowSchema &child,
+	                                const LogicalType &goose_type, ClientContext &context,
+	                                const ArrowTypeExtension &extension);
+
+	//! (Optional) Callback to a function that sets up the arrow schema production
+	populate_arrow_schema_t populate_arrow_schema = nullptr;
+	//! (Optional) Callback to a function that sets up the arrow schema production
+	get_type_t get_type = nullptr;
+
+private:
+	//! Extension Info from Arrow
+	ArrowExtensionMetadata extension_metadata;
+	//! Arrow Extension Type
+	shared_ptr<ArrowTypeExtensionData> type_extension;
+};
+
+struct HashArrowTypeExtension {
+	size_t operator()(ArrowExtensionMetadata const &arrow_extension_info) const noexcept {
+		return arrow_extension_info.GetHash();
+	}
+};
+
+struct TypeInfo {
+	TypeInfo();
+	explicit TypeInfo(const LogicalType &type);
+	explicit TypeInfo(string alias);
+	string alias;
+	LogicalTypeId type;
+	hash_t GetHash() const;
+	bool operator==(const TypeInfo &other) const;
+};
+
+struct HashTypeInfo {
+	size_t operator()(TypeInfo const &type_info) const noexcept {
+		return type_info.GetHash();
+	}
+};
+
+//! The set of encoding functions
+struct ArrowTypeExtensionSet {
+	ArrowTypeExtensionSet() {};
+	static void Initialize(const DBConfig &config);
+	std::mutex lock;
+	unordered_map<ArrowExtensionMetadata, ArrowTypeExtension, HashArrowTypeExtension> type_extensions;
+	unordered_map<TypeInfo, vector<ArrowExtensionMetadata>, HashTypeInfo> type_to_info;
+};
+
+} // namespace goose

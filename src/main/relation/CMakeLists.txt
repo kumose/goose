@@ -1,0 +1,33 @@
+add_library_unity(
+  goose_main_relation
+  OBJECT
+  aggregate_relation.cc
+  create_table_relation.cc
+  create_view_relation.cc
+  cross_product_relation.cc
+  delete_relation.cc
+  delim_get_relation.cc
+  distinct_relation.cc
+  explain_relation.cc
+  filter_relation.cc
+  insert_relation.cc
+  join_relation.cc
+  limit_relation.cc
+  order_relation.cc
+  update_relation.cc
+  projection_relation.cc
+  query_relation.cc
+  read_csv_relation.cc
+  read_json_relation.cc
+  setop_relation.cc
+  subquery_relation.cc
+  table_function_relation.cc
+  table_relation.cc
+  value_relation.cc
+  materialized_relation.cc
+  view_relation.cc
+  write_parquet_relation.cc
+  write_csv_relation.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_main_relation>
+    PARENT_SCOPE)

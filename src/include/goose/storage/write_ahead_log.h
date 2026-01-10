@@ -1,0 +1,149 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/catalog/catalog_entry/index_catalog_entry.h>
+#include <goose/catalog/catalog_entry/scalar_macro_catalog_entry.h>
+#include <goose/catalog/catalog_entry/sequence_catalog_entry.h>
+#include <goose/catalog/catalog_entry/table_macro_catalog_entry.h>
+#include <goose/common/enums/wal_type.h>
+#include <goose/common/helper.h>
+#include <goose/common/serializer/buffered_file_writer.h>
+#include <goose/common/types/data_chunk.h>
+#include <goose/main/attached_database.h>
+#include <goose/storage/block.h>
+#include <goose/storage/storage_info.h>
+
+namespace goose {
+
+struct AlterInfo;
+
+class AttachedDatabase;
+class Catalog;
+class DatabaseInstance;
+class SchemaCatalogEntry;
+class SequenceCatalogEntry;
+class ScalarMacroCatalogEntry;
+class ViewCatalogEntry;
+class TypeCatalogEntry;
+class TableCatalogEntry;
+class Transaction;
+class TransactionManager;
+class WriteAheadLogDeserializer;
+struct PersistentCollectionData;
+
+enum class WALInitState { NO_WAL, UNINITIALIZED, UNINITIALIZED_REQUIRES_TRUNCATE, INITIALIZED };
+enum class WALReplayState { MAIN_WAL, CHECKPOINT_WAL };
+
+//! The WriteAheadLog (WAL) is a log that is used to provide durability. Prior
+//! to committing a transaction it writes the changes the transaction made to
+//! the database to the log, which can then be replayed upon startup in case the
+//! server crashes or is shut down.
+class WriteAheadLog {
+public:
+	//! Initialize the WAL in the specified directory
+	explicit WriteAheadLog(StorageManager &storage_manager, const string &wal_path, idx_t wal_size = 0ULL,
+	                       WALInitState state = WALInitState::NO_WAL,
+	                       optional_idx checkpoint_iteration = optional_idx());
+	virtual ~WriteAheadLog();
+
+public:
+	//! Replay and initialize the WAL, QueryContext is passed for metric collection purposes only!!
+	static unique_ptr<WriteAheadLog> Replay(QueryContext context, StorageManager &storage_manager,
+	                                        const string &wal_path);
+
+	AttachedDatabase &GetDatabase();
+
+	const string &GetPath() const {
+		return wal_path;
+	}
+	//! Gets the total bytes written to the WAL since startup
+	idx_t GetTotalWritten() const;
+
+	//! A WAL is initialized, if a writer to a file exists.
+	bool Initialized() const;
+	//! Initializes the file of the WAL by creating the file writer.
+	BufferedFileWriter &Initialize();
+
+	//! Write the WAL header.
+	void WriteHeader();
+
+	virtual void WriteCreateTable(const TableCatalogEntry &entry);
+	void WriteDropTable(const TableCatalogEntry &entry);
+
+	void WriteCreateSchema(const SchemaCatalogEntry &entry);
+	void WriteDropSchema(const SchemaCatalogEntry &entry);
+
+	void WriteCreateView(const ViewCatalogEntry &entry);
+	void WriteDropView(const ViewCatalogEntry &entry);
+
+	void WriteCreateSequence(const SequenceCatalogEntry &entry);
+	void WriteDropSequence(const SequenceCatalogEntry &entry);
+	void WriteSequenceValue(SequenceValue val);
+
+	void WriteCreateMacro(const ScalarMacroCatalogEntry &entry);
+	void WriteDropMacro(const ScalarMacroCatalogEntry &entry);
+
+	void WriteCreateTableMacro(const TableMacroCatalogEntry &entry);
+	void WriteDropTableMacro(const TableMacroCatalogEntry &entry);
+
+	void WriteCreateIndex(const IndexCatalogEntry &entry);
+	void WriteDropIndex(const IndexCatalogEntry &entry);
+
+	void WriteCreateType(const TypeCatalogEntry &entry);
+	void WriteDropType(const TypeCatalogEntry &entry);
+	//! Sets the table used for subsequent insert/delete/update commands
+	void WriteSetTable(const string &schema, const string &table);
+
+	void WriteAlter(CatalogEntry &entry, const AlterInfo &info);
+
+	void WriteInsert(DataChunk &chunk);
+	void WriteRowGroupData(const PersistentCollectionData &data);
+	void WriteDelete(DataChunk &chunk);
+	//! Write a single (sub-) column update to the WAL. Chunk must be a pair of (COL, ROW_ID).
+	//! The column_path vector is a *path* towards a column within the table
+	//! i.e. if we have a table with a single column S STRUCT(A INT, B INT)
+	//! and we update the validity mask of "S.B"
+	//! the column path is:
+	//! 0 (first column of table)
+	//! -> 1 (second subcolumn of struct)
+	//! -> 0 (first subcolumn of INT)
+	void WriteUpdate(DataChunk &chunk, const vector<column_t> &column_path);
+
+	//! Truncate the WAL to a previous size, and clear anything currently set in the writer
+	void Truncate(idx_t size);
+	void Flush();
+
+	void WriteCheckpoint(MetaBlockPointer meta_block);
+
+protected:
+	//! Internally replay all WAL entries. QueryContext is passed for metric collection purposes only!!
+	static unique_ptr<WriteAheadLog> ReplayInternal(QueryContext context, StorageManager &storage_manager,
+	                                                unique_ptr<FileHandle> handle,
+	                                                WALReplayState replay_state = WALReplayState::MAIN_WAL);
+
+protected:
+	StorageManager &storage_manager;
+	mutex wal_lock;
+	unique_ptr<BufferedFileWriter> writer;
+	string wal_path;
+	atomic<WALInitState> init_state;
+	optional_idx checkpoint_iteration;
+};
+
+} // namespace goose

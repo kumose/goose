@@ -1,0 +1,9 @@
+# name: test/sql/table_function/goose_types.test
+# description: Test goose_types function
+# group: [table_function]
+
+statement ok nosort goose_col
+SELECT * FROM goose_types();
+
+statement ok nosort goose_col
+SELECT * FROM goose_types;

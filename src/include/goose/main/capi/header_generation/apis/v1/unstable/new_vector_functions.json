@@ -1,0 +1,15 @@
+{
+  "version": "unstable_new_vector_functions",
+  "description": "API to create and manipulate vector types",
+  "entries": [
+    "goose_create_vector",
+    "goose_destroy_vector",
+    "goose_slice_vector",
+    "goose_vector_reference_value",
+    "goose_vector_reference_vector",
+    "goose_create_selection_vector",
+    "goose_destroy_selection_vector",
+    "goose_selection_vector_get_data_ptr",
+    "goose_vector_copy_sel"
+  ]
+}

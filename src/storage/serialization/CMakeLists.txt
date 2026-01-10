@@ -1,0 +1,24 @@
+add_library_unity(
+  goose_storage_serialization
+  OBJECT
+  serialize_constraint.cc
+  serialize_create_info.cc
+  serialize_dependency.cc
+  serialize_expression.cc
+  serialize_extension_install_info.cc
+  serialize_extra_drop_info.cc
+  serialize_logical_operator.cc
+  serialize_macro_function.cc
+  serialize_nodes.cc
+  serialize_parsed_expression.cc
+  serialize_parse_info.cc
+  serialize_query_node.cc
+  serialize_result_modifier.cc
+  serialize_statement.cc
+  serialize_table_filter.cc
+  serialize_tableref.cc
+  serialize_types.cc
+  serialize_storage.cc)
+set(ALL_OBJECT_FILES
+    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_storage_serialization>
+    PARENT_SCOPE)

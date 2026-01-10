@@ -1,0 +1,20 @@
+# name: test/sql/table_function/goose_indexes.test
+# description: Test goose_indexes function
+# group: [table_function]
+
+statement ok
+CREATE TABLE integers(i INTEGER, j INTEGER, k INTEGER)
+
+statement ok
+CREATE INDEX i_index ON integers((j + 1), k)
+
+statement ok nosort goose_col
+SELECT * FROM goose_indexes();
+
+statement ok nosort goose_col
+SELECT * FROM goose_indexes;
+
+query I
+select expressions from goose_indexes where table_name = 'integers';
+----
+['((j + 1))', k]

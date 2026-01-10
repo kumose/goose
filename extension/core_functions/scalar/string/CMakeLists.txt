@@ -1,0 +1,30 @@
+add_library_unity(
+  goose_core_functions_string
+  OBJECT
+  starts_with.cc
+  jaccard.cc
+  levenshtein.cc
+  damerau_levenshtein.cc
+  bar.cc
+  printf.cc
+  replace.cc
+  hamming.cc
+  instr.cc
+  ascii.cc
+  reverse.cc
+  url_encode.cc
+  parse_path.cc
+  left_right.cc
+  to_base.cc
+  pad.cc
+  trim.cc
+  format_bytes.cc
+  hex.cc
+  repeat.cc
+  translate.cc
+  chr.cc
+  unicode.cc
+  jaro_winkler.cc)
+set(CORE_FUNCTION_FILES
+    ${CORE_FUNCTION_FILES} $<TARGET_OBJECTS:goose_core_functions_string>
+    PARENT_SCOPE)

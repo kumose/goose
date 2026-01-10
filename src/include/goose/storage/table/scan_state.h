@@ -1,0 +1,375 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/common/common.h>
+#include <goose/common/types-import.h>
+#include <goose/storage/buffer/buffer_handle.h>
+#include <goose/storage/storage_lock.h>
+#include <goose/storage/table/row_group_reorderer.h>
+#include <goose/common/enums/scan_options.h>
+#include <goose/common/random_engine.h>
+#include <goose/storage/table/segment_lock.h>
+#include <goose/common/types/data_chunk.h>
+#include <goose/parser/parsed_data/sample_options.h>
+#include <goose/storage/storage_index.h>
+#include <goose/planner/table_filter_state.h>
+
+namespace goose {
+class AdaptiveFilter;
+class ColumnSegment;
+class LocalTableStorage;
+class CollectionScanState;
+class Index;
+class RowGroup;
+class RowGroupCollection;
+class UpdateSegment;
+class TableScanState;
+class ColumnSegment;
+class ColumnSegmentTree;
+class ValiditySegment;
+class TableFilterSet;
+class ColumnData;
+class GooseTransaction;
+class RowGroupSegmentTree;
+class TableFilter;
+struct AdaptiveFilterState;
+struct TableScanOptions;
+struct ScanSamplingInfo;
+struct TableFilterState;
+template <class T>
+struct SegmentNode;
+
+struct SegmentScanState {
+	virtual ~SegmentScanState() {
+	}
+
+	template <class TARGET>
+	TARGET &Cast() {
+		DynamicCastCheck<TARGET>(this);
+		return reinterpret_cast<TARGET &>(*this);
+	}
+	template <class TARGET>
+	const TARGET &Cast() const {
+		DynamicCastCheck<TARGET>(this);
+		return reinterpret_cast<const TARGET &>(*this);
+	}
+};
+
+struct IndexScanState {
+	virtual ~IndexScanState() {
+	}
+
+	template <class TARGET>
+	TARGET &Cast() {
+		DynamicCastCheck<TARGET>(this);
+		return reinterpret_cast<TARGET &>(*this);
+	}
+	template <class TARGET>
+	const TARGET &Cast() const {
+		DynamicCastCheck<TARGET>(this);
+		return reinterpret_cast<const TARGET &>(*this);
+	}
+};
+
+typedef unordered_map<block_id_t, BufferHandle> buffer_handle_set_t;
+
+struct PushedDownExpressionState {
+public:
+	explicit PushedDownExpressionState(ClientContext &context) : executor(context) {
+	}
+
+public:
+	//! The executor to execute the expression
+	ExpressionExecutor executor;
+	//! The pushed down expression to execute
+	unique_ptr<Expression> expression;
+	//! The target chunk to store the result of the execution
+	DataChunk target;
+	DataChunk input;
+};
+
+struct ColumnScanState {
+	explicit ColumnScanState(optional_ptr<CollectionScanState> parent_p) : parent(parent_p) {
+	}
+
+	optional_ptr<CollectionScanState> parent;
+	//! The query context for this scan
+	QueryContext context;
+	//! The column segment that is currently being scanned
+	optional_ptr<SegmentNode<ColumnSegment>> current;
+	//! Column segment tree
+	ColumnSegmentTree *segment_tree = nullptr;
+	//! The current row offset in the column
+	idx_t offset_in_column = 0;
+	//! The internal row index (i.e. the position of the SegmentScanState)
+	idx_t internal_index = 0;
+	//! Storage index of the current column that's being scanned
+	StorageIndex storage_index;
+	//! Segment scan state
+	unique_ptr<SegmentScanState> scan_state;
+	//! Child states of the vector
+	unsafe_vector<ColumnScanState> child_states;
+	//! Whether or not InitializeState has been called for this segment
+	bool initialized = false;
+	//! If this segment has already been checked for skipping purposes
+	bool segment_checked = false;
+	//! We initialize one SegmentScanState per segment, however, if scanning a DataChunk requires us to scan over more
+	//! than one Segment, we need to keep the scan states of the previous segments around
+	vector<unique_ptr<SegmentScanState>> previous_states;
+	//! The last read offset in the child state (used for LIST columns only)
+	idx_t last_offset = 0;
+	//! Whether or not we should scan a specific child column
+	vector<bool> scan_child_column;
+	//! Contains TableScan level config for scanning
+	optional_ptr<TableScanOptions> scan_options;
+	//! (optionally) the expression state for any pushed down expression(s)
+	unique_ptr<PushedDownExpressionState> expression_state;
+
+public:
+	void Initialize(const QueryContext &context_p, const LogicalType &type, const StorageIndex &column_id,
+	                optional_ptr<TableScanOptions> options);
+	void Initialize(const QueryContext &context_p, const LogicalType &type, optional_ptr<TableScanOptions> options);
+	//! Move the scan state forward by "count" rows (including all child states)
+	void Next(idx_t count);
+	//! Move ONLY this state forward by "count" rows (i.e. not the child states)
+	void NextInternal(idx_t count);
+	//! Returns the current row position in the segment
+	idx_t GetPositionInSegment() const;
+};
+
+enum class FetchType {
+	//! Verify if each row is valid for the transaction prior to fetching
+	TRANSACTIONAL_FETCH,
+	// Force fetch the row, regardless of it if is valid for the transaction or not
+	FORCE_FETCH
+};
+
+struct ColumnFetchState {
+	FetchType fetch_type = FetchType::TRANSACTIONAL_FETCH;
+	//! The query context for this fetch
+	QueryContext context;
+	//! The set of pinned block handles for this set of fetches
+	buffer_handle_set_t handles;
+	//! Any child states of the fetch
+	vector<unique_ptr<ColumnFetchState>> child_states;
+	//! The current row group we are fetching from
+	optional_ptr<SegmentNode<RowGroup>> row_group;
+
+	BufferHandle &GetOrInsertHandle(ColumnSegment &segment);
+};
+
+struct ScanFilter {
+	ScanFilter(ClientContext &context, idx_t index, const vector<StorageIndex> &column_ids, TableFilter &filter);
+
+	idx_t scan_column_index;
+	StorageIndex table_column_index;
+	TableFilter &filter;
+	bool always_true;
+	unique_ptr<TableFilterState> filter_state;
+
+	bool IsAlwaysTrue() const {
+		return always_true;
+	}
+};
+
+class ScanFilterInfo {
+public:
+	~ScanFilterInfo();
+
+	void Initialize(ClientContext &context, TableFilterSet &filters, const vector<StorageIndex> &column_ids);
+
+	const vector<ScanFilter> &GetFilterList() const {
+		return filter_list;
+	}
+
+	optional_ptr<AdaptiveFilter> GetAdaptiveFilter();
+	AdaptiveFilterState BeginFilter() const;
+	void EndFilter(AdaptiveFilterState state);
+
+	//! Whether or not there is any filter we need to execute
+	bool HasFilters() const;
+
+	//! Whether or not there is a filter we need to execute for this column currently
+	bool ColumnHasFilters(idx_t col_idx);
+
+	//! Resets any SetFilterAlwaysTrue flags
+	void CheckAllFilters();
+	//! Labels the filters for this specific column as always true
+	//! We do not need to execute them anymore until CheckAllFilters is called
+	void SetFilterAlwaysTrue(idx_t filter_idx);
+
+private:
+	//! The table filters (if any)
+	optional_ptr<TableFilterSet> table_filters;
+	//! Adaptive filter info (if any)
+	unique_ptr<AdaptiveFilter> adaptive_filter;
+	//! The set of filters
+	vector<ScanFilter> filter_list;
+	//! Whether or not the column has a filter active right now
+	unsafe_vector<bool> column_has_filter;
+	//! Whether or not the column has a filter active at all
+	unsafe_vector<bool> base_column_has_filter;
+	//! The amount of filters that are always true currently
+	idx_t always_true_filters = 0;
+};
+
+class CollectionScanState {
+public:
+	explicit CollectionScanState(TableScanState &parent_p);
+
+	//! The current row_group we are scanning
+	optional_ptr<SegmentNode<RowGroup>> row_group;
+	//! The vector index within the row_group
+	idx_t vector_index;
+	//! The maximum row within the row group
+	idx_t max_row_group_row;
+	//! Child column scans
+	unsafe_vector<ColumnScanState> column_scans;
+	//! Row group segment tree we are scanning
+	shared_ptr<RowGroupSegmentTree> row_groups;
+	//! The total maximum row index
+	idx_t max_row;
+	//! The current batch index
+	idx_t batch_index;
+	//! The valid selection
+	SelectionVector valid_sel;
+
+	RandomEngine random;
+
+	//! Optional state for custom row group ordering
+	unique_ptr<RowGroupReorderer> reorderer;
+
+public:
+	void Initialize(const QueryContext &context, const vector<LogicalType> &types);
+	const vector<StorageIndex> &GetColumnIds();
+	ScanFilterInfo &GetFilterInfo();
+	ScanSamplingInfo &GetSamplingInfo();
+	TableScanOptions &GetOptions();
+	optional_ptr<SegmentNode<RowGroup>> GetNextRowGroup(SegmentNode<RowGroup> &row_group) const;
+	optional_ptr<SegmentNode<RowGroup>> GetNextRowGroup(SegmentLock &l, SegmentNode<RowGroup> &row_group) const;
+	optional_ptr<SegmentNode<RowGroup>> GetRootSegment() const;
+	bool Scan(GooseTransaction &transaction, DataChunk &result);
+	bool ScanCommitted(DataChunk &result, TableScanType type);
+	bool ScanCommitted(DataChunk &result, SegmentLock &l, TableScanType type);
+
+private:
+	TableScanState &parent;
+};
+
+struct ScanSamplingInfo {
+	//! Whether or not to do a system sample during scanning
+	bool do_system_sample = false;
+	//! The sampling rate to use
+	double sample_rate;
+};
+
+struct TableScanOptions {
+	//! Fetch rows one-at-a-time instead of using the regular scans.
+	bool force_fetch_row = false;
+};
+
+class CheckpointLock {
+public:
+	explicit CheckpointLock(unique_ptr<StorageLockKey> lock_p) : lock(std::move(lock_p)) {
+	}
+
+private:
+	unique_ptr<StorageLockKey> lock;
+};
+
+class TableScanState {
+public:
+	TableScanState();
+	~TableScanState();
+
+	//! The underlying table scan state
+	CollectionScanState table_state;
+	//! Transaction-local scan state
+	CollectionScanState local_state;
+	//! Options for scanning
+	TableScanOptions options;
+	//! Shared lock over the checkpoint to prevent checkpoints while reading
+	shared_ptr<CheckpointLock> checkpoint_lock;
+	//! Filter info
+	ScanFilterInfo filters;
+	//! Sampling info
+	ScanSamplingInfo sampling_info;
+
+public:
+	void Initialize(vector<StorageIndex> column_ids, optional_ptr<ClientContext> context = nullptr,
+	                optional_ptr<TableFilterSet> table_filters = nullptr,
+	                optional_ptr<SampleOptions> table_sampling = nullptr);
+
+	const vector<StorageIndex> &GetColumnIds();
+
+	ScanFilterInfo &GetFilterInfo();
+
+	ScanSamplingInfo &GetSamplingInfo();
+
+private:
+	//! The column identifiers of the scan
+	vector<StorageIndex> column_ids;
+};
+
+struct ParallelCollectionScanState {
+	ParallelCollectionScanState();
+	optional_ptr<SegmentNode<RowGroup>> GetRootSegment(RowGroupSegmentTree &row_groups) const;
+	optional_ptr<SegmentNode<RowGroup>> GetNextRowGroup(RowGroupSegmentTree &row_groups,
+	                                                    SegmentNode<RowGroup> &row_group) const;
+
+	//! The row group collection we are scanning
+	RowGroupCollection *collection;
+	shared_ptr<RowGroupSegmentTree> row_groups;
+	optional_ptr<SegmentNode<RowGroup>> current_row_group;
+	idx_t vector_index;
+	idx_t max_row;
+	idx_t batch_index;
+	atomic<idx_t> processed_rows;
+	mutex lock;
+
+	//! Optional state for custom row group ordering
+	unique_ptr<RowGroupReorderer> reorderer;
+};
+
+struct ParallelTableScanState {
+	//! Parallel scan state for the table
+	ParallelCollectionScanState scan_state;
+	//! Parallel scan state for the transaction-local state
+	ParallelCollectionScanState local_state;
+	//! Shared lock over the checkpoint to prevent checkpoints while reading
+	shared_ptr<CheckpointLock> checkpoint_lock;
+};
+
+struct PrefetchState {
+	~PrefetchState();
+
+	void AddBlock(shared_ptr<BlockHandle> block);
+
+	vector<shared_ptr<BlockHandle>> blocks;
+};
+
+class CreateIndexScanState : public TableScanState {
+public:
+	shared_ptr<RowGroupSegmentTree> row_groups;
+	vector<unique_ptr<StorageLockKey>> locks;
+	unique_lock<mutex> append_lock;
+	SegmentLock segment_lock;
+};
+
+} // namespace goose

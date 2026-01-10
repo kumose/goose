@@ -1,0 +1,10 @@
+#include <goose/parser/tableref/basetableref.h>
+#include <goose/parser/tableref/bound_ref_wrapper.h>
+#include <goose/parser/tableref/emptytableref.h>
+#include <goose/parser/tableref/expressionlistref.h>
+#include <goose/parser/tableref/column_data_ref.h>
+#include <goose/parser/tableref/joinref.h>
+#include <goose/parser/tableref/pivotref.h>
+#include <goose/parser/tableref/showref.h>
+#include <goose/parser/tableref/subqueryref.h>
+#include <goose/parser/tableref/table_function_ref.h>

@@ -1,0 +1,59 @@
+// Copyright (C) Kumo inc. and its affiliates.
+// Author: Jeff.li lijippy@163.com
+// All rights reserved.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+#pragma once
+
+#include <goose/planner/expression.h>
+
+namespace goose {
+
+class BoundBetweenExpression : public Expression {
+public:
+	static constexpr const ExpressionClass TYPE = ExpressionClass::BOUND_BETWEEN;
+
+public:
+	BoundBetweenExpression(unique_ptr<Expression> input, unique_ptr<Expression> lower, unique_ptr<Expression> upper,
+	                       bool lower_inclusive, bool upper_inclusive);
+
+	unique_ptr<Expression> input;
+	unique_ptr<Expression> lower;
+	unique_ptr<Expression> upper;
+	bool lower_inclusive;
+	bool upper_inclusive;
+
+public:
+	string ToString() const override;
+
+	bool Equals(const BaseExpression &other) const override;
+
+	unique_ptr<Expression> Copy() const override;
+
+	void Serialize(Serializer &serializer) const override;
+	static unique_ptr<Expression> Deserialize(Deserializer &deserializer);
+
+public:
+	ExpressionType LowerComparisonType() const {
+		return lower_inclusive ? ExpressionType::COMPARE_GREATERTHANOREQUALTO : ExpressionType::COMPARE_GREATERTHAN;
+	}
+	ExpressionType UpperComparisonType() const {
+		return upper_inclusive ? ExpressionType::COMPARE_LESSTHANOREQUALTO : ExpressionType::COMPARE_LESSTHAN;
+	}
+
+private:
+	BoundBetweenExpression();
+};
+} // namespace goose
