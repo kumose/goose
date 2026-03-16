@@ -7,9 +7,9 @@ add_definitions(-DUSE_GOOSE_SHELL_WRAPPER)
 
 
 if(GOOSE_EXTENSION_AUTOCOMPLETE_SHOULD_LINK)
-  include_directories(../../extension/autocomplete/include)
+  include_directories(${PROJECT_SOURCE_DIR}/extension/autocomplete/include)
   set(ALL_OBJECT_FILES ${ALL_OBJECT_FILES}
-                       ../../extension/autocomplete/autocomplete_extension.cc)
+          ${PROJECT_SOURCE_DIR}/extension/autocomplete/autocomplete_extension.cc)
   add_definitions(-DSHELL_INLINE_AUTOCOMPLETE)
 endif()
 set(SHELL_SOURCES

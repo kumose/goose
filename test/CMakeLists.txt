@@ -1,5 +1,4 @@
 include_directories(./catch)
-include_directories(../third_party/sqlite/include)
 include_directories(include)
 
 # Allows loading tests from registered extensions

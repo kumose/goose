@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 
-include_directories(../../src/include)
-link_directories(../../build/debug/src)
+include_directories(${PROJECT_SOURCE_DIR}/src/include)
+link_directories(${PROJECT_SOURCE_DIR}/build/debug/src)
 
 add_executable(example main.cc)
 target_link_libraries(example goose)
