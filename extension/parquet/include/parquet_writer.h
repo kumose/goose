@@ -33,7 +33,7 @@
 #include "parquet_types.h"
 #include "parquet_geometry.h"
 #include "writer/parquet_write_stats.h"
-#include "xthrift/protocol/TCompactProtocol.h"
+#include "kthrift/protocol/TCompactProtocol.h"
 
 namespace goose {
 class FileSystem;

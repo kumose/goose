@@ -34,9 +34,9 @@ if (NOT CLANG_TIDY)
     set(PARQUET_EXTENSION_FILES
             ${PARQUET_EXTENSION_FILES}
             ${PROJECT_SOURCE_DIR}/third_party/parquet/parquet_types.cc
-            ${PROJECT_SOURCE_DIR}/third_party/thrift/xthrift/protocol/TProtocol.cc
-            ${PROJECT_SOURCE_DIR}/third_party/thrift/xthrift/transport/TTransportException.cc
-            ${PROJECT_SOURCE_DIR}/third_party/thrift/xthrift/transport/TBufferTransports.cc
+            ${PROJECT_SOURCE_DIR}/third_party/thrift/kthrift/protocol/TProtocol.cc
+            ${PROJECT_SOURCE_DIR}/third_party/thrift/kthrift/transport/TTransportException.cc
+            ${PROJECT_SOURCE_DIR}/third_party/thrift/kthrift/transport/TBufferTransports.cc
     )
 endif ()
 

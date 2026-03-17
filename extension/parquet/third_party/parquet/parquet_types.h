@@ -9,11 +9,11 @@
 
 #include <iosfwd>
 
-#include <xthrift/Thrift.h>
-#include <xthrift/TApplicationException.h>
-#include <xthrift/TBase.h>
-#include <xthrift/protocol/TProtocol.h>
-#include <xthrift/transport/TTransport.h>
+#include <kthrift/Thrift.h>
+#include <kthrift/TApplicationException.h>
+#include <kthrift/TBase.h>
+#include <kthrift/protocol/TProtocol.h>
+#include <kthrift/transport/TTransport.h>
 
 #include <functional>
 #include <memory>

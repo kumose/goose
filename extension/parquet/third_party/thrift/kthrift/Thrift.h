@@ -20,9 +20,9 @@
 #ifndef _GOOSE_THRIFT_THRIFT_H_
 #define _GOOSE_THRIFT_THRIFT_H_ 1
 
-#include "xthrift/transport/PlatformSocket.h"
+#include "kthrift/transport/PlatformSocket.h"
 
-#include "xthrift/thrift-config.h"
+#include "kthrift/thrift-config.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -43,8 +43,8 @@
 #include <typeinfo>
 #include <cstddef>
 
-#include "xthrift/TLogging.h"
-//#include <xthrift/TOutput.h>
+#include "kthrift/TLogging.h"
+//#include <kthrift/TOutput.h>
 
 #define THRIFT_UNUSED_VARIABLE(x) ((void)(x))
 

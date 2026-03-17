@@ -20,7 +20,7 @@
 #ifndef _GOOSE_THRIFT_TLOGGING_H_
 #define _GOOSE_THRIFT_TLOGGING_H_ 1
 
-#include "xthrift/thrift-config.h"
+#include "kthrift/thrift-config.h"
 
 /**
  * Contains utility macros for debugging and logging.

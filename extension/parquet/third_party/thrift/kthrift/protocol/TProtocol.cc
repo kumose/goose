@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "xthrift/protocol/TProtocol.h"
+#include "kthrift/protocol/TProtocol.h"
 
 namespace goose_apache {
 namespace thrift {
