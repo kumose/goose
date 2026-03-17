@@ -3,7 +3,6 @@
     "brotli",
     "cantor",
     "lz4",
-    "marksim",
     "mbedtls",
     {
       "name": "snappy",
@@ -16,6 +15,6 @@
     "xfsst",
     "xre2",
     "zstd",
-    "icu"
+    "xicu"
   ]
 }

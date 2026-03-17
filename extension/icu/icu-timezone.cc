@@ -24,13 +24,13 @@ bool ICUIsFinite(const timestamp_t &t) {
 }
 
 struct ICUTimeZoneData : public GlobalTableFunctionState {
-	ICUTimeZoneData() : tzs(icu::TimeZone::createEnumeration()) {
+	ICUTimeZoneData() : tzs(xicu::TimeZone::createEnumeration()) {
 		UErrorCode status = U_ZERO_ERROR;
-		goose::unique_ptr<icu::Calendar> calendar(icu::Calendar::createInstance(status));
+		goose::unique_ptr<xicu::Calendar> calendar(xicu::Calendar::createInstance(status));
 		now = calendar->getNow();
 	}
 
-	goose::unique_ptr<icu::StringEnumeration> tzs;
+	goose::unique_ptr<xicu::StringEnumeration> tzs;
 	UDate now;
 };
 
@@ -72,9 +72,9 @@ static void ICUTimeZoneFunction(ClientContext &context, TableFunctionInput &data
 		//	so the SHORT name is the shortest, lexicographically first equivalent TZ without a slash.
 		std::string short_id;
 		long_id->toUTF8String(short_id);
-		const auto nIDs = icu::TimeZone::countEquivalentIDs(*long_id);
+		const auto nIDs = xicu::TimeZone::countEquivalentIDs(*long_id);
 		for (int32_t idx = 0; idx < nIDs; ++idx) {
-			const auto eid = icu::TimeZone::getEquivalentID(*long_id, idx);
+			const auto eid = xicu::TimeZone::getEquivalentID(*long_id, idx);
 			if (eid.indexOf(char16_t('/')) >= 0) {
 				continue;
 			}
@@ -86,7 +86,7 @@ static void ICUTimeZoneFunction(ClientContext &context, TableFunctionInput &data
 		}
 		output.SetValue(1, index, Value(short_id));
 
-		goose::unique_ptr<icu::TimeZone> tz(icu::TimeZone::createTimeZone(*long_id));
+		goose::unique_ptr<xicu::TimeZone> tz(xicu::TimeZone::createTimeZone(*long_id));
 		int32_t raw_offset_ms;
 		int32_t dst_offset_ms;
 		tz->getOffset(data.now, false, raw_offset_ms, dst_offset_ms, status);
@@ -105,7 +105,7 @@ static void ICUTimeZoneFunction(ClientContext &context, TableFunctionInput &data
 }
 
 struct ICUFromNaiveTimestamp : public ICUDateFunc {
-	static inline timestamp_t Operation(icu::Calendar *calendar, timestamp_t naive) {
+	static inline timestamp_t Operation(xicu::Calendar *calendar, timestamp_t naive) {
 		if (!ICUIsFinite(naive)) {
 			return naive;
 		}
@@ -203,7 +203,7 @@ struct ICUFromNaiveTimestamp : public ICUDateFunc {
 };
 
 struct ICUToNaiveTimestamp : public ICUDateFunc {
-	static inline timestamp_t Operation(icu::Calendar *calendar, timestamp_t instant) {
+	static inline timestamp_t Operation(xicu::Calendar *calendar, timestamp_t instant) {
 		if (!ICUIsFinite(instant)) {
 			return instant;
 		}
@@ -336,7 +336,7 @@ struct ICULocalTimeFunc : public ICUDateFunc {
 	}
 };
 
-dtime_tz_t ICUToTimeTZ::Operation(icu::Calendar *calendar, dtime_tz_t timetz) {
+dtime_tz_t ICUToTimeTZ::Operation(xicu::Calendar *calendar, dtime_tz_t timetz) {
 	// Normalise to +00:00, add TZ offset, then set offset to TZ
 	auto time = Time::NormalizeTimeTZ(timetz);
 
@@ -349,7 +349,7 @@ dtime_tz_t ICUToTimeTZ::Operation(icu::Calendar *calendar, dtime_tz_t timetz) {
 	return dtime_tz_t(time, offset);
 }
 
-bool ICUToTimeTZ::ToTimeTZ(icu::Calendar *calendar, timestamp_t instant, dtime_tz_t &result) {
+bool ICUToTimeTZ::ToTimeTZ(xicu::Calendar *calendar, timestamp_t instant, dtime_tz_t &result) {
 	if (!ICUIsFinite(instant)) {
 		return false;
 	}
@@ -457,7 +457,7 @@ struct ICUTimeZoneFunc : public ICUDateFunc {
 	}
 };
 
-timestamp_t ICUDateFunc::FromNaive(icu::Calendar *calendar, timestamp_t naive) {
+timestamp_t ICUDateFunc::FromNaive(xicu::Calendar *calendar, timestamp_t naive) {
 	return ICUFromNaiveTimestamp::Operation(calendar, naive);
 }
 

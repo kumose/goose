@@ -55,21 +55,21 @@ struct ICUDateFunc {
 	                                             vector<goose::unique_ptr<Expression>> &arguments);
 
 	//! Tries to set the time zone for the calendar and returns false if it is not valid.
-	static bool TrySetTimeZone(icu::Calendar *calendar, const string_t &tz_id);
+	static bool TrySetTimeZone(xicu::Calendar *calendar, const string_t &tz_id);
 	//! Sets the time zone for the calendar. Throws if it is not valid
-	static void SetTimeZone(icu::Calendar *calendar, const string_t &tz_id, string *error_message = nullptr);
+	static void SetTimeZone(xicu::Calendar *calendar, const string_t &tz_id, string *error_message = nullptr);
 	//! Gets the timestamp from the calendar, throwing if it is not in range.
-	static bool TryGetTime(icu::Calendar *calendar, uint64_t micros, timestamp_t &result);
+	static bool TryGetTime(xicu::Calendar *calendar, uint64_t micros, timestamp_t &result);
 	//! Gets the timestamp from the calendar, throwing if it is not in range.
-	static timestamp_t GetTime(icu::Calendar *calendar, uint64_t micros = 0);
+	static timestamp_t GetTime(xicu::Calendar *calendar, uint64_t micros = 0);
 	//! Gets the timestamp from the calendar, assuming it is in range.
-	static timestamp_t GetTimeUnsafe(icu::Calendar *calendar, uint64_t micros = 0);
+	static timestamp_t GetTimeUnsafe(xicu::Calendar *calendar, uint64_t micros = 0);
 	//! Sets the calendar to the timestamp, returning the unused µs part
-	static uint64_t SetTime(icu::Calendar *calendar, timestamp_t date);
+	static uint64_t SetTime(xicu::Calendar *calendar, timestamp_t date);
 	//! Extracts the field from the calendar
-	static int32_t ExtractField(icu::Calendar *calendar, UCalendarDateFields field);
+	static int32_t ExtractField(xicu::Calendar *calendar, UCalendarDateFields field);
 	//! Subtracts the field of the given date from the calendar
-	static int32_t SubtractField(icu::Calendar *calendar, UCalendarDateFields field, timestamp_t end_date);
+	static int32_t SubtractField(xicu::Calendar *calendar, UCalendarDateFields field, timestamp_t end_date);
 	//! Adds the timestamp and the interval using the calendar
 	static timestamp_t Add(TZCalendar &calendar, timestamp_t timestamp, interval_t interval);
 	//! Subtracts the interval from the timestamp using the calendar
@@ -79,15 +79,15 @@ struct ICUDateFunc {
 	//! Pulls out the bin values from the timestamp assuming it is an instant,
 	//! constructs an ICU timestamp, and then converts that back to a Goose instant
 	//! Adding offset doesn't really work around DST because the bin values are ambiguous
-	static timestamp_t FromNaive(icu::Calendar *calendar, timestamp_t naive);
+	static timestamp_t FromNaive(xicu::Calendar *calendar, timestamp_t naive);
 
 	//! Truncates the calendar time to the given part precision
-	typedef void (*part_trunc_t)(icu::Calendar *calendar, uint64_t &micros);
+	typedef void (*part_trunc_t)(xicu::Calendar *calendar, uint64_t &micros);
 	static part_trunc_t TruncationFactory(DatePartSpecifier part);
-	static timestamp_t CurrentMidnight(icu::Calendar *calendar, ExpressionState &state);
+	static timestamp_t CurrentMidnight(xicu::Calendar *calendar, ExpressionState &state);
 
 	//! Subtracts the two times at the given part precision
-	typedef int64_t (*part_sub_t)(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date);
+	typedef int64_t (*part_sub_t)(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date);
 	static part_sub_t SubtractFactory(DatePartSpecifier part);
 };
 

@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.5...3.29)
+cmake_minimum_required(VERSION 3.15...3.29)
+
+project(ParquetExtension)
 
 include_directories(
         include ${PROJECT_SOURCE_DIR}/third_party/parquet

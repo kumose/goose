@@ -9,7 +9,7 @@
 namespace goose {
 
 struct ICUDateTrunc : public ICUDateFunc {
-	static void PreserveOffsets(icu::Calendar *calendar) {
+	static void PreserveOffsets(xicu::Calendar *calendar) {
 		//	We have to extract _everything_ before setting anything
 		//	Otherwise ICU will clear the fStamp fields
 		//	This also means we must call this method first.
@@ -22,101 +22,101 @@ struct ICUDateTrunc : public ICUDateFunc {
 		calendar->set(UCAL_DST_OFFSET, dst_offset);
 	}
 
-	static void TruncMicrosecondInternal(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncMicrosecondInternal(xicu::Calendar *calendar, uint64_t &micros) {
 	}
 
-	static void TruncMicrosecond(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncMicrosecond(xicu::Calendar *calendar, uint64_t &micros) {
 		PreserveOffsets(calendar);
 		TruncMicrosecondInternal(calendar, micros);
 	}
 
-	static void TruncMillisecondInternal(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncMillisecondInternal(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncMicrosecondInternal(calendar, micros);
 		micros = 0;
 	}
 
-	static void TruncMillisecond(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncMillisecond(xicu::Calendar *calendar, uint64_t &micros) {
 		PreserveOffsets(calendar);
 		TruncMillisecondInternal(calendar, micros);
 	}
 
-	static void TruncSecondInternal(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncSecondInternal(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncMillisecondInternal(calendar, micros);
 		calendar->set(UCAL_MILLISECOND, 0);
 	}
 
-	static void TruncSecond(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncSecond(xicu::Calendar *calendar, uint64_t &micros) {
 		PreserveOffsets(calendar);
 		TruncSecondInternal(calendar, micros);
 	}
 
-	static void TruncMinuteInternal(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncMinuteInternal(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncSecondInternal(calendar, micros);
 		calendar->set(UCAL_SECOND, 0);
 	}
 
-	static void TruncMinute(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncMinute(xicu::Calendar *calendar, uint64_t &micros) {
 		PreserveOffsets(calendar);
 		TruncMinuteInternal(calendar, micros);
 	}
 
-	static void TruncHour(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncHour(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncMinuteInternal(calendar, micros);
 		calendar->set(UCAL_MINUTE, 0);
 	}
 
-	static void TruncDay(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncDay(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncHour(calendar, micros);
 		calendar->set(UCAL_HOUR_OF_DAY, 0);
 	}
 
-	static void TruncWeek(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncWeek(xicu::Calendar *calendar, uint64_t &micros) {
 		calendar->setFirstDayOfWeek(UCAL_MONDAY);
 		calendar->setMinimalDaysInFirstWeek(4);
 		TruncDay(calendar, micros);
 		calendar->set(UCAL_DAY_OF_WEEK, UCAL_MONDAY);
 	}
 
-	static void TruncMonth(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncMonth(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncDay(calendar, micros);
 		calendar->set(UCAL_DATE, 1);
 	}
 
-	static void TruncQuarter(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncQuarter(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncMonth(calendar, micros);
 		auto mm = ExtractField(calendar, UCAL_MONTH);
 		calendar->set(UCAL_MONTH, (mm / 3) * 3);
 	}
 
-	static void TruncYear(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncYear(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncMonth(calendar, micros);
 		calendar->set(UCAL_MONTH, UCAL_JANUARY);
 	}
 
-	static void TruncISOYear(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncISOYear(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncWeek(calendar, micros);
 		calendar->set(UCAL_WEEK_OF_YEAR, 1);
 	}
 
-	static void TruncDecade(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncDecade(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncYear(calendar, micros);
 		auto yyyy = ExtractField(calendar, UCAL_YEAR) / 10;
 		calendar->set(UCAL_YEAR, yyyy * 10);
 	}
 
-	static void TruncCentury(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncCentury(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncYear(calendar, micros);
 		auto yyyy = ExtractField(calendar, UCAL_YEAR) / 100;
 		calendar->set(UCAL_YEAR, yyyy * 100);
 	}
 
-	static void TruncMillenium(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncMillenium(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncYear(calendar, micros);
 		auto yyyy = ExtractField(calendar, UCAL_YEAR) / 1000;
 		calendar->set(UCAL_YEAR, yyyy * 1000);
 	}
 
-	static void TruncEra(icu::Calendar *calendar, uint64_t &micros) {
+	static void TruncEra(xicu::Calendar *calendar, uint64_t &micros) {
 		TruncYear(calendar, micros);
 		auto era = ExtractField(calendar, UCAL_ERA);
 		calendar->set(UCAL_YEAR, 0);
@@ -221,7 +221,7 @@ ICUDateFunc::part_trunc_t ICUDateFunc::TruncationFactory(DatePartSpecifier type)
 	}
 }
 
-timestamp_t ICUDateFunc::CurrentMidnight(icu::Calendar *calendar, ExpressionState &state) {
+timestamp_t ICUDateFunc::CurrentMidnight(xicu::Calendar *calendar, ExpressionState &state) {
 	const auto current_timestamp = MetaTransaction::Get(state.GetContext()).start_timestamp;
 	auto current_micros = SetTime(calendar, current_timestamp);
 	ICUDateTrunc::TruncDay(calendar, current_micros);

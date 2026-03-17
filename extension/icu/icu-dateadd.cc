@@ -44,7 +44,7 @@ struct ICUCalendarAge : public ICUDateFunc {
 	}
 };
 
-static inline void CalendarAddHour(icu::Calendar *calendar, int64_t interval_hour, UErrorCode &status) {
+static inline void CalendarAddHour(xicu::Calendar *calendar, int64_t interval_hour, UErrorCode &status) {
 	if (interval_hour >= 0) {
 		while (interval_hour > 0) {
 			calendar->add(UCAL_HOUR,

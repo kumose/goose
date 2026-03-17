@@ -20,11 +20,11 @@
 #include "include/icu-timebucket.h"
 #include "include/icu-timezone.h"
 #include "include/icu_extension.h"
-#include "unicode/calendar.h"
-#include "unicode/coll.h"
-#include "unicode/stringpiece.h"
-#include "unicode/timezone.h"
-#include "unicode/ucol.h"
+#include <xicu/unicode/calendar.h>
+#include <xicu/unicode/coll.h>
+#include <xicu/unicode/stringpiece.h>
+#include <xicu/unicode/timezone.h>
+#include <xicu/unicode/ucol.h>
 #include "icu-helpers.h"
 
 #include <cassert>
@@ -32,21 +32,21 @@
 namespace goose {
 
 struct IcuBindData : public FunctionData {
-	goose::unique_ptr<icu::Collator> collator;
+	goose::unique_ptr<xicu::Collator> collator;
 	string language;
 	string country;
 	string tag;
 
-	explicit IcuBindData(goose::unique_ptr<icu::Collator> collator_p) : collator(std::move(collator_p)) {
+	explicit IcuBindData(goose::unique_ptr<xicu::Collator> collator_p) : collator(std::move(collator_p)) {
 	}
 
 	IcuBindData(string language_p, string country_p) : language(std::move(language_p)), country(std::move(country_p)) {
 		UErrorCode status = U_ZERO_ERROR;
-		auto locale = icu::Locale(language.c_str(), country.c_str());
+		auto locale = xicu::Locale(language.c_str(), country.c_str());
 		if (locale.isBogus()) {
 			throw InvalidInputException("Locale is bogus!?");
 		}
-		this->collator = goose::unique_ptr<icu::Collator>(icu::Collator::createInstance(locale, status));
+		this->collator = goose::unique_ptr<xicu::Collator>(xicu::Collator::createInstance(locale, status));
 		if (U_FAILURE(status)) {
 			auto error_name = u_errorName(status);
 			throw InvalidInputException("Failed to create ICU collator: %s (language: %s, country: %s)", error_name,
@@ -61,7 +61,7 @@ struct IcuBindData : public FunctionData {
 			auto error_name = u_errorName(status);
 			throw InvalidInputException("Failed to create ICU collator with tag %s: %s", tag, error_name);
 		}
-		collator = unique_ptr<icu::Collator>(icu::Collator::fromUCollator(ucollator));
+		collator = unique_ptr<xicu::Collator>(xicu::Collator::fromUCollator(ucollator));
 	}
 
 	static goose::unique_ptr<FunctionData> CreateInstance(string language, string country, string tag) {
@@ -112,10 +112,10 @@ struct IcuBindData : public FunctionData {
 
 const string IcuBindData::FUNCTION_PREFIX = "icu_collate_";
 
-static int32_t ICUGetSortKey(icu::Collator &collator, string_t input, goose::unique_ptr<char[]> &buffer,
+static int32_t ICUGetSortKey(xicu::Collator &collator, string_t input, goose::unique_ptr<char[]> &buffer,
                              int32_t &buffer_size) {
-	icu::UnicodeString unicode_string =
-	    icu::UnicodeString::fromUTF8(icu::StringPiece(input.GetData(), int32_t(input.GetSize())));
+	xicu::UnicodeString unicode_string =
+	    xicu::UnicodeString::fromUTF8(xicu::StringPiece(input.GetData(), int32_t(input.GetSize())));
 	int32_t string_size = collator.getSortKey(unicode_string, reinterpret_cast<uint8_t *>(buffer.get()), buffer_size);
 	if (string_size > buffer_size) {
 		// have to resize the buffer
@@ -204,11 +204,11 @@ static ScalarFunction GetICUCollateFunction(const string &collation, const strin
 	return result;
 }
 
-unique_ptr<icu::TimeZone> GetKnownTimeZone(const string &tz_str) {
-	icu::StringPiece tz_name_utf8(tz_str);
-	const auto uid = icu::UnicodeString::fromUTF8(tz_name_utf8);
-	goose::unique_ptr<icu::TimeZone> tz(icu::TimeZone::createTimeZone(uid));
-	if (*tz != icu::TimeZone::getUnknown()) {
+unique_ptr<xicu::TimeZone> GetKnownTimeZone(const string &tz_str) {
+	xicu::StringPiece tz_name_utf8(tz_str);
+	const auto uid = xicu::UnicodeString::fromUTF8(tz_name_utf8);
+	goose::unique_ptr<xicu::TimeZone> tz(xicu::TimeZone::createTimeZone(uid));
+	if (*tz != xicu::TimeZone::getUnknown()) {
 		return tz;
 	}
 
@@ -274,7 +274,7 @@ static string NormalizeTimeZone(const string &tz_str) {
 	return tz_str;
 }
 
-unique_ptr<icu::TimeZone> GetTimeZoneInternal(string &tz_str, vector<string> &candidates) {
+unique_ptr<xicu::TimeZone> GetTimeZoneInternal(string &tz_str, vector<string> &candidates) {
 	auto tz = GetKnownTimeZone(tz_str);
 	if (tz) {
 		return tz;
@@ -285,8 +285,8 @@ unique_ptr<icu::TimeZone> GetTimeZoneInternal(string &tz_str, vector<string> &ca
 	// If we don't find one, make a suggestion
 	// FIXME: this is very inefficient
 	UErrorCode status = U_ZERO_ERROR;
-	goose::unique_ptr<icu::Calendar> calendar(icu::Calendar::createInstance(status));
-	goose::unique_ptr<icu::StringEnumeration> tzs(icu::TimeZone::createEnumeration());
+	goose::unique_ptr<xicu::Calendar> calendar(xicu::Calendar::createInstance(status));
+	goose::unique_ptr<xicu::StringEnumeration> tzs(xicu::TimeZone::createEnumeration());
 	for (;;) {
 		auto long_id = tzs->snext(status);
 		if (U_FAILURE(status) || !long_id) {
@@ -297,9 +297,9 @@ unique_ptr<icu::TimeZone> GetTimeZoneInternal(string &tz_str, vector<string> &ca
 		if (StringUtil::CIEquals(candidate_tz_name, tz_str)) {
 			// case insensitive match - return this timezone instead
 			tz_str = candidate_tz_name;
-			icu::StringPiece utf8(tz_str);
-			const auto tz_unicode_str = icu::UnicodeString::fromUTF8(utf8);
-			goose::unique_ptr<icu::TimeZone> insensitive_tz(icu::TimeZone::createTimeZone(tz_unicode_str));
+			xicu::StringPiece utf8(tz_str);
+			const auto tz_unicode_str = xicu::UnicodeString::fromUTF8(utf8);
+			goose::unique_ptr<xicu::TimeZone> insensitive_tz(xicu::TimeZone::createTimeZone(tz_unicode_str));
 			return insensitive_tz;
 		}
 
@@ -308,12 +308,12 @@ unique_ptr<icu::TimeZone> GetTimeZoneInternal(string &tz_str, vector<string> &ca
 	return nullptr;
 }
 
-unique_ptr<icu::TimeZone> ICUHelpers::TryGetTimeZone(string &tz_str) {
+unique_ptr<xicu::TimeZone> ICUHelpers::TryGetTimeZone(string &tz_str) {
 	vector<string> candidates;
 	return GetTimeZoneInternal(tz_str, candidates);
 }
 
-unique_ptr<icu::TimeZone> ICUHelpers::GetTimeZone(string &tz_str, string *error_message) {
+unique_ptr<xicu::TimeZone> ICUHelpers::GetTimeZone(string &tz_str, string *error_message) {
 	vector<string> candidates;
 	auto tz = GetTimeZoneInternal(tz_str, candidates);
 	if (tz) {
@@ -341,10 +341,10 @@ struct ICUCalendarData : public GlobalTableFunctionState {
 	ICUCalendarData() {
 		// All calendars are available in all locales
 		UErrorCode status = U_ZERO_ERROR;
-		calendars.reset(icu::Calendar::getKeywordValuesForLocale("calendar", icu::Locale::getDefault(), false, status));
+		calendars.reset(xicu::Calendar::getKeywordValuesForLocale("calendar", xicu::Locale::getDefault(), false, status));
 	}
 
-	goose::unique_ptr<icu::StringEnumeration> calendars;
+	goose::unique_ptr<xicu::StringEnumeration> calendars;
 };
 
 static goose::unique_ptr<FunctionData> ICUCalendarBind(ClientContext &context, TableFunctionBindInput &input,
@@ -387,10 +387,10 @@ static void ICUCalendarFunction(ClientContext &context, TableFunctionInput &data
 static void SetICUCalendar(ClientContext &context, SetScope scope, Value &parameter) {
 	const auto name = parameter.Value::GetValueUnsafe<string>();
 	string locale_key = "@calendar=" + name;
-	icu::Locale locale(locale_key.c_str());
+	xicu::Locale locale(locale_key.c_str());
 
 	UErrorCode status = U_ZERO_ERROR;
-	goose::unique_ptr<icu::Calendar> cal(icu::Calendar::createInstance(locale, status));
+	goose::unique_ptr<xicu::Calendar> cal(xicu::Calendar::createInstance(locale, status));
 	if (!U_FAILURE(status) && name == cal->getType()) {
 		return;
 	}
@@ -399,8 +399,8 @@ static void SetICUCalendar(ClientContext &context, SetScope scope, Value &parame
 	//	Go through all the calendar names and look for a case insensitive match
 	//	If we don't find one, make a suggestion
 	status = U_ZERO_ERROR;
-	goose::unique_ptr<icu::StringEnumeration> calendars;
-	calendars.reset(icu::Calendar::getKeywordValuesForLocale("calendar", icu::Locale::getDefault(), false, status));
+	goose::unique_ptr<xicu::StringEnumeration> calendars;
+	calendars.reset(xicu::Calendar::getKeywordValuesForLocale("calendar", xicu::Locale::getDefault(), false, status));
 
 	vector<string> candidates;
 	for (;;) {
@@ -428,7 +428,7 @@ static void SetICUCalendar(ClientContext &context, SetScope scope, Value &parame
 static void LoadInternal(ExtensionLoader &loader) {
 	// iterate over all the collations
 	int32_t count;
-	auto locales = icu::Collator::getAvailableLocales(count);
+	auto locales = xicu::Collator::getAvailableLocales(count);
 	for (int32_t i = 0; i < count; i++) {
 		string collation;
 		const auto &locale = locales[i]; // NOLINT
@@ -465,8 +465,8 @@ static void LoadInternal(ExtensionLoader &loader) {
 
 	// Time Zones
 	auto &config = DBConfig::GetConfig(loader.GetDatabaseInstance());
-	goose::unique_ptr<icu::TimeZone> tz(icu::TimeZone::createDefault());
-	icu::UnicodeString tz_id;
+	goose::unique_ptr<xicu::TimeZone> tz(xicu::TimeZone::createDefault());
+	xicu::UnicodeString tz_id;
 	std::string tz_string;
 	tz->getID(tz_id).toUTF8String(tz_string);
 	// If the environment TZ is invalid, look for some alternatives
@@ -491,7 +491,7 @@ static void LoadInternal(ExtensionLoader &loader) {
 
 	// Calendars
 	UErrorCode status = U_ZERO_ERROR;
-	goose::unique_ptr<icu::Calendar> cal(icu::Calendar::createInstance(status));
+	goose::unique_ptr<xicu::Calendar> cal(xicu::Calendar::createInstance(status));
 	config.AddExtensionOption("Calendar", "The current calendar", LogicalType::VARCHAR, Value(cal->getType()),
 	                          SetICUCalendar);
 

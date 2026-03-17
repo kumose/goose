@@ -17,7 +17,7 @@
 
 namespace goose {
 
-date_t ICUMakeDate::Operation(icu::Calendar *calendar, timestamp_t instant) {
+date_t ICUMakeDate::Operation(xicu::Calendar *calendar, timestamp_t instant) {
 	if (!Timestamp::IsFinite(instant)) {
 		return Timestamp::GetDate(instant);
 	}
@@ -69,7 +69,7 @@ void ICUMakeDate::AddCasts(ExtensionLoader &loader) {
 
 struct ICUMakeTimestampTZFunc : public ICUDateFunc {
 	template <typename T>
-	static inline timestamp_t Operation(icu::Calendar *calendar, T yyyy, T mm, T dd, T hr, T mn, double ss) {
+	static inline timestamp_t Operation(xicu::Calendar *calendar, T yyyy, T mm, T dd, T hr, T mn, double ss) {
 		const auto year = Cast::Operation<T, int32_t>(AddOperator::Operation<T, T, T>(yyyy, (yyyy < 0)));
 		const auto month = Cast::Operation<T, int32_t>(SubtractOperatorOverflowCheck::Operation<T, T, T>(mm, 1));
 		const auto day = Cast::Operation<T, int32_t>(dd);
