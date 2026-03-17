@@ -20,7 +20,7 @@
 #ifndef _GOOSE_THRIFT_TRANSPORT_TVIRTUALTRANSPORT_H_
 #define _GOOSE_THRIFT_TRANSPORT_TVIRTUALTRANSPORT_H_ 1
 
-#include "thrift/transport/TTransport.h"
+#include "kthrift/transport/TTransport.h"
 
 namespace goose_apache {
 namespace thrift {

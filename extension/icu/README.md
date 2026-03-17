@@ -35,7 +35,7 @@ In this example, we order several German names using the German locale.
 
 ```cpp
 // createSortKey creates a byte-orderable string according to the collation locale
-static string createSortKey(icu::Collator &collator, const string &str) {
+static string createSortKey(xicu::Collator &collator, const string &str) {
     // run getSortKey once to get the size
     int32_t size = collator.getSortKey(UnicodeString::fromUTF8(StringPiece(str)), nullptr, 0);
     // allocate a buffer to hold the sort key
@@ -50,7 +50,7 @@ vector<string> strings = {"Göbel", "Goethe", "Goldmann", "Göthe" "Götz", "Gab
 
 UErrorCode status = U_ZERO_ERROR;
 // create the collator for the german locale
-auto de_collator = unique_ptr<icu::Collator>(Collator::createInstance(Locale("de"), status));
+auto de_collator = unique_ptr<xicu::Collator>(Collator::createInstance(Locale("de"), status));
 if (U_FAILURE(status)) {
 	// something went wrong
 	exit(1);

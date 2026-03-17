@@ -3,8 +3,8 @@ project(example-c++)
 
 set(CMAKE_CXX_STANDARD 11)
 
-include_directories(../../src/include)
-link_directories(../../build/release/src)
+include_directories(${PROJECT_SOURCE_DIR}/src/include)
+link_directories(${PROJECT_SOURCE_DIR}/build/release/src)
 
 add_executable(example main.cc)
 target_link_libraries(example goose)

@@ -17,10 +17,10 @@
  * under the License.
  */
 
-#include "thrift/transport/TTransportException.h"
+#include "kthrift/transport/TTransportException.h"
 #include <cstring>
 
-#include "thrift/thrift-config.h"
+#include "kthrift/thrift-config.h"
 
 using std::string;
 

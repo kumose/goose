@@ -6,13 +6,13 @@
 #include <goose/function/function_set.h>
 #include <goose/function/table_function.h>
 #include "include/icu-datefunc.h"
-#include "unicode/calendar.h"
+#include <xicu/unicode/calendar.h>
 #include "tz_calendar.h"
 
 namespace goose {
 
 struct ICUTableRange {
-	using CalendarPtr = unique_ptr<icu::Calendar>;
+	using CalendarPtr = unique_ptr<xicu::Calendar>;
 
 	struct ICURangeBindData : public TableFunctionData {
 		ICURangeBindData(const ICURangeBindData &other)
@@ -25,7 +25,7 @@ struct ICUTableRange {
 			if (context.TryGetCurrentSetting("TimeZone", tz_value)) {
 				tz_setting = tz_value.ToString();
 			}
-			auto tz = icu::TimeZone::createTimeZone(icu::UnicodeString::fromUTF8(icu::StringPiece(tz_setting)));
+			auto tz = xicu::TimeZone::createTimeZone(xicu::UnicodeString::fromUTF8(xicu::StringPiece(tz_setting)));
 
 			string cal_id("@calendar=");
 			Value cal_value;
@@ -36,10 +36,10 @@ struct ICUTableRange {
 				cal_id += "gregorian";
 			}
 
-			icu::Locale locale(cal_id.c_str());
+			xicu::Locale locale(cal_id.c_str());
 
 			UErrorCode success = U_ZERO_ERROR;
-			calendar.reset(icu::Calendar::createInstance(tz, locale, success));
+			calendar.reset(xicu::Calendar::createInstance(tz, locale, success));
 			if (U_FAILURE(success)) {
 				throw InternalException("Unable to create ICU calendar.");
 			}

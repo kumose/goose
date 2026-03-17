@@ -20,7 +20,7 @@
 #ifndef _GOOSE_THRIFT_PROTOCOL_TCOMPACTPROTOCOL_H_
 #define _GOOSE_THRIFT_PROTOCOL_TCOMPACTPROTOCOL_H_ 1
 
-#include "thrift/protocol/TVirtualProtocol.h"
+#include "kthrift/protocol/TVirtualProtocol.h"
 
 #include <stack>
 #include <memory>
@@ -261,6 +261,6 @@ typedef TCompactProtocolFactoryT<TTransport> TCompactProtocolFactory;
 }
 } // goose_apache::thrift::protocol
 
-#include "thrift/protocol/TCompactProtocol.tcc"
+#include "kthrift/protocol/TCompactProtocol.tcc"
 
 #endif

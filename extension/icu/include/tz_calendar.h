@@ -15,21 +15,21 @@
 
 #pragma once
 
-#include "unicode/calendar.h"
+#include <xicu/unicode/calendar.h>
 #include <goose/common/string_util.h>
 
 namespace goose {
 
-using CalendarPtr = goose::unique_ptr<icu::Calendar>;
+using CalendarPtr = goose::unique_ptr<xicu::Calendar>;
 
 struct TZCalendar {
-	TZCalendar(icu::Calendar &calendar_p, const string &cal_setting)
+	TZCalendar(xicu::Calendar &calendar_p, const string &cal_setting)
 	    : calendar(CalendarPtr(calendar_p.clone())),
 	      is_gregorian(cal_setting.empty() || StringUtil::CIEquals(cal_setting, "gregorian")),
 	      supports_intervals(calendar->getMaximum(UCAL_MONTH) < 12) { // 0-based
 	}
 
-	icu::Calendar *GetICUCalendar() {
+	xicu::Calendar *GetICUCalendar() {
 		return calendar.get();
 	}
 	bool IsGregorian() const {

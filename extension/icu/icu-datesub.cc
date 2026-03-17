@@ -12,78 +12,78 @@ struct ICUCalendarSub : public ICUDateFunc {
 	//	ICU only has 32 bit precision for date parts, so it can overflow a high resolution.
 	//	Since there is no difference between ICU and the obvious calculations,
 	//	we make these using the Goose internal type.
-	static int64_t SubtractMicrosecond(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractMicrosecond(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		return end_date.value - start_date.value;
 	}
 
-	static int64_t SubtractMillisecond(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractMillisecond(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		return SubtractMicrosecond(calendar, start_date, end_date) / Interval::MICROS_PER_MSEC;
 	}
 
-	static int64_t SubtractSecond(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractSecond(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		return SubtractMicrosecond(calendar, start_date, end_date) / Interval::MICROS_PER_SEC;
 	}
 
-	static int64_t SubtractMinute(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractMinute(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		return SubtractMicrosecond(calendar, start_date, end_date) / Interval::MICROS_PER_MINUTE;
 	}
 
-	static int64_t SubtractHour(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractHour(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		SetTime(calendar, start_date);
 		return SubtractField(calendar, UCAL_HOUR_OF_DAY, end_date);
 	}
 
-	static int64_t SubtractDay(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractDay(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		SetTime(calendar, start_date);
 		return SubtractField(calendar, UCAL_DATE, end_date);
 	}
 
-	static int64_t SubtractWeek(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractWeek(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		calendar->setFirstDayOfWeek(UCAL_MONDAY);
 		calendar->setMinimalDaysInFirstWeek(4);
 		SetTime(calendar, start_date);
 		return SubtractField(calendar, UCAL_WEEK_OF_YEAR, end_date);
 	}
 
-	static int64_t SubtractMonth(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractMonth(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		SetTime(calendar, start_date);
 		return SubtractField(calendar, UCAL_MONTH, end_date);
 	}
 
-	static int64_t SubtractQuarter(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractQuarter(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		// No ICU part for this, so do it manually.
 		// This will not work for lunar calendars!
 		return SubtractMonth(calendar, start_date, end_date) / 3;
 	}
 
-	static int64_t SubtractYear(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractYear(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		SetTime(calendar, start_date);
 		return SubtractField(calendar, UCAL_YEAR, end_date);
 	}
 
-	static int64_t SubtractISOYear(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractISOYear(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		calendar->setFirstDayOfWeek(UCAL_MONDAY);
 		calendar->setMinimalDaysInFirstWeek(4);
 		SetTime(calendar, start_date);
 		return SubtractField(calendar, UCAL_YEAR_WOY, end_date);
 	}
 
-	static int64_t SubtractDecade(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractDecade(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		// No ICU part for this, so do it manually.
 		return SubtractYear(calendar, start_date, end_date) / 10;
 	}
 
-	static int64_t SubtractCentury(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractCentury(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		// No ICU part for this, so do it manually.
 		return SubtractYear(calendar, start_date, end_date) / 100;
 	}
 
-	static int64_t SubtractMillenium(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractMillenium(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		// No ICU part for this, so do it manually.
 		return SubtractYear(calendar, start_date, end_date) / 1000;
 	}
 
-	static int64_t SubtractEra(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
+	static int64_t SubtractEra(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date) {
 		SetTime(calendar, start_date);
 		return SubtractField(calendar, UCAL_ERA, end_date);
 	}
@@ -192,7 +192,7 @@ ICUDateFunc::part_sub_t ICUDateFunc::SubtractFactory(DatePartSpecifier type) {
 // to the desired part precision and then applying ICU subtraction/difference
 struct ICUCalendarDiff : public ICUDateFunc {
 	template <typename T>
-	static int64_t DifferenceFunc(icu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date,
+	static int64_t DifferenceFunc(xicu::Calendar *calendar, timestamp_t start_date, timestamp_t end_date,
 	                              part_trunc_t trunc_func, part_sub_t sub_func) {
 		// Truncate the two arguments. This is safe because we will stay in range
 		auto micros = SetTime(calendar, start_date);

@@ -18,7 +18,7 @@
 
 namespace goose {
 
-TimestampComponents ICUHelpers::GetComponents(timestamp_tz_t ts, icu::Calendar *calendar) {
+TimestampComponents ICUHelpers::GetComponents(timestamp_tz_t ts, xicu::Calendar *calendar) {
 	// Get the parts in the given time zone
 	uint64_t micros = ICUDateFunc::SetTime(calendar, timestamp_t(ts.value));
 
@@ -80,7 +80,7 @@ struct ICUStrptime : public ICUDateFunc {
 		}
 	}
 
-	static uint64_t ToMicros(icu::Calendar *calendar, const ParseResult &parsed, const StrpTimeFormat &format) {
+	static uint64_t ToMicros(xicu::Calendar *calendar, const ParseResult &parsed, const StrpTimeFormat &format) {
 		// Get the parts in the current time zone
 		uint64_t micros = parsed.GetMicros();
 		calendar->set(UCAL_EXTENDED_YEAR, parsed.data[0]); // strptime doesn't understand eras
@@ -380,7 +380,7 @@ struct ICUStrftime : public ICUDateFunc {
 		}
 	}
 
-	static string_t Operation(icu::Calendar *calendar, timestamp_t input, const char *tz_name, StrfTimeFormat &format,
+	static string_t Operation(xicu::Calendar *calendar, timestamp_t input, const char *tz_name, StrfTimeFormat &format,
 	                          Vector &result) {
 		// Infinity is always formatted the same way
 		if (!Timestamp::IsFinite(input)) {
@@ -465,7 +465,7 @@ struct ICUStrftime : public ICUDateFunc {
 		loader.RegisterFunction(set);
 	}
 
-	static string_t CastOperation(icu::Calendar *calendar, timestamp_t input, Vector &result) {
+	static string_t CastOperation(xicu::Calendar *calendar, timestamp_t input, Vector &result) {
 		// Infinity is always formatted the same way
 		if (!Timestamp::IsFinite(input)) {
 			return StringVector::AddString(result, Timestamp::ToString(input));

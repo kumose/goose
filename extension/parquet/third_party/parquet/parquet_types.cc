@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <ostream>
 
-#include <thrift/TToString.h>
+#include <kthrift/TToString.h>
 
 namespace goose_parquet {
 

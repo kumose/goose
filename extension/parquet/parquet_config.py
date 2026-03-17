@@ -34,9 +34,9 @@ source_files += [
     os.path.sep.join(x.split('/'))
     for x in [
         'third_party/parquet/parquet_types.cc',
-        'third_party/thrift/thrift/protocol/TProtocol.cc',
-        'third_party/thrift/thrift/transport/TTransportException.cc',
-        'third_party/thrift/thrift/transport/TBufferTransports.cc',
+        'third_party/thrift/kthrift/protocol/TProtocol.cc',
+        'third_party/thrift/kthrift/transport/TTransportException.cc',
+        'third_party/thrift/kthrift/transport/TBufferTransports.cc',
         'third_party/snappy/snappy.cc',
         'third_party/snappy/snappy-sinksource.cc',
     ]
