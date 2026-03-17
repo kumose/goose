@@ -9,8 +9,8 @@
 #pragma once
 
 #include <list>
-#include "thrift/protocol/TCompactProtocol.h"
-#include "thrift/transport/TBufferTransports.h"
+#include "xthrift/protocol/TCompactProtocol.h"
+#include "xthrift/transport/TBufferTransports.h"
 
 #include <goose/goose.h>
 #include <goose/storage/caching_file_system.h>

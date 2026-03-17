@@ -20,8 +20,8 @@
 #ifndef _GOOSE_THRIFT_TRANSPORT_TTRANSPORT_H_
 #define _GOOSE_THRIFT_TRANSPORT_TTRANSPORT_H_ 1
 
-#include "thrift/Thrift.h"
-#include "thrift/transport/TTransportException.h"
+#include "xthrift/Thrift.h"
+#include "xthrift/transport/TTransportException.h"
 #include <memory>
 #include <cstdint>
 #include <string>

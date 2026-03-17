@@ -20,8 +20,8 @@
 #ifndef _GOOSE_THRIFT_TBASE_H_
 #define _GOOSE_THRIFT_TBASE_H_ 1
 
-#include "thrift/Thrift.h"
-#include "thrift/protocol/TProtocol.h"
+#include "xthrift/Thrift.h"
+#include "xthrift/protocol/TProtocol.h"
 
 namespace goose_apache {
 namespace thrift {

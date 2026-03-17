@@ -20,7 +20,7 @@
 #ifndef _GOOSE_THRIFT_TAPPLICATIONEXCEPTION_H_
 #define _GOOSE_THRIFT_TAPPLICATIONEXCEPTION_H_ 1
 
-#include "thrift/Thrift.h"
+#include "xthrift/Thrift.h"
 
 namespace goose_apache {
 namespace thrift {

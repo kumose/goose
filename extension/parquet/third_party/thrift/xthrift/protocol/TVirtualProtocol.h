@@ -20,7 +20,7 @@
 #ifndef _GOOSE_THRIFT_PROTOCOL_TVIRTUALPROTOCOL_H_
 #define _GOOSE_THRIFT_PROTOCOL_TVIRTUALPROTOCOL_H_ 1
 
-#include "thrift/protocol/TProtocol.h"
+#include "xthrift/protocol/TProtocol.h"
 #include <goose/common/vector.h>
 
 namespace goose_apache {

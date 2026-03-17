@@ -25,8 +25,8 @@
 #include <winsock2.h>
 #endif
 
-#include "thrift/transport/TTransport.h"
-#include "thrift/protocol/TProtocolException.h"
+#include "xthrift/transport/TTransport.h"
+#include "xthrift/protocol/TProtocolException.h"
 
 #include <memory>
 
