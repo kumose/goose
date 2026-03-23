@@ -22,30 +22,29 @@
 #include <goose/transaction/commit_state.h>
 
 namespace goose {
+    class DataTable;
 
-class DataTable;
+    struct DeleteInfo;
+    struct UpdateInfo;
 
-struct DeleteInfo;
-struct UpdateInfo;
+    class CleanupState {
+    public:
+        explicit CleanupState(GooseTransaction &transaction, transaction_t lowest_active_transaction,
+                              ActiveTransactionState transaction_state);
 
-class CleanupState {
-public:
-	explicit CleanupState(GooseTransaction &transaction, transaction_t lowest_active_transaction,
-	                      ActiveTransactionState transaction_state);
+    public:
+        void CleanupEntry(UndoFlags type, data_ptr_t data);
 
-public:
-	void CleanupEntry(UndoFlags type, data_ptr_t data);
+    private:
+        //! Lowest active transaction
+        transaction_t lowest_active_transaction;
+        ActiveTransactionState transaction_state;
+        //! While cleaning up, we remove data from any delta indexes we added data to during the commit
+        IndexDataRemover index_data_remover;
 
-private:
-	//! Lowest active transaction
-	transaction_t lowest_active_transaction;
-	ActiveTransactionState transaction_state;
-	//! While cleaning up, we remove data from any delta indexes we added data to during the commit
-	IndexDataRemover index_data_remover;
+    private:
+        void CleanupDelete(DeleteInfo &info);
 
-private:
-	void CleanupDelete(DeleteInfo &info);
-	void CleanupUpdate(UpdateInfo &info);
-};
-
+        void CleanupUpdate(UpdateInfo &info);
+    };
 } // namespace goose

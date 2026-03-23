@@ -1,4 +1,4 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 
 #include "arrow/arrow_test_helper.h"
 #include <goose/common/adbc/single_batch_array_stream.h>

@@ -1,11 +1,11 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/common/file_system.h>
 #include <goose/storage/buffer_manager.h>
 #include <goose/storage/storage_info.h>
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 #include <goose/main/client_context.h>
 #include <goose/main/config.h>
-#include "test_config.h"
+#include <goose/testing/test_config.h>
 
 using namespace goose;
 using namespace std;

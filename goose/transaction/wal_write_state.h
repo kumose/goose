@@ -19,40 +19,41 @@
 #include <goose/common/vector_size.h>
 
 namespace goose {
-class CatalogEntry;
-class DataChunk;
-class GooseTransaction;
-class WriteAheadLog;
-class ClientContext;
+    class CatalogEntry;
+    class DataChunk;
+    class GooseTransaction;
+    class WriteAheadLog;
+    class ClientContext;
 
-struct DataTableInfo;
-struct DeleteInfo;
-struct UpdateInfo;
+    struct DataTableInfo;
+    struct DeleteInfo;
+    struct UpdateInfo;
 
-class WALWriteState {
-public:
-	explicit WALWriteState(GooseTransaction &transaction, WriteAheadLog &log,
-	                       optional_ptr<StorageCommitState> commit_state);
+    class WALWriteState {
+    public:
+        explicit WALWriteState(GooseTransaction &transaction, WriteAheadLog &log,
+                               optional_ptr<StorageCommitState> commit_state);
 
-public:
-	void CommitEntry(UndoFlags type, data_ptr_t data);
+    public:
+        void CommitEntry(UndoFlags type, data_ptr_t data);
 
-private:
-	void SwitchTable(DataTableInfo &table, UndoFlags new_op);
+    private:
+        void SwitchTable(DataTableInfo &table, UndoFlags new_op);
 
-	void WriteCatalogEntry(CatalogEntry &entry, data_ptr_t extra_data);
-	void WriteDelete(DeleteInfo &info);
-	void WriteUpdate(UpdateInfo &info);
+        void WriteCatalogEntry(CatalogEntry &entry, data_ptr_t extra_data);
 
-private:
-	GooseTransaction &transaction;
-	WriteAheadLog &log;
-	optional_ptr<StorageCommitState> commit_state;
+        void WriteDelete(DeleteInfo &info);
 
-	optional_ptr<DataTableInfo> current_table_info;
+        void WriteUpdate(UpdateInfo &info);
 
-	unique_ptr<DataChunk> delete_chunk;
-	unique_ptr<DataChunk> update_chunk;
-};
+    private:
+        GooseTransaction &transaction;
+        WriteAheadLog &log;
+        optional_ptr<StorageCommitState> commit_state;
 
+        optional_ptr<DataTableInfo> current_table_info;
+
+        unique_ptr<DataChunk> delete_chunk;
+        unique_ptr<DataChunk> update_chunk;
+    };
 } // namespace goose

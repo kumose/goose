@@ -3,7 +3,7 @@
 #include <goose/common/types/vector.h>
 #include <goose/common/vector_operations/unary_executor.h>
 #include <goose/common/fast_float/fast_float.h>
-#include <goose/fmt/format.h>
+#include <goose/utility/fmt/format.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 // Internals

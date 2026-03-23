@@ -111,7 +111,7 @@ unique_ptr<CreateInfo> CreateIndexInfo::Deserialize(Deserializer &deserializer) 
 	deserializer.ReadPropertyWithDefault<vector<column_t>>(207, "column_ids", result->column_ids);
 	deserializer.ReadPropertyWithDefault<case_insensitive_map_t<Value>>(208, "options", result->options);
 	deserializer.ReadPropertyWithDefault<string>(209, "index_type_name", result->index_type);
-	return std::move(result);
+	return result;
 }
 
 void CreateMacroInfo::Serialize(Serializer &serializer) const {
@@ -127,7 +127,7 @@ unique_ptr<CreateInfo> CreateMacroInfo::Deserialize(Deserializer &deserializer) 
 	auto extra_functions = deserializer.ReadPropertyWithDefault<vector<unique_ptr<MacroFunction>>>(202, "extra_functions");
 	auto result = goose::unique_ptr<CreateMacroInfo>(new CreateMacroInfo(deserializer.Get<CatalogType>(), std::move(function), std::move(extra_functions)));
 	result->name = std::move(name);
-	return std::move(result);
+	return result;
 }
 
 void CreateSchemaInfo::Serialize(Serializer &serializer) const {

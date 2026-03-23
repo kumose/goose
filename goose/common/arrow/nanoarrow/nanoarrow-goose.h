@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goose/common/arrow/nanoarrow/nanoarrow.h"
+#include <goose/common/arrow/nanoarrow/nanoarrow.h>
 
 // Bring in the symbols from goose_nanoarrow into goose
 namespace goose {

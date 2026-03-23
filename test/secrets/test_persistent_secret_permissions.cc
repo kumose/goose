@@ -1,11 +1,11 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/goose.h>
 #include <goose/main/database.h>
 #include <goose/main/extension/extension_loader.h>
 #include <goose/main/secret/secret.h>
 #include <goose/main/secret/secret_manager.h>
 #include <goose/main/secret/secret_storage.h>
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 
 #include <sys/stat.h>
 

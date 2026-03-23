@@ -21,149 +21,168 @@
 #include <goose/common/queue.h>
 
 namespace goose {
-class GooseTransactionManager;
-class GooseTransaction;
-struct UndoBufferProperties;
+    class GooseTransactionManager;
+    class GooseTransaction;
+    struct UndoBufferProperties;
 
-//! CleanupInfo collects transactions awaiting cleanup.
-//! This ensures we can clean up after releasing the transaction lock.
-struct GooseCleanupInfo {
-	//! All transactions in a cleanup info share the same lowest_start_time.
-	transaction_t lowest_start_time;
-	vector<unique_ptr<GooseTransaction>> transactions;
+    //! CleanupInfo collects transactions awaiting cleanup.
+    //! This ensures we can clean up after releasing the transaction lock.
+    struct GooseCleanupInfo {
+        //! All transactions in a cleanup info share the same lowest_start_time.
+        transaction_t lowest_start_time;
+        vector<unique_ptr<GooseTransaction> > transactions;
 
-	void Cleanup() noexcept;
-	bool ScheduleCleanup() noexcept;
-};
+        void Cleanup() noexcept;
 
-struct ActiveCheckpointWrapper {
-	explicit ActiveCheckpointWrapper(GooseTransactionManager &manager);
-	~ActiveCheckpointWrapper();
+        bool ScheduleCleanup() noexcept;
+    };
 
-	void Clear();
+    struct ActiveCheckpointWrapper {
+        explicit ActiveCheckpointWrapper(GooseTransactionManager &manager);
 
-	GooseTransactionManager &manager;
-	bool is_cleared;
-};
+        ~ActiveCheckpointWrapper();
 
-//! The Transaction Manager is responsible for creating and managing
-//! transactions
-class GooseTransactionManager : public TransactionManager {
-public:
-	explicit GooseTransactionManager(AttachedDatabase &db);
-	~GooseTransactionManager() override;
+        void Clear();
 
-public:
-	static GooseTransactionManager &Get(AttachedDatabase &db);
+        GooseTransactionManager &manager;
+        bool is_cleared;
+    };
 
-	//! Start a new transaction
-	Transaction &StartTransaction(ClientContext &context) override;
-	//! Commit the given transaction
-	ErrorData CommitTransaction(ClientContext &context, Transaction &transaction) override;
-	//! Rollback the given transaction
-	void RollbackTransaction(Transaction &transaction) override;
+    //! The Transaction Manager is responsible for creating and managing
+    //! transactions
+    class GooseTransactionManager : public TransactionManager {
+    public:
+        explicit GooseTransactionManager(AttachedDatabase &db);
 
-	void Checkpoint(ClientContext &context, bool force = false) override;
+        ~GooseTransactionManager() override;
 
-	transaction_t LowestActiveId() const {
-		return lowest_active_id;
-	}
-	transaction_t LowestActiveStart() const {
-		return lowest_active_start;
-	}
-	transaction_t GetLastCommit() const {
-		return last_commit;
-	}
-	transaction_t GetActiveCheckpoint() const {
-		return active_checkpoint;
-	}
-	transaction_t GetNewCheckpointId();
-	void ResetCheckpointId();
+    public:
+        static GooseTransactionManager &Get(AttachedDatabase &db);
 
-	bool IsGooseTransactionManager() override {
-		return true;
-	}
+        //! Start a new transaction
+        Transaction &StartTransaction(ClientContext &context) override;
 
-	//! Obtains a shared lock to the checkpoint lock
-	unique_ptr<StorageLockKey> SharedCheckpointLock();
-	//! Try to obtain an exclusive checkpoint lock
-	unique_ptr<StorageLockKey> TryGetCheckpointLock();
-	unique_ptr<StorageLockKey> TryUpgradeCheckpointLock(StorageLockKey &lock);
-	unique_ptr<StorageLockKey> SharedVacuumLock();
-	unique_ptr<StorageLockKey> TryGetVacuumLock();
+        //! Commit the given transaction
+        ErrorData CommitTransaction(ClientContext &context, Transaction &transaction) override;
 
-	//! Returns the current version of the catalog (incremented whenever anything changes, not stored between restarts)
-	GOOSE_API idx_t GetCatalogVersion(Transaction &transaction);
+        //! Rollback the given transaction
+        void RollbackTransaction(Transaction &transaction) override;
 
-	void PushCatalogEntry(Transaction &transaction_p, CatalogEntry &entry, data_ptr_t extra_data = nullptr,
-	                      idx_t extra_data_size = 0);
-	void PushAttach(Transaction &transaction_p, AttachedDatabase &db);
+        void Checkpoint(ClientContext &context, bool force = false) override;
 
-protected:
-	struct CheckpointDecision {
-		explicit CheckpointDecision(string reason_p);
-		explicit CheckpointDecision(CheckpointType type);
-		~CheckpointDecision();
+        transaction_t LowestActiveId() const {
+            return lowest_active_id;
+        }
 
-		bool can_checkpoint;
-		string reason;
-		CheckpointType type;
-	};
+        transaction_t LowestActiveStart() const {
+            return lowest_active_start;
+        }
 
-private:
-	//! Generates a new commit timestamp
-	transaction_t GetCommitTimestamp();
-	//! Remove the given transaction from the list of active transactions
-	unique_ptr<GooseCleanupInfo> RemoveTransaction(GooseTransaction &transaction) noexcept;
-	//! Remove the given transaction from the list of active transactions
-	unique_ptr<GooseCleanupInfo> RemoveTransaction(GooseTransaction &transaction, bool store_transaction) noexcept;
+        transaction_t GetLastCommit() const {
+            return last_commit;
+        }
 
-	//! Whether or not we can checkpoint
-	CheckpointDecision CanCheckpoint(GooseTransaction &transaction, unique_ptr<StorageLockKey> &checkpoint_lock,
-	                                 const UndoBufferProperties &properties);
-	bool HasOtherTransactions(GooseTransaction &transaction);
+        transaction_t GetActiveCheckpoint() const {
+            return active_checkpoint;
+        }
 
-private:
-	//! The current start timestamp used by transactions
-	transaction_t current_start_timestamp;
-	//! The current transaction ID used by transactions
-	transaction_t current_transaction_id;
-	//! The lowest active transaction id
-	atomic<transaction_t> lowest_active_id;
-	//! The lowest active transaction timestamp
-	atomic<transaction_t> lowest_active_start;
-	//! The last commit timestamp
-	atomic<transaction_t> last_commit;
-	//! The currently active checkpoint
-	atomic<transaction_t> active_checkpoint;
-	//! Set of currently running transactions
-	vector<unique_ptr<GooseTransaction>> active_transactions;
-	//! Set of recently committed transactions
-	vector<unique_ptr<GooseTransaction>> recently_committed_transactions;
-	//! The lock used for transaction operations
-	mutex transaction_lock;
-	//! The checkpoint lock
-	StorageLock checkpoint_lock;
-	//! The vacuum lock - necessary to start vacuum operations
-	StorageLock vacuum_lock;
-	//! Lock necessary to start transactions only - used by FORCE CHECKPOINT to prevent new transactions from starting
-	mutex start_transaction_lock;
+        transaction_t GetNewCheckpointId();
 
-	atomic<idx_t> last_uncommitted_catalog_version = {TRANSACTION_ID_START};
-	idx_t last_committed_version = 0;
+        void ResetCheckpointId();
 
-	//! Only one cleanup can be active at any time.
-	mutex cleanup_lock;
-	//! Changes to the cleanup queue must be synchronized.
-	mutex cleanup_queue_lock;
-	//! Cleanups have to happen in-order.
-	//! E.g., if one transaction drops a table, and another creates a table,
-	//! inverting the cleanup order can result in catalog errors.
-	queue<unique_ptr<GooseCleanupInfo>> cleanup_queue;
+        bool IsGooseTransactionManager() override {
+            return true;
+        }
 
-protected:
-	virtual void OnCommitCheckpointDecision(const CheckpointDecision &decision, GooseTransaction &transaction) {
-	}
-};
+        //! Obtains a shared lock to the checkpoint lock
+        unique_ptr<StorageLockKey> SharedCheckpointLock();
 
+        //! Try to obtain an exclusive checkpoint lock
+        unique_ptr<StorageLockKey> TryGetCheckpointLock();
+
+        unique_ptr<StorageLockKey> TryUpgradeCheckpointLock(StorageLockKey &lock);
+
+        unique_ptr<StorageLockKey> SharedVacuumLock();
+
+        unique_ptr<StorageLockKey> TryGetVacuumLock();
+
+        //! Returns the current version of the catalog (incremented whenever anything changes, not stored between restarts)
+        GOOSE_API idx_t GetCatalogVersion(Transaction &transaction);
+
+        void PushCatalogEntry(Transaction &transaction_p, CatalogEntry &entry, data_ptr_t extra_data = nullptr,
+                              idx_t extra_data_size = 0);
+
+        void PushAttach(Transaction &transaction_p, AttachedDatabase &db);
+
+    protected:
+        struct CheckpointDecision {
+            explicit CheckpointDecision(string reason_p);
+
+            explicit CheckpointDecision(CheckpointType type);
+
+            ~CheckpointDecision();
+
+            bool can_checkpoint;
+            string reason;
+            CheckpointType type;
+        };
+
+    private:
+        //! Generates a new commit timestamp
+        transaction_t GetCommitTimestamp();
+
+        //! Remove the given transaction from the list of active transactions
+        unique_ptr<GooseCleanupInfo> RemoveTransaction(GooseTransaction &transaction) noexcept;
+
+        //! Remove the given transaction from the list of active transactions
+        unique_ptr<GooseCleanupInfo> RemoveTransaction(GooseTransaction &transaction, bool store_transaction) noexcept;
+
+        //! Whether or not we can checkpoint
+        CheckpointDecision CanCheckpoint(GooseTransaction &transaction, unique_ptr<StorageLockKey> &checkpoint_lock,
+                                         const UndoBufferProperties &properties);
+
+        bool HasOtherTransactions(GooseTransaction &transaction);
+
+    private:
+        //! The current start timestamp used by transactions
+        transaction_t current_start_timestamp;
+        //! The current transaction ID used by transactions
+        transaction_t current_transaction_id;
+        //! The lowest active transaction id
+        atomic<transaction_t> lowest_active_id;
+        //! The lowest active transaction timestamp
+        atomic<transaction_t> lowest_active_start;
+        //! The last commit timestamp
+        atomic<transaction_t> last_commit;
+        //! The currently active checkpoint
+        atomic<transaction_t> active_checkpoint;
+        //! Set of currently running transactions
+        vector<unique_ptr<GooseTransaction> > active_transactions;
+        //! Set of recently committed transactions
+        vector<unique_ptr<GooseTransaction> > recently_committed_transactions;
+        //! The lock used for transaction operations
+        mutex transaction_lock;
+        //! The checkpoint lock
+        StorageLock checkpoint_lock;
+        //! The vacuum lock - necessary to start vacuum operations
+        StorageLock vacuum_lock;
+        //! Lock necessary to start transactions only - used by FORCE CHECKPOINT to prevent new transactions from starting
+        mutex start_transaction_lock;
+
+        atomic<idx_t> last_uncommitted_catalog_version = {TRANSACTION_ID_START};
+        idx_t last_committed_version = 0;
+
+        //! Only one cleanup can be active at any time.
+        mutex cleanup_lock;
+        //! Changes to the cleanup queue must be synchronized.
+        mutex cleanup_queue_lock;
+        //! Cleanups have to happen in-order.
+        //! E.g., if one transaction drops a table, and another creates a table,
+        //! inverting the cleanup order can result in catalog errors.
+        queue<unique_ptr<GooseCleanupInfo> > cleanup_queue;
+
+    protected:
+        virtual void OnCommitCheckpointDecision(const CheckpointDecision &decision, GooseTransaction &transaction) {
+        }
+    };
 } // namespace goose

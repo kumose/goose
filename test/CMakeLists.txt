@@ -1,5 +1,3 @@
-include_directories(./catch)
-include_directories(include)
 
 # Allows loading tests from registered extensions
 include_directories("${PROJECT_BINARY_DIR}/codegen/include/")
@@ -25,8 +23,6 @@ if(${ENABLE_UNITTEST_CPP_TESTS})
   add_subdirectory(mbedtls)
 endif()
 add_subdirectory(extension)
-add_subdirectory(helpers)
-add_subdirectory(sqlite)
 
 if(NOT WIN32 AND NOT SUN)
   if(${ENABLE_UNITTEST_CPP_TESTS})

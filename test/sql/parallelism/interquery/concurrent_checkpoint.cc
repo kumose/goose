@@ -1,6 +1,6 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/common/value_operations/value_operations.h>
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 #include <goose/main/appender.h>
 
 #include <atomic>

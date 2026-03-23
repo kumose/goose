@@ -28,14 +28,6 @@ function(add_extension_definitions)
     endforeach()
 endfunction()
 
-function(add_extension_dependencies LIBRARY)
-    foreach(EXT_NAME IN LISTS GOOSE_EXTENSION_NAMES)
-        string(TOUPPER ${EXT_NAME} EXTENSION_NAME_UPPERCASE)
-        if (GOOSE_EXTENSION_${EXTENSION_NAME_UPPERCASE}_SHOULD_LINK)
-            add_dependencies(${LIBRARY} ${EXT_NAME}_extension)
-        endif()
-    endforeach()
-endfunction()
 
 function(get_statically_linked_extensions GOOSE_EXTENSION_NAMES OUT_VARIABLE)
     if(NOT ${DISABLE_BUILTIN_EXTENSIONS})
@@ -50,22 +42,6 @@ function(get_statically_linked_extensions GOOSE_EXTENSION_NAMES OUT_VARIABLE)
             endif()
         endforeach()
     endif()
-endfunction()
-
-function(link_extension_libraries LIBRARY LINKAGE)
-    get_statically_linked_extensions("${GOOSE_EXTENSION_NAMES}" STATICALLY_LINKED_EXTENSIONS)
-    # Now link against any registered out-of-tree extensions
-    foreach(EXT_NAME IN LISTS STATICALLY_LINKED_EXTENSIONS)
-        string(TOUPPER ${EXT_NAME} EXT_NAME_UPPERCASE)
-        if (${GOOSE_EXTENSION_${EXT_NAME_UPPERCASE}_SHOULD_LINK})
-            target_link_libraries(${LIBRARY} ${LINKAGE} ${EXT_NAME}_extension)
-        endif()
-    endforeach()
-    target_link_libraries(${LIBRARY} ${LINKAGE} goose_generated_extension_loader)
-endfunction()
-
-function(link_threads LIBRARY LINKAGE)
-    target_link_libraries(${LIBRARY} ${LINKAGE} Threads::Threads)
 endfunction()
 
 # Deploys extensions to a local repository (a folder structure that contains the goose version + binary arch)
@@ -97,134 +73,6 @@ if (NOT ${EXTENSION_CONFIG_BUILD} AND NOT ${EXTENSION_TESTS_ONLY} AND NOT CLANG_
     endif()
 endif()
 
-function(build_loadable_extension_directory NAME ABI_TYPE OUTPUT_DIRECTORY EXTENSION_VERSION CAPI_VERSION PARAMETERS)
-    set(TARGET_NAME ${NAME}_loadable_extension)
-    if (LOCAL_EXTENSION_REPO)
-        add_dependencies(goose_local_extension_repo ${NAME}_loadable_extension)
-    endif()
-    # all parameters after output_directory
-    set(FILES "${ARGV}")
-    # remove name, abi_type, output_directory, extension_version, capi_version, parameters
-    list(REMOVE_AT FILES 0 1 2 3 4 5)
-
-    # parse parameters
-    string(FIND "${PARAMETERS}" "-no-warnings" IGNORE_WARNINGS)
-
-    string(TOUPPER ${NAME} EXTENSION_NAME_UPPERCASE)
-
-    if(EMSCRIPTEN)
-        add_library(${TARGET_NAME} STATIC ${FILES})
-    else()
-        add_library(${TARGET_NAME} SHARED ${FILES})
-    endif()
-    # this disables the -Dsome_target_EXPORTS define being added by cmake which otherwise trips clang-tidy (yay)
-    set_target_properties(${TARGET_NAME} PROPERTIES DEFINE_SYMBOL "")
-    set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME ${NAME})
-    set_target_properties(${TARGET_NAME} PROPERTIES PREFIX "")
-    if(${IGNORE_WARNINGS} GREATER -1)
-        disable_target_warnings(${TARGET_NAME})
-    endif()
-    # loadable extension binaries can be built two ways:
-    # 1. EXTENSION_STATIC_BUILD=1
-    #    Goose is statically linked into each extension binary. This increases portability because in several situations
-    #    Goose itself may have been loaded with RTLD_LOCAL. This is currently the main way we distribute the loadable
-    #    extension binaries
-    # 2. EXTENSION_STATIC_BUILD=0
-    #    The Goose symbols required by the loadable extensions are left unresolved. This will reduce the size of the binaries
-    #    and works well when running the Goose cli directly. For windows this uses delay loading. For MacOS and linux the
-    #    dynamic loader will look up the missing symbols when the extension is dlopen-ed.
-    if(WASM_LOADABLE_EXTENSIONS)
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sSIDE_MODULE=1 -DWASM_LOADABLE_EXTENSIONS")
-    elseif(${ABI_TYPE} STREQUAL "C_STRUCT" OR ${ABI_TYPE} STREQUAL "C_STRUCT_UNSTABLE")
-        # TODO strip all symbols except the capi init
-    elseif (EXTENSION_STATIC_BUILD)
-        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-            if (APPLE)
-                set_target_properties(${TARGET_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
-                # Note that on MacOS we need to use the -exported_symbol whitelist feature due to a lack of -exclude-libs flag in mac's ld variant
-                set(WHITELIST "-Wl,-exported_symbol,_${NAME}_goose_cpp_init")
-                target_link_libraries(${TARGET_NAME} goose_static dummy_static_extension_loader ${GOOSE_EXTRA_LINK_FLAGS} -Wl,-dead_strip ${WHITELIST})
-            elseif (ZOS)
-                target_link_libraries(${TARGET_NAME} goose_static ${GOOSE_EXTRA_LINK_FLAGS})
-            else()
-                # For GNU we rely on fvisibility=hidden to hide the extension symbols and use -exclude-libs to hide the goose symbols
-                set_target_properties(${TARGET_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
-                target_link_libraries(${TARGET_NAME} goose_static dummy_static_extension_loader ${GOOSE_EXTRA_LINK_FLAGS} -Wl,--gc-sections -Wl,--exclude-libs,ALL)
-            endif()
-        elseif (WIN32)
-            target_link_libraries(${TARGET_NAME} goose_static dummy_static_extension_loader ${GOOSE_EXTRA_LINK_FLAGS})
-        else()
-            message(FATAL_ERROR, "EXTENSION static build is only intended for Linux and Windows on MVSC")
-        endif()
-    else()
-        if (WIN32)
-            target_link_libraries(${TARGET_NAME} goose ${GOOSE_EXTRA_LINK_FLAGS})
-        elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang$")
-            if (APPLE)
-                set_target_properties(${TARGET_NAME} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-            endif()
-        endif()
-    endif()
-
-
-    target_compile_definitions(${TARGET_NAME} PUBLIC -DGOOSE_BUILD_LOADABLE_EXTENSION)
-    set_target_properties(${TARGET_NAME} PROPERTIES SUFFIX
-            ".goose_extension")
-
-    if(MSVC)
-        set_target_properties(
-                ${TARGET_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG
-                "${CMAKE_BINARY_DIR}/${OUTPUT_DIRECTORY}")
-        set_target_properties(
-                ${TARGET_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE
-                "${CMAKE_BINARY_DIR}/${OUTPUT_DIRECTORY}")
-    endif()
-
-    if(EMSCRIPTEN)
-        # Compile the library into the actual wasm file
-        string(TOUPPER ${NAME} EXTENSION_NAME_UPPERCASE)
-        set(TO_BE_LINKED ${GOOSE_EXTENSION_${EXTENSION_NAME_UPPERCASE}_LINKED_LIBS} )
-        separate_arguments(TO_BE_LINKED)
-        if (${ABI_TYPE} STREQUAL "CPP")
-            set(EXPORTED_FUNCTIONS "_${NAME}_goose_cpp_init")
-        elseif (${ABI_TYPE} STREQUAL "C_STRUCT" OR ${ABI_TYPE} STREQUAL "C_STRUCT_UNSTABLE")
-            set(EXPORTED_FUNCTIONS "_${NAME}_init_c_api")
-        endif()
-        add_custom_command(
-                TARGET ${TARGET_NAME}
-                POST_BUILD
-                COMMAND emcc $<TARGET_FILE:${TARGET_NAME}> -o $<TARGET_FILE:${TARGET_NAME}>.wasm -O3 -sSIDE_MODULE=2 -sEXPORTED_FUNCTIONS="${EXPORTED_FUNCTIONS}" ${WASM_THREAD_FLAGS} ${TO_BE_LINKED}
-        )
-    endif()
-
-    if (${ABI_TYPE} STREQUAL "CPP")
-        set(FOOTER_VERSION_VALUE ${GOOSE_NORMALIZED_VERSION})
-    elseif (${ABI_TYPE} STREQUAL "C_STRUCT_UNSTABLE")
-        set(FOOTER_VERSION_VALUE ${GOOSE_NORMALIZED_VERSION})
-    elseif (${ABI_TYPE} STREQUAL "C_STRUCT")
-        set(FOOTER_VERSION_VALUE ${CAPI_VERSION})
-    endif()
-
-    add_custom_command(
-            TARGET ${TARGET_NAME}
-            POST_BUILD
-            COMMAND
-            ${CMAKE_COMMAND} -DABI_TYPE=${ABI_TYPE} -DEXTENSION=$<TARGET_FILE:${TARGET_NAME}>${EXTENSION_POSTFIX} -DPLATFORM_FILE=${goose_BINARY_DIR}/goose_platform_out -DVERSION_FIELD="${FOOTER_VERSION_VALUE}" -DEXTENSION_VERSION="${EXTENSION_VERSION}" -DNULL_FILE=${GOOSE_MODULE_BASE_DIR}/cmake/null.txt -P ${GOOSE_MODULE_BASE_DIR}/cmake/append_metadata.cmake
-    )
-    add_dependencies(${TARGET_NAME} goose_platform)
-    if (NOT ${EXTENSION_CONFIG_BUILD} AND NOT ${EXTENSION_TESTS_ONLY} AND NOT CLANG_TIDY)
-        add_dependencies(goose_local_extension_repo ${TARGET_NAME})
-    endif()
-endfunction()
-
-function(build_loadable_extension NAME PARAMETERS)
-    # all parameters after name
-    set(FILES "${ARGV}")
-    list(REMOVE_AT FILES 0 1)
-    string(TOUPPER ${NAME} EXTENSION_NAME_UPPERCASE)
-
-    build_loadable_extension_directory(${NAME} "CPP" "extension/${NAME}" "${GOOSE_EXTENSION_${EXTENSION_NAME_UPPERCASE}_EXT_VERSION}" "" "${PARAMETERS}" ${FILES})
-endfunction()
 
 function(build_loadable_extension_capi NAME CAPI_VERSION_MAJOR CAPI_VERSION_MINOR CAPI_VERSION_PATCH PARAMETERS)
     set(FILES "${ARGV}")

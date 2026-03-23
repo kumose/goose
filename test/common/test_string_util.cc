@@ -2,7 +2,7 @@
 #include <goose/common/types/value.h>
 #include <goose/common/types-import.h>
 #include <goose/common/exception/parser_exception.h>
-#include "catch.h"
+#include <goose/testing/catch.h>
 
 #include <goose/common/vector.h>
 #include <string>

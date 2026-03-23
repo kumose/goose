@@ -18,20 +18,19 @@
 #include <goose/transaction/undo_buffer.h>
 
 namespace goose {
-class DataChunk;
-class DataTable;
-class GooseTransaction;
-class WriteAheadLog;
+    class DataChunk;
+    class DataTable;
+    class GooseTransaction;
+    class WriteAheadLog;
 
-class RollbackState {
-public:
-	explicit RollbackState(GooseTransaction &transaction);
+    class RollbackState {
+    public:
+        explicit RollbackState(GooseTransaction &transaction);
 
-public:
-	void RollbackEntry(UndoFlags type, data_ptr_t data);
+    public:
+        void RollbackEntry(UndoFlags type, data_ptr_t data);
 
-private:
-	GooseTransaction &transaction;
-};
-
+    private:
+        GooseTransaction &transaction;
+    };
 } // namespace goose

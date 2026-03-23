@@ -22,4 +22,8 @@ namespace testing {
     inline std::string testing_root() {
         return "@PROJECT_SOURCE_DIR@/tests";
     }
+
+    inline std::string goose_root_directory() {
+        return "@GOOSE_ROOT_DIRECTORY@";
+    }
 }  // namespace testing

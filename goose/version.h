@@ -77,13 +77,13 @@
 /// Git Version Information
 ////////////////////////////////////////////////////////////////////////////////
 // Full Git commit hash (e.g., "a1b2c3d4e5f67890abcdef1234567890abcdef12")
-#define GOOSE_GIT_COMMIT_HASH "934002d59af2ebe1b730dddc02ceb5a3df0fe089"
+#define GOOSE_GIT_COMMIT_HASH "812d4204b0c85e78c61a1fc2ef5b906810b575dd"
 // Short Git commit hash (e.g., "a1b2c3d")
-#define GOOSE_GIT_COMMIT_SHORT_HASH "934002d"
+#define GOOSE_GIT_COMMIT_SHORT_HASH "812d420"
 // Git dirty flag (0 = clean working tree, 1 = uncommitted changes)
 #define GOOSE_GIT_IS_DIRTY 1
 // Combined Git version string (e.g., "0.6.0-a1b2c3d" or "0.6.0-a1b2c3d-dirty")
-#define GOOSE_GIT_VERSION_STRING "v0.5.5-934002d-dirty"
+#define GOOSE_GIT_VERSION_STRING "v0.5.5-812d420-dirty"
 
 #define GOOSE_CUSTOM_PLATFORM_ENABLE 0
 
@@ -204,3 +204,10 @@
 #define GOOSE_DISABLE_EXTENSION_LOAD
 #endif
 
+#define HAVE_LINENOISE
+#define SQLITE_SHELL_UTF8
+#ifdef SQLITE_SHELL_UTF8
+#define SQLITE_SHELL_IS_UTF8 1
+#else
+#define SQLITE_SHELL_IS_UTF8 0
+#endif

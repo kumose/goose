@@ -3,7 +3,7 @@
 #include <goose/function/table/arrow.h>
 #include <goose/main/capi/capi_internal.h>
 #include <goose/main/prepared_statement_data.h>
-#include <goose/fmt/format.h>
+#include <goose/utility/fmt/format.h>
 
 using goose::ArrowConverter;
 using goose::ArrowResultWrapper;

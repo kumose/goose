@@ -1,5 +1,5 @@
-#include "catch.h"
-#include "test_helpers.h"
+#include <goose/testing/catch.h>
+#include <goose/testing/test_helpers.h>
 #include <goose/main/appender.h>
 #include <goose/common/serializer/memory_stream.h>
 #include <goose/parser/statement/logical_plan_statement.h>

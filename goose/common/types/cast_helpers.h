@@ -23,7 +23,7 @@
 #include <goose/common/types/hugeint.h>
 #include <goose/common/types/uhugeint.h>
 #include <goose/common/types/vector.h>
-#include <goose/fmt/format.h>
+#include <goose/utility/fmt/format.h>
 
 namespace goose {
 

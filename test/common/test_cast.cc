@@ -1,4 +1,4 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/common/operator/cast_operators.h>
 #include <goose/common/string_util.h>
 #include <goose/common/limits.h>

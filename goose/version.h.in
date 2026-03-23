@@ -204,3 +204,10 @@
 #define GOOSE_DISABLE_EXTENSION_LOAD
 #endif
 
+#cmakedefine HAVE_LINENOISE
+#cmakedefine SQLITE_SHELL_UTF8
+#ifdef SQLITE_SHELL_UTF8
+#define SQLITE_SHELL_IS_UTF8 1
+#else
+#define SQLITE_SHELL_IS_UTF8 0
+#endif

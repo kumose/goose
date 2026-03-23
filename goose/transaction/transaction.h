@@ -22,71 +22,76 @@
 #include <goose/common/types-import.h>
 
 namespace goose {
-class Catalog;
-class SequenceCatalogEntry;
-class SchemaCatalogEntry;
+    class Catalog;
+    class SequenceCatalogEntry;
+    class SchemaCatalogEntry;
 
-class AttachedDatabase;
-class ColumnData;
-class ClientContext;
-class CatalogEntry;
-class DataTable;
-class DatabaseInstance;
-class LocalStorage;
-class MetaTransaction;
-class TransactionManager;
-class WriteAheadLog;
+    class AttachedDatabase;
+    class ColumnData;
+    class ClientContext;
+    class CatalogEntry;
+    class DataTable;
+    class DatabaseInstance;
+    class LocalStorage;
+    class MetaTransaction;
+    class TransactionManager;
+    class WriteAheadLog;
 
-class ChunkVectorInfo;
+    class ChunkVectorInfo;
 
-struct DeleteInfo;
-struct UpdateInfo;
-struct DatabaseModificationType;
+    struct DeleteInfo;
+    struct UpdateInfo;
+    struct DatabaseModificationType;
 
-//! The transaction object holds information about a currently running or past
-//! transaction
-class Transaction {
-public:
-	GOOSE_API Transaction(TransactionManager &manager, ClientContext &context);
-	GOOSE_API virtual ~Transaction();
+    //! The transaction object holds information about a currently running or past
+    //! transaction
+    class Transaction {
+    public:
+        GOOSE_API Transaction(TransactionManager &manager, ClientContext &context);
 
-	TransactionManager &manager;
-	weak_ptr<ClientContext> context;
-	//! The current active query for the transaction. Set to MAXIMUM_QUERY_ID if
-	//! no query is active.
-	atomic<transaction_t> active_query;
+        GOOSE_API virtual ~Transaction();
 
-public:
-	GOOSE_API static Transaction &Get(ClientContext &context, AttachedDatabase &db);
-	GOOSE_API static Transaction &Get(ClientContext &context, Catalog &catalog);
-	//! Returns the transaction for the given context if it has already been started
-	GOOSE_API static optional_ptr<Transaction> TryGet(ClientContext &context, AttachedDatabase &db);
+        TransactionManager &manager;
+        weak_ptr<ClientContext> context;
+        //! The current active query for the transaction. Set to MAXIMUM_QUERY_ID if
+        //! no query is active.
+        atomic<transaction_t> active_query;
 
-	//! Whether or not the transaction has made any modifications to the database so far
-	GOOSE_API bool IsReadOnly();
-	//! Promotes the transaction to a read-write transaction
-	GOOSE_API virtual void SetReadWrite();
-	//! Sets the database modifications that are planned to be performed in this transaction
-	GOOSE_API virtual void SetModifications(DatabaseModificationType type);
+    public:
+        GOOSE_API static Transaction &Get(ClientContext &context, AttachedDatabase &db);
 
-	virtual bool IsGooseTransaction() const {
-		return false;
-	}
+        GOOSE_API static Transaction &Get(ClientContext &context, Catalog &catalog);
 
-public:
-	template <class TARGET>
-	TARGET &Cast() {
-		DynamicCastCheck<TARGET>(this);
-		return reinterpret_cast<TARGET &>(*this);
-	}
-	template <class TARGET>
-	const TARGET &Cast() const {
-		DynamicCastCheck<TARGET>(this);
-		return reinterpret_cast<const TARGET &>(*this);
-	}
+        //! Returns the transaction for the given context if it has already been started
+        GOOSE_API static optional_ptr<Transaction> TryGet(ClientContext &context, AttachedDatabase &db);
 
-private:
-	bool is_read_only;
-};
+        //! Whether or not the transaction has made any modifications to the database so far
+        GOOSE_API bool IsReadOnly();
 
+        //! Promotes the transaction to a read-write transaction
+        GOOSE_API virtual void SetReadWrite();
+
+        //! Sets the database modifications that are planned to be performed in this transaction
+        GOOSE_API virtual void SetModifications(DatabaseModificationType type);
+
+        virtual bool IsGooseTransaction() const {
+            return false;
+        }
+
+    public:
+        template<class TARGET>
+        TARGET &Cast() {
+            DynamicCastCheck<TARGET>(this);
+            return reinterpret_cast<TARGET &>(*this);
+        }
+
+        template<class TARGET>
+        const TARGET &Cast() const {
+            DynamicCastCheck<TARGET>(this);
+            return reinterpret_cast<const TARGET &>(*this);
+        }
+
+    private:
+        bool is_read_only;
+    };
 } // namespace goose

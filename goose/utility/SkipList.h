@@ -481,55 +481,59 @@ namespace goose_skiplistlib {
      * @brief Namespace for the C++ Slip List.
      */
     namespace skip_list {
+        /************************ Exceptions ****************************/
 
-/************************ Exceptions ****************************/
-
-/**
- * @brief Base exception class for all exceptions in the OrderedStructs::SkipList namespace.
- */
+        /**
+         * @brief Base exception class for all exceptions in the OrderedStructs::SkipList namespace.
+         */
         class Exception : public std::exception {
         public:
-            explicit Exception(const std::string &in_msg) : msg(in_msg) {}
+            explicit Exception(const std::string &in_msg) : msg(in_msg) {
+            }
 
             const std::string &message() const { return msg; }
 
-            virtual ~Exception() noexcept {}
+            virtual ~Exception() noexcept {
+            }
 
         protected:
             std::string msg;
         };
 
-/**
- * @brief Specialised exception case for an index out of range error.
- */
+        /**
+         * @brief Specialised exception case for an index out of range error.
+         */
         class IndexError : public Exception {
         public:
-            explicit IndexError(const std::string &in_msg) : Exception(in_msg) {}
+            explicit IndexError(const std::string &in_msg) : Exception(in_msg) {
+            }
         };
 
-/**
- * @brief Specialised exception for an value error where the given value does not exist in the Skip List.
- */
+        /**
+         * @brief Specialised exception for an value error where the given value does not exist in the Skip List.
+         */
         class ValueError : public Exception {
         public:
-            explicit ValueError(const std::string &in_msg) : Exception(in_msg) {}
+            explicit ValueError(const std::string &in_msg) : Exception(in_msg) {
+            }
         };
 
-/** @brief Specialised exception used for NaN detection where value != value (example NaNs). */
+        /** @brief Specialised exception used for NaN detection where value != value (example NaNs). */
         class FailedComparison : public Exception {
         public:
-            explicit FailedComparison(const std::string &in_msg) : Exception(in_msg) {}
+            explicit FailedComparison(const std::string &in_msg) : Exception(in_msg) {
+            }
         };
 
-/**
- * This throws an IndexError when the index value >= the size of Skip List.
- * If @ref INCLUDE_METHODS_THAT_USE_STREAMS is defined then the error will have an informative message.
- *
- * @param index The out of range index.
- */
+        /**
+         * This throws an IndexError when the index value >= the size of Skip List.
+         * If @ref INCLUDE_METHODS_THAT_USE_STREAMS is defined then the error will have an informative message.
+         *
+         * @param index The out of range index.
+         */
         void _throw_exceeds_size(size_t index);
 
-/************************ END: Exceptions ****************************/
+        /************************ END: Exceptions ****************************/
 
 #ifdef SKIPLIST_THREAD_SUPPORT
         /**
@@ -541,7 +545,6 @@ namespace goose_skiplistlib {
 #include "NodeRefs.h"
 #include "Node.h"
 #include "HeadNode.h"
-
     } // namespace skip_list
 } // namespace goose_skiplistlib
 

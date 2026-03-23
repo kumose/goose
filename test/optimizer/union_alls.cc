@@ -1,5 +1,5 @@
-#include "catch.h"
-#include "test_helpers.h"
+#include <goose/testing/catch.h>
+#include <goose/testing/test_helpers.h>
 #include <goose/goose.h>
 #include <goose/main/database.h>
 #include <goose/main/secret/secret_manager.h>

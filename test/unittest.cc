@@ -1,11 +1,11 @@
 #define CATCH_CONFIG_RUNNER
-#include "catch.h"
+#include <goose/testing/catch.h>
 
 #include <goose/common/file_system.h>
 #include <goose/common/string_util.h>
-#include "sqlite/sqllogic_test_logger.h"
-#include "test_helpers.h"
-#include "test_config.h"
+#include <goose/testing/sqlite/sqllogic_test_logger.h>
+#include <goose/testing/test_helpers.h>
+#include <goose/testing/test_config.h>
 
 using namespace goose;
 

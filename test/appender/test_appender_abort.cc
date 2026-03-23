@@ -1,6 +1,6 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/main/appender.h>
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 
 #include <vector>
 

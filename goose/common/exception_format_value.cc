@@ -1,8 +1,8 @@
 #include <goose/common/exception.h>
 #include <goose/common/types.h>
 #include <goose/common/helper.h> // defines GOOSE_EXPLICIT_FALLTHROUGH which fmt will use to annotate
-#include <goose/fmt/format.h>
-#include <goose/fmt/printf.h>
+#include <goose/utility/fmt/format.h>
+#include <goose/utility/fmt/printf.h>
 #include <goose/common/types/hugeint.h>
 #include <goose/common/types/uhugeint.h>
 #include <goose/parser/keyword_helper.h>

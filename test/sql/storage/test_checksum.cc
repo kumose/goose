@@ -1,6 +1,6 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/common/file_system.h>
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 
 using namespace goose;
 using namespace std;

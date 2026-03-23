@@ -1,4 +1,4 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/common/lru_cache.h>
 #include <goose/common/optional_idx.h>
 

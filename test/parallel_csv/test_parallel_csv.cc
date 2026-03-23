@@ -1,10 +1,10 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/common/types/date.h>
 #include <goose/common/types/time.h>
 #include <goose/common/types/timestamp.h>
 #include <goose/execution/operator/csv_scanner/csv_reader_options.h>
 #include <goose/main/appender.h>
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 #include <goose/main/client_data.h>
 
 #include <iostream>

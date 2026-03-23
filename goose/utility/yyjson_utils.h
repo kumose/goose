@@ -20,21 +20,19 @@
 using namespace goose_yyjson; // NOLINT
 
 namespace goose {
+    struct ConvertedJSONHolder {
+    public:
+        ~ConvertedJSONHolder() {
+            if (doc) {
+                yyjson_mut_doc_free(doc);
+            }
+            if (stringified_json) {
+                free(stringified_json);
+            }
+        }
 
-struct ConvertedJSONHolder {
-public:
-	~ConvertedJSONHolder() {
-		if (doc) {
-			yyjson_mut_doc_free(doc);
-		}
-		if (stringified_json) {
-			free(stringified_json);
-		}
-	}
-
-public:
-	yyjson_mut_doc *doc = nullptr;
-	char *stringified_json = nullptr;
-};
-
+    public:
+        yyjson_mut_doc *doc = nullptr;
+        char *stringified_json = nullptr;
+    };
 } // namespace goose

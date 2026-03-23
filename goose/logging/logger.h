@@ -21,18 +21,18 @@
 #include <goose/common/string_util.h>
 
 namespace goose {
-class TableDescription;
-class DatabaseInstance;
-class DataChunk;
-class LogManager;
-class ColumnDataCollection;
-class ThreadContext;
-class FileOpener;
-class LogStorage;
-class ExecutionContext;
-struct FileHandle;
+    class TableDescription;
+    class DatabaseInstance;
+    class DataChunk;
+    class LogManager;
+    class ColumnDataCollection;
+    class ThreadContext;
+    class FileOpener;
+    class LogStorage;
+    class ExecutionContext;
+    struct FileHandle;
 
-//! Internal
+    //! Internal
 #define GOOSE_LOG_INTERNAL(SOURCE, TYPE, LEVEL, ...)                                                                  \
 	{                                                                                                                  \
 		auto &logger_ref_ = Logger::Get(SOURCE);                                                                       \
@@ -41,7 +41,7 @@ struct FileHandle;
 		}                                                                                                              \
 	}
 
-//! Default Loggers
+    //! Default Loggers
 #define GOOSE_LOG_TRACE(SOURCE, ...)                                                                                  \
 	GOOSE_LOG_INTERNAL(SOURCE, DefaultLogType::NAME, LogLevel::LOG_TRACE, __VA_ARGS__)
 #define GOOSE_LOG_DEBUG(SOURCE, ...)                                                                                  \
@@ -54,162 +54,190 @@ struct FileHandle;
 #define GOOSE_LOG_FATAL(SOURCE, ...)                                                                                  \
 	GOOSE_LOG_INTERNAL(SOURCE, DefaultLogType::NAME, LogLevel::LOG_FATAL, __VA_ARGS__)
 
-//! LogType based loggers
+    //! LogType based loggers
 #define GOOSE_LOG(SOURCE, LOG_TYPE_CLASS, ...)                                                                        \
 	GOOSE_LOG_INTERNAL(SOURCE, LOG_TYPE_CLASS::NAME, LOG_TYPE_CLASS::LEVEL,                                           \
 	                    LOG_TYPE_CLASS::ConstructLogMessage(__VA_ARGS__))
 
-//! Main logging interface
-class Logger {
-public:
-	GOOSE_API explicit Logger(LogManager &manager) : manager(manager) {
-	}
+    //! Main logging interface
+    class Logger {
+    public:
+        GOOSE_API explicit Logger(LogManager &manager) : manager(manager) {
+        }
 
-	GOOSE_API virtual ~Logger() = default;
+        GOOSE_API virtual ~Logger() = default;
 
-	// Main Logging interface. In most cases the macros above should be used instead of calling these directly
-	GOOSE_API virtual bool ShouldLog(const char *log_type, LogLevel log_level) = 0;
-	GOOSE_API virtual void WriteLog(const char *log_type, LogLevel log_level, const char *message) = 0;
+        // Main Logging interface. In most cases the macros above should be used instead of calling these directly
+        GOOSE_API virtual bool ShouldLog(const char *log_type, LogLevel log_level) = 0;
 
-	// Some more string types for easy logging
-	GOOSE_API void WriteLog(const char *log_type, LogLevel log_level, const string &message);
-	GOOSE_API void WriteLog(const char *log_type, LogLevel log_level, const string_t &message);
+        GOOSE_API virtual void WriteLog(const char *log_type, LogLevel log_level, const char *message) = 0;
 
-	// Syntactic sugar for formatted strings
-	template <typename... ARGS>
-	void WriteLog(const char *log_type, LogLevel log_level, const char *format_string, ARGS... params) {
-		auto formatted_string = StringUtil::Format(format_string, params...);
-		WriteLog(log_type, log_level, formatted_string.c_str());
-	}
+        // Some more string types for easy logging
+        GOOSE_API void WriteLog(const char *log_type, LogLevel log_level, const string &message);
 
-	GOOSE_API virtual void Flush() = 0;
+        GOOSE_API void WriteLog(const char *log_type, LogLevel log_level, const string_t &message);
 
-	// Get the Logger to write log messages to. In decreasing order of preference(!) so the ThreadContext getter is the
-	// most preferred way of fetching the logger and the DatabaseInstance getter the least preferred. This has to do
-	// both with logging performance and level of detail of logging context that is provided.
-	GOOSE_API static Logger &Get(const ThreadContext &thread_context);
-	GOOSE_API static Logger &Get(const ExecutionContext &execution_context);
-	GOOSE_API static Logger &Get(const ClientContext &client_context);
-	GOOSE_API static Logger &Get(const FileOpener &opener);
-	GOOSE_API static Logger &Get(const DatabaseInstance &db);
-	GOOSE_API static Logger &Get(const shared_ptr<Logger> &logger);
+        // Syntactic sugar for formatted strings
+        template<typename... ARGS>
+        void WriteLog(const char *log_type, LogLevel log_level, const char *format_string, ARGS... params) {
+            auto formatted_string = StringUtil::Format(format_string, params...);
+            WriteLog(log_type, log_level, formatted_string.c_str());
+        }
 
-	template <class T>
-	static void Flush(T &log_context_source) {
-		Get(log_context_source).Flush();
-	}
+        GOOSE_API virtual void Flush() = 0;
 
-	GOOSE_API virtual bool IsThreadSafe() = 0;
-	GOOSE_API virtual bool IsMutable() {
-		return false;
-	};
-	GOOSE_API virtual void UpdateConfig(LogConfig &new_config) {
-		throw InternalException("Cannot update the config of this logger!");
-	}
-	GOOSE_API virtual const LogConfig &GetConfig() const = 0;
+        // Get the Logger to write log messages to. In decreasing order of preference(!) so the ThreadContext getter is the
+        // most preferred way of fetching the logger and the DatabaseInstance getter the least preferred. This has to do
+        // both with logging performance and level of detail of logging context that is provided.
+        GOOSE_API static Logger &Get(const ThreadContext &thread_context);
 
-protected:
-	LogManager &manager;
-};
+        GOOSE_API static Logger &Get(const ExecutionContext &execution_context);
 
-// Thread-safe logger
-class ThreadSafeLogger : public Logger {
-public:
-	explicit ThreadSafeLogger(LogConfig &config_p, LoggingContext &context_p, LogManager &manager);
-	explicit ThreadSafeLogger(LogConfig &config_p, RegisteredLoggingContext context_p, LogManager &manager);
+        GOOSE_API static Logger &Get(const ClientContext &client_context);
 
-	// Main Logger API
-	bool ShouldLog(const char *log_type, LogLevel log_level) override;
-	void WriteLog(const char *log_type, LogLevel log_level, const char *message) override;
+        GOOSE_API static Logger &Get(const FileOpener &opener);
 
-	void Flush() override;
-	bool IsThreadSafe() override {
-		return true;
-	}
-	const LogConfig &GetConfig() const override {
-		return config;
-	}
+        GOOSE_API static Logger &Get(const DatabaseInstance &db);
 
-protected:
-	const LogConfig config;
-	mutex lock;
-	const RegisteredLoggingContext context;
-};
+        GOOSE_API static Logger &Get(const shared_ptr<Logger> &logger);
 
-// Non Thread-safe logger
-// - will cache log entries locally
-class ThreadLocalLogger : public Logger {
-public:
-	explicit ThreadLocalLogger(LogConfig &config_p, LoggingContext &context_p, LogManager &manager);
-	explicit ThreadLocalLogger(LogConfig &config_p, RegisteredLoggingContext context_p, LogManager &manager);
+        template<class T>
+        static void Flush(T &log_context_source) {
+            Get(log_context_source).Flush();
+        }
 
-	// Main Logger API
-	bool ShouldLog(const char *log_type, LogLevel log_level) override;
-	void WriteLog(const char *log_type, LogLevel log_level, const char *message) override;
-	void Flush() override;
+        GOOSE_API virtual bool IsThreadSafe() = 0;
 
-	bool IsThreadSafe() override {
-		return false;
-	}
-	const LogConfig &GetConfig() const override {
-		return config;
-	}
+        GOOSE_API virtual bool IsMutable() {
+            return false;
+        };
+        GOOSE_API virtual void UpdateConfig(LogConfig &new_config) {
+            throw InternalException("Cannot update the config of this logger!");
+        }
 
-protected:
-	const LogConfig config;
-	const RegisteredLoggingContext context;
-};
+        GOOSE_API virtual const LogConfig &GetConfig() const = 0;
 
-// Thread-safe Logger with mutable log settings
-class MutableLogger : public Logger {
-public:
-	explicit MutableLogger(LogConfig &config_p, LoggingContext &context_p, LogManager &manager);
-	explicit MutableLogger(LogConfig &config_p, RegisteredLoggingContext context_p, LogManager &manager);
+    protected:
+        LogManager &manager;
+    };
 
-	// Main Logger API
-	bool ShouldLog(const char *log_type, LogLevel log_level) override;
-	void WriteLog(const char *log_type, LogLevel log_level, const char *message) override;
+    // Thread-safe logger
+    class ThreadSafeLogger : public Logger {
+    public:
+        explicit ThreadSafeLogger(LogConfig &config_p, LoggingContext &context_p, LogManager &manager);
 
-	void Flush() override;
-	bool IsThreadSafe() override {
-		return true;
-	}
-	bool IsMutable() override {
-		return true;
-	}
-	const LogConfig &GetConfig() const override {
-		return config;
-	}
-	void UpdateConfig(LogConfig &new_config) override;
+        explicit ThreadSafeLogger(LogConfig &config_p, RegisteredLoggingContext context_p, LogManager &manager);
 
-protected:
-	// Atomics for lock-free log setting checks
-	atomic<bool> enabled;
-	atomic<LogMode> mode;
-	atomic<LogLevel> level;
+        // Main Logger API
+        bool ShouldLog(const char *log_type, LogLevel log_level) override;
 
-	mutex lock;
-	LogConfig config;
-	const RegisteredLoggingContext context;
-};
+        void WriteLog(const char *log_type, LogLevel log_level, const char *message) override;
 
-// For when logging is disabled: NOPs everything
-class NopLogger : public Logger {
-public:
-	explicit NopLogger(LogManager &manager) : Logger(manager) {
-	}
-	bool ShouldLog(const char *log_type, LogLevel log_level) override {
-		return false;
-	}
-	void WriteLog(const char *log_type, LogLevel log_level, const char *message) override {};
-	void Flush() override {
-	}
-	bool IsThreadSafe() override {
-		return true;
-	}
-	const LogConfig &GetConfig() const override {
-		throw InternalException("Called GetConfig on NopLogger");
-	}
-};
+        void Flush() override;
 
+        bool IsThreadSafe() override {
+            return true;
+        }
+
+        const LogConfig &GetConfig() const override {
+            return config;
+        }
+
+    protected:
+        const LogConfig config;
+        mutex lock;
+        const RegisteredLoggingContext context;
+    };
+
+    // Non Thread-safe logger
+    // - will cache log entries locally
+    class ThreadLocalLogger : public Logger {
+    public:
+        explicit ThreadLocalLogger(LogConfig &config_p, LoggingContext &context_p, LogManager &manager);
+
+        explicit ThreadLocalLogger(LogConfig &config_p, RegisteredLoggingContext context_p, LogManager &manager);
+
+        // Main Logger API
+        bool ShouldLog(const char *log_type, LogLevel log_level) override;
+
+        void WriteLog(const char *log_type, LogLevel log_level, const char *message) override;
+
+        void Flush() override;
+
+        bool IsThreadSafe() override {
+            return false;
+        }
+
+        const LogConfig &GetConfig() const override {
+            return config;
+        }
+
+    protected:
+        const LogConfig config;
+        const RegisteredLoggingContext context;
+    };
+
+    // Thread-safe Logger with mutable log settings
+    class MutableLogger : public Logger {
+    public:
+        explicit MutableLogger(LogConfig &config_p, LoggingContext &context_p, LogManager &manager);
+
+        explicit MutableLogger(LogConfig &config_p, RegisteredLoggingContext context_p, LogManager &manager);
+
+        // Main Logger API
+        bool ShouldLog(const char *log_type, LogLevel log_level) override;
+
+        void WriteLog(const char *log_type, LogLevel log_level, const char *message) override;
+
+        void Flush() override;
+
+        bool IsThreadSafe() override {
+            return true;
+        }
+
+        bool IsMutable() override {
+            return true;
+        }
+
+        const LogConfig &GetConfig() const override {
+            return config;
+        }
+
+        void UpdateConfig(LogConfig &new_config) override;
+
+    protected:
+        // Atomics for lock-free log setting checks
+        atomic<bool> enabled;
+        atomic<LogMode> mode;
+        atomic<LogLevel> level;
+
+        mutex lock;
+        LogConfig config;
+        const RegisteredLoggingContext context;
+    };
+
+    // For when logging is disabled: NOPs everything
+    class NopLogger : public Logger {
+    public:
+        explicit NopLogger(LogManager &manager) : Logger(manager) {
+        }
+
+        bool ShouldLog(const char *log_type, LogLevel log_level) override {
+            return false;
+        }
+
+        void WriteLog(const char *log_type, LogLevel log_level, const char *message) override {
+        };
+
+        void Flush() override {
+        }
+
+        bool IsThreadSafe() override {
+            return true;
+        }
+
+        const LogConfig &GetConfig() const override {
+            throw InternalException("Called GetConfig on NopLogger");
+        }
+    };
 } // namespace goose

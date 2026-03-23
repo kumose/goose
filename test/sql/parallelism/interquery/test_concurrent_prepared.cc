@@ -1,5 +1,5 @@
-#include "catch.h"
-#include "test_helpers.h"
+#include <goose/testing/catch.h>
+#include <goose/testing/test_helpers.h>
 #include <iostream>
 #include <thread>
 

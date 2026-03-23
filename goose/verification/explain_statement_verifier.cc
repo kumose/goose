@@ -1,16 +1,15 @@
 #include <goose/verification/explain_statement_verifier.h>
 
 namespace goose {
+    ExplainStatementVerifier::ExplainStatementVerifier(unique_ptr<SQLStatement> statement_p,
+                                                       optional_ptr<case_insensitive_map_t<BoundParameterData> >
+                                                       parameters)
+        : StatementVerifier(VerificationType::EXPLAIN, "Explain", std::move(statement_p), parameters) {
+    }
 
-ExplainStatementVerifier::ExplainStatementVerifier(unique_ptr<SQLStatement> statement_p,
-                                                   optional_ptr<case_insensitive_map_t<BoundParameterData>> parameters)
-    : StatementVerifier(VerificationType::EXPLAIN, "Explain", std::move(statement_p), parameters) {
-}
-
-unique_ptr<StatementVerifier>
-ExplainStatementVerifier::Create(const SQLStatement &statement,
-                                 optional_ptr<case_insensitive_map_t<BoundParameterData>> parameters) {
-	return make_uniq<ExplainStatementVerifier>(statement.Copy(), parameters);
-}
-
+    unique_ptr<StatementVerifier>
+    ExplainStatementVerifier::Create(const SQLStatement &statement,
+                                     optional_ptr<case_insensitive_map_t<BoundParameterData> > parameters) {
+        return make_uniq < ExplainStatementVerifier > (statement.Copy(), parameters);
+    }
 } // namespace goose

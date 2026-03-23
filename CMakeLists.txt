@@ -61,15 +61,21 @@ include(kmcmake_module)
 # your cmake directory ${PROJECT_SOURCE_DIR}/cmake, do things here
 #################################################################
 
+set(PLATFORM_CC ${PROJECT_SOURCE_DIR}/cmake/test_platform.cc)
+set(NULL_TXT  ${PROJECT_SOURCE_DIR}/cmake/null.txt)
+set(META_CMAKE  ${PROJECT_SOURCE_DIR}/cmake/append_metadata.cmake)
+
 include(goose_config)
 include(goose_deps)
 include(goose_cxx_config)
 include(goose_test)
+include(extension_build_tools)
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} UPPERCASE_BUILD_TYPE)
 configure_file(${PROJECT_SOURCE_DIR}/goose/version.h.in ${PROJECT_SOURCE_DIR}/goose/version.h @ONLY)
 
 add_subdirectory(goose)
+add_subdirectory(extension)
 ####################################################################
 # belows are auto, edit it be cation
 ####################################################################
@@ -158,6 +164,10 @@ if(NOT PYTHON_EXTENSION)
             DESTINATION
             "${config_install_dir}"
     )
+
+    install(FILES cmake/append_metadata.cmake cmake/null.txt cmake/test_platform.cc cmake/extension_build_tools.cmake
+            DESTINATION "${config_install_dir}")
+
     configure_file(${PROJECT_SOURCE_DIR}/kmcmake/package/pkg_dump_template.pc.in
             ${PROJECT_BINARY_DIR}/package/${PROJECT_NAME}.pc)
 

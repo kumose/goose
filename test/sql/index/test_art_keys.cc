@@ -1,4 +1,4 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/common/radix.h>
 #include <goose/common/types/string_type.h>
 #include <goose/execution/index/art/art_key.h>

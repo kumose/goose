@@ -7,7 +7,7 @@
 #include <goose/main/client_config.h>
 #include <goose/main/extension_helper.h>
 #include <goose/main/query_profiler.h>
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 #include <goose/common/helper.h>
 #include <goose/execution/operator/helper/physical_result_collector.h>
 #include <goose/common/arrow/physical_arrow_collector.h>

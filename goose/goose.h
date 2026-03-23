@@ -19,3 +19,4 @@
 #include <goose/main/database.h>
 #include <goose/main/query_result.h>
 #include <goose/main/appender.h>
+#include <goose/version.h>

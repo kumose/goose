@@ -25,87 +25,100 @@
 #include <goose/main/attached_database.h>
 
 namespace goose {
-class AttachedDatabase;
-class ClientContext;
-struct DatabaseModificationType;
-class Transaction;
+    class AttachedDatabase;
+    class ClientContext;
+    struct DatabaseModificationType;
+    class Transaction;
 
-enum class TransactionState { UNCOMMITTED, COMMITTED, ROLLED_BACK };
+    enum class TransactionState { UNCOMMITTED, COMMITTED, ROLLED_BACK };
 
-struct TransactionReference {
-	explicit TransactionReference(Transaction &transaction_p)
-	    : state(TransactionState::UNCOMMITTED), transaction(transaction_p) {
-	}
+    struct TransactionReference {
+        explicit TransactionReference(Transaction &transaction_p)
+            : state(TransactionState::UNCOMMITTED), transaction(transaction_p) {
+        }
 
-	TransactionState state;
-	Transaction &transaction;
-};
+        TransactionState state;
+        Transaction &transaction;
+    };
 
-//! The MetaTransaction manages multiple transactions for different attached databases
-class MetaTransaction {
-public:
-	GOOSE_API MetaTransaction(ClientContext &context, timestamp_t start_timestamp,
-	                           transaction_t global_transaction_id);
+    //! The MetaTransaction manages multiple transactions for different attached databases
+    class MetaTransaction {
+    public:
+        GOOSE_API MetaTransaction(ClientContext &context, timestamp_t start_timestamp,
+                                  transaction_t global_transaction_id);
 
-	ClientContext &context;
-	//! The timestamp when the transaction started
-	timestamp_t start_timestamp;
-	//! The global identifier of the transaction
-	transaction_t global_transaction_id;
-	//! The validity checker of the transaction
-	ValidChecker transaction_validity;
-	//! The active query number
-	atomic<transaction_t> active_query;
+        ClientContext &context;
+        //! The timestamp when the transaction started
+        timestamp_t start_timestamp;
+        //! The global identifier of the transaction
+        transaction_t global_transaction_id;
+        //! The validity checker of the transaction
+        ValidChecker transaction_validity;
+        //! The active query number
+        atomic<transaction_t> active_query;
 
-public:
-	GOOSE_API static MetaTransaction &Get(ClientContext &context);
-	timestamp_t GetCurrentTransactionStartTimestamp() const {
-		return start_timestamp;
-	}
+    public:
+        GOOSE_API static MetaTransaction &Get(ClientContext &context);
 
-	Transaction &GetTransaction(AttachedDatabase &db);
-	optional_ptr<Transaction> TryGetTransaction(AttachedDatabase &db);
-	void RemoveTransaction(AttachedDatabase &db);
+        timestamp_t GetCurrentTransactionStartTimestamp() const {
+            return start_timestamp;
+        }
 
-	ErrorData Commit();
-	void Rollback();
-	// Finalize the transaction after a COMMIT of ROLLBACK.
-	void Finalize();
+        Transaction &GetTransaction(AttachedDatabase &db);
 
-	idx_t GetActiveQuery();
-	void SetActiveQuery(transaction_t query_number);
+        optional_ptr<Transaction> TryGetTransaction(AttachedDatabase &db);
 
-	void SetReadOnly();
-	bool IsReadOnly() const;
-	void ModifyDatabase(AttachedDatabase &db, DatabaseModificationType modification);
-	optional_ptr<AttachedDatabase> ModifiedDatabase() {
-		return modified_database;
-	}
-	const vector<reference<AttachedDatabase>> &OpenedTransactions() const {
-		return all_transactions;
-	}
-	optional_ptr<AttachedDatabase> GetReferencedDatabase(const string &name);
-	shared_ptr<AttachedDatabase> GetReferencedDatabaseOwning(const string &name);
-	AttachedDatabase &UseDatabase(shared_ptr<AttachedDatabase> &database);
-	void DetachDatabase(AttachedDatabase &database);
+        void RemoveTransaction(AttachedDatabase &db);
 
-private:
-	//! Lock to prevent all_transactions and transactions from getting out of sync.
-	mutex lock;
-	//! The set of active transactions for each database.
-	reference_map_t<AttachedDatabase, TransactionReference> transactions;
-	//! The set of referenced databases in invocation order.
-	vector<reference<AttachedDatabase>> all_transactions;
-	//! The database we are modifying. We can only modify one database per meta transaction.
-	optional_ptr<AttachedDatabase> modified_database;
-	//! Whether the meta transaction is marked as read only.
-	bool is_read_only;
-	//! Lock for referenced_databases.
-	mutex referenced_database_lock;
-	//! The set of used (referenced) databases.
-	reference_map_t<AttachedDatabase, shared_ptr<AttachedDatabase>> referenced_databases;
-	//! Map of name -> database for databases that are in-use by this transaction.
-	case_insensitive_map_t<reference<AttachedDatabase>> used_databases;
-};
+        ErrorData Commit();
 
+        void Rollback();
+
+        // Finalize the transaction after a COMMIT of ROLLBACK.
+        void Finalize();
+
+        idx_t GetActiveQuery();
+
+        void SetActiveQuery(transaction_t query_number);
+
+        void SetReadOnly();
+
+        bool IsReadOnly() const;
+
+        void ModifyDatabase(AttachedDatabase &db, DatabaseModificationType modification);
+
+        optional_ptr<AttachedDatabase> ModifiedDatabase() {
+            return modified_database;
+        }
+
+        const vector<reference<AttachedDatabase> > &OpenedTransactions() const {
+            return all_transactions;
+        }
+
+        optional_ptr<AttachedDatabase> GetReferencedDatabase(const string &name);
+
+        shared_ptr<AttachedDatabase> GetReferencedDatabaseOwning(const string &name);
+
+        AttachedDatabase &UseDatabase(shared_ptr<AttachedDatabase> &database);
+
+        void DetachDatabase(AttachedDatabase &database);
+
+    private:
+        //! Lock to prevent all_transactions and transactions from getting out of sync.
+        mutex lock;
+        //! The set of active transactions for each database.
+        reference_map_t<AttachedDatabase, TransactionReference> transactions;
+        //! The set of referenced databases in invocation order.
+        vector<reference<AttachedDatabase> > all_transactions;
+        //! The database we are modifying. We can only modify one database per meta transaction.
+        optional_ptr<AttachedDatabase> modified_database;
+        //! Whether the meta transaction is marked as read only.
+        bool is_read_only;
+        //! Lock for referenced_databases.
+        mutex referenced_database_lock;
+        //! The set of used (referenced) databases.
+        reference_map_t<AttachedDatabase, shared_ptr<AttachedDatabase> > referenced_databases;
+        //! Map of name -> database for databases that are in-use by this transaction.
+        case_insensitive_map_t<reference<AttachedDatabase> > used_databases;
+    };
 } // namespace goose

@@ -18,17 +18,17 @@
 #include <goose/verification/statement_verifier.h>
 
 namespace goose {
+    class NoOperatorCachingVerifier : public StatementVerifier {
+    public:
+        explicit NoOperatorCachingVerifier(unique_ptr<SQLStatement> statement_p,
+                                           optional_ptr<case_insensitive_map_t<BoundParameterData> > parameters);
 
-class NoOperatorCachingVerifier : public StatementVerifier {
-public:
-	explicit NoOperatorCachingVerifier(unique_ptr<SQLStatement> statement_p,
-	                                   optional_ptr<case_insensitive_map_t<BoundParameterData>> parameters);
-	static unique_ptr<StatementVerifier> Create(const SQLStatement &statement_p,
-	                                            optional_ptr<case_insensitive_map_t<BoundParameterData>> parameters);
+        static unique_ptr<StatementVerifier> Create(const SQLStatement &statement_p,
+                                                    optional_ptr<case_insensitive_map_t<BoundParameterData> >
+                                                    parameters);
 
-	bool DisableOperatorCaching() const override {
-		return true;
-	}
-};
-
+        bool DisableOperatorCaching() const override {
+            return true;
+        }
+    };
 } // namespace goose

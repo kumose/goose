@@ -1,52 +1,35 @@
-cmake_minimum_required(VERSION 3.15...3.29)
+# Copyright (C) Kumo inc. and its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-project(ParquetExtension)
+file(GLOB_RECURSE PARQUET_SRC "*.cc")
 
-include_directories(
-        include ${PROJECT_SOURCE_DIR}/third_party/parquet
-        ${PROJECT_SOURCE_DIR}/third_party/thrift)
-
-add_subdirectory(decoder)
-add_subdirectory(reader)
-add_subdirectory(writer)
-set(PARQUET_EXTENSION_FILES
-        ${PARQUET_EXTENSION_FILES}
-        column_reader.cc
-        column_writer.cc
-        parquet_crypto.cc
-        parquet_extension.cc
-        parquet_file_metadata_cache.cc
-        parquet_float16.cc
-        parquet_multi_file_info.cc
-        parquet_metadata.cc
-        parquet_reader.cc
-        parquet_field_id.cc
-        parquet_statistics.cc
-        parquet_timestamp.cc
-        parquet_writer.cc
-        parquet_shredding.cc
-        parquet_column_schema.cc
-        parquet_geometry.cc
-        serialize_parquet.cc
-        zstd_file_system.cc)
-
-if (NOT CLANG_TIDY)
-    set(PARQUET_EXTENSION_FILES
-            ${PARQUET_EXTENSION_FILES}
-            ${PROJECT_SOURCE_DIR}/third_party/parquet/parquet_types.cc
-            ${PROJECT_SOURCE_DIR}/third_party/thrift/kthrift/protocol/TProtocol.cc
-            ${PROJECT_SOURCE_DIR}/third_party/thrift/kthrift/transport/TTransportException.cc
-            ${PROJECT_SOURCE_DIR}/third_party/thrift/kthrift/transport/TBufferTransports.cc
-    )
-endif ()
-
-build_static_extension(parquet ${PARQUET_EXTENSION_FILES})
-set(PARAMETERS "-warnings")
-
-build_loadable_extension(parquet ${PARAMETERS} ${PARQUET_EXTENSION_FILES})
-
-install(
-        TARGETS parquet_extension
-        EXPORT "${GOOSE_EXPORT_SET}"
-        LIBRARY DESTINATION "${INSTALL_LIB_DIR}"
-        ARCHIVE DESTINATION "${INSTALL_LIB_DIR}")
+goose_cc_extension(
+        NAMESPACE ${PROJECT_NAME}
+        NAME parquet
+        SOURCES
+        ${PARQUET_SRC}
+        ABI_TYPE
+        "CPP"
+        INCLUDES
+        include
+        third_party/thrift
+        third_party/parquet
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        PLINKS
+        goose::goose_static
+        ${KMCMAKE_DEPS_LINK}
+        PUBLIC
+)

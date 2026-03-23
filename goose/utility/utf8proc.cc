@@ -51,10 +51,10 @@ namespace goose {
 #  define UINT16_MAX 65535U
 #endif
 
-#include "utf8proc_data.cc"
+#include "utf8proc_data.inc"
 
 
-UTF8PROC_DLLEXPORT const utf8proc_int8_t utf8proc_utf8class[256] = {
+  UTF8PROC_DLLEXPORT const utf8proc_int8_t utf8proc_utf8class[256] = {
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

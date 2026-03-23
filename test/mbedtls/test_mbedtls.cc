@@ -1,4 +1,4 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/utility/mbedtls_wrapper.h>
 
 #include <chrono>

@@ -5,7 +5,7 @@
 #include <goose/execution/physical_operator.h>
 #include <goose/parallel/pipeline.h>
 #include <goose/planner/logical_operator.h>
-#include <goose/fmt/printf.h>
+#include <goose/utility/fmt/printf.h>
 
 #include <ostream>
 #include <sstream>

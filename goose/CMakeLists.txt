@@ -22,13 +22,45 @@ if (SHADOW_FORBIDDEN_FUNCTIONS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -include 'goose/common/shadow_forbidden_functions.h'")
 endif ()
 
-file(GLOB_RECURSE ALL_SRC "*.cc")
+file(GLOB_RECURSE CATALOG_SRC "catalog/*.cc")
+file(GLOB_RECURSE COMMON_SRC "common/*.cc")
+file(GLOB_RECURSE execution_SRC "execution/*.cc")
+file(GLOB_RECURSE function_SRC "function/*.cc")
+file(GLOB_RECURSE imdb_SRC "imdb/*.cc")
+file(GLOB_RECURSE logging_SRC "logging/*.cc")
+file(GLOB_RECURSE main_SRC "main/*.cc")
+file(GLOB_RECURSE optimizer_SRC "optimizer/*.cc")
+file(GLOB_RECURSE parallel_SRC "parallel/*.cc")
+file(GLOB_RECURSE parser_SRC "parser/*.cc")
+file(GLOB_RECURSE planner_SRC "planner/*.cc")
+file(GLOB_RECURSE storage_SRC "storage/*.cc")
+file(GLOB_RECURSE transaction_SRC "transaction/*.cc")
+file(GLOB_RECURSE utility_SRC "utility/*.cc")
+file(GLOB_RECURSE verification_SRC "verification/*.cc")
+
+set(LIB_SRC
+        ${CATALOG_SRC}
+        ${COMMON_SRC}
+        ${execution_SRC}
+        ${function_SRC}
+        ${imdb_SRC}
+        ${logging_SRC}
+        ${main_SRC}
+        ${optimizer_SRC}
+        ${parallel_SRC}
+        ${parser_SRC}
+        ${planner_SRC}
+        ${storage_SRC}
+        ${transaction_SRC}
+        ${utility_SRC}
+        ${verification_SRC}
+)
 list(REMOVE_ITEM ALL_SRC ${PROJECT_SOURCE_DIR}/goose/utility/utf8proc_data.cc)
 kmcmake_cc_library(
         NAMESPACE ${PROJECT_NAME}
         NAME goose
         SOURCES
-        ${ALL_SRC}
+        ${LIB_SRC}
         CXXOPTS
         ${KMCMAKE_CXX_OPTIONS}
         PLINKS
@@ -36,4 +68,54 @@ kmcmake_cc_library(
         PUBLIC
 )
 
+file(GLOB_RECURSE shell_SRC "shell/*.cc")
+
+if(WIN32 AND NOT MINGW)
+    string(TIMESTAMP GOOSE_COPYRIGHT_YEAR "%Y")
+    ensure_variable_is_number(GOOSE_MAJOR_VERSION RC_MAJOR_VERSION)
+    ensure_variable_is_number(GOOSE_MINOR_VERSION RC_MINOR_VERSION)
+    ensure_variable_is_number(GOOSE_PATCH_VERSION RC_PATCH_VERSION)
+    ensure_variable_is_number(GOOSE_DEV_ITERATION RC_DEV_ITERATION)
+
+    set(CMAKE_RC_FLAGS
+            "${CMAKE_RC_FLAGS} -D GOOSE_VERSION=\"${GOOSE_VERSION}\"")
+    set(CMAKE_RC_FLAGS
+            "${CMAKE_RC_FLAGS} -D GOOSE_MAJOR_VERSION=\"${RC_MAJOR_VERSION}\"")
+    set(CMAKE_RC_FLAGS
+            "${CMAKE_RC_FLAGS} -D GOOSE_MINOR_VERSION=\"${RC_MINOR_VERSION}\"")
+    set(CMAKE_RC_FLAGS
+            "${CMAKE_RC_FLAGS} -D GOOSE_PATCH_VERSION=\"${RC_PATCH_VERSION}\"")
+    set(CMAKE_RC_FLAGS
+            "${CMAKE_RC_FLAGS} -D GOOSE_DEV_ITERATION=\"${RC_DEV_ITERATION}\"")
+    set(CMAKE_RC_FLAGS
+            "${CMAKE_RC_FLAGS} -D GOOSE_COPYRIGHT_YEAR=\"${GOOSE_COPYRIGHT_YEAR}\"")
+    set(${shell_SRC} shell/rc/goose.rc)
+endif()
+kmcmake_cc_library(
+        NAMESPACE ${PROJECT_NAME}
+        NAME goose_shell
+        SOURCES
+        ${shell_SRC}
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        PLINKS
+        goose::goose_static
+        ${KMCMAKE_DEPS_LINK}
+        PUBLIC
+)
+
+file(GLOB_RECURSE testing_SRC "testing/*.cc")
+kmcmake_cc_library(
+        NAMESPACE ${PROJECT_NAME}
+        NAME goose_testing
+        SOURCES
+        ${testing_SRC}
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        PLINKS
+        goose::dummy_static_extension_loader_static
+        goose::goose_static
+        ${KMCMAKE_DEPS_LINK}
+        PUBLIC
+)
 ###kmcmake_example

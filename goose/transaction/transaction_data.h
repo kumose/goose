@@ -19,16 +19,15 @@
 #include <goose/common/optional_ptr.h>
 
 namespace goose {
-class GooseTransaction;
-class Transaction;
+    class GooseTransaction;
+    class Transaction;
 
-struct TransactionData {
-	TransactionData(GooseTransaction &transaction_p); // NOLINT: allow implicit conversion
-	TransactionData(transaction_t transaction_id_p, transaction_t start_time_p);
+    struct TransactionData {
+        TransactionData(GooseTransaction &transaction_p); // NOLINT: allow implicit conversion
+        TransactionData(transaction_t transaction_id_p, transaction_t start_time_p);
 
-	optional_ptr<GooseTransaction> transaction;
-	transaction_t transaction_id;
-	transaction_t start_time;
-};
-
+        optional_ptr<GooseTransaction> transaction;
+        transaction_t transaction_id;
+        transaction_t start_time;
+    };
 } // namespace goose

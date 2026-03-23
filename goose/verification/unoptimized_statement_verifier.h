@@ -18,17 +18,17 @@
 #include <goose/verification/statement_verifier.h>
 
 namespace goose {
+    class UnoptimizedStatementVerifier : public StatementVerifier {
+    public:
+        explicit UnoptimizedStatementVerifier(unique_ptr<SQLStatement> statement_p,
+                                              optional_ptr<case_insensitive_map_t<BoundParameterData> > parameters);
 
-class UnoptimizedStatementVerifier : public StatementVerifier {
-public:
-	explicit UnoptimizedStatementVerifier(unique_ptr<SQLStatement> statement_p,
-	                                      optional_ptr<case_insensitive_map_t<BoundParameterData>> parameters);
-	static unique_ptr<StatementVerifier> Create(const SQLStatement &statement_p,
-	                                            optional_ptr<case_insensitive_map_t<BoundParameterData>> parameters);
+        static unique_ptr<StatementVerifier> Create(const SQLStatement &statement_p,
+                                                    optional_ptr<case_insensitive_map_t<BoundParameterData> >
+                                                    parameters);
 
-	bool DisableOptimizer() const override {
-		return true;
-	}
-};
-
+        bool DisableOptimizer() const override {
+            return true;
+        }
+    };
 } // namespace goose

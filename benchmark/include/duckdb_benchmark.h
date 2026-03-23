@@ -18,7 +18,7 @@
 #include "benchmark.hpp"
 #include <goose/goose.h>
 #include <goose/main/client_context.h>
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 #include <goose/main/query_profiler.h>
 #include <goose/common/helper.h>
 

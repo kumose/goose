@@ -22,4 +22,8 @@ namespace testing {
     inline std::string testing_root() {
         return "/home/jeff/github/kumose/goose/tests";
     }
+
+    inline std::string goose_root_directory() {
+        return "/home/jeff/github/kumose/goose";
+    }
 }  // namespace testing

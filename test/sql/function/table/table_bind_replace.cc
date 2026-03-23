@@ -1,5 +1,5 @@
-#include "catch.h"
-#include "test_helpers.h"
+#include <goose/testing/catch.h>
+#include <goose/testing/test_helpers.h>
 #include <goose/parser/parsed_data/create_table_function_info.h>
 #include <goose/parser/tableref/joinref.h>
 #include <goose/common/enums/joinref_type.h>
@@ -123,7 +123,7 @@ struct BindReplaceDemoFun2 {
 		auto tf_ref = make_uniq<TableFunctionRef>();
 		tf_ref->function = make_uniq<FunctionExpression>("range", std::move(children));
 
-		return std::move(tf_ref);
+		return tf_ref;
 	}
 
 	static void Register(Connection &con) {

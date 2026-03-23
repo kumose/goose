@@ -1,38 +1,33 @@
-cmake_minimum_required(VERSION 2.8.12...3.29)
+# Copyright (C) Kumo inc. and its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-project(ICUExtension)
+file(GLOB_RECURSE ICU_SRC "*.cc")
 
-include_directories(include)
-
-
-set(ICU_EXTENSION_FILES
-        ${ICU_LIBRARY_FILES}
-        icu_extension.cc
-        icu-current.cc
-        icu-dateadd.cc
-        icu-datefunc.cc
-        icu-datepart.cc
-        icu-datesub.cc
-        icu-datetrunc.cc
-        icu-makedate.cc
-        icu-list-range.cc
-        icu-table-range.cc
-        icu-strptime.cc
-        icu-timebucket.cc
-        icu-timezone.cc)
-
-build_static_extension(icu ${ICU_EXTENSION_FILES})
-link_threads(icu_extension "")
-find_package(xicu REQUIRED)
-target_link_libraries(icu_extension xicu::xicu_static)
-disable_target_warnings(icu_extension)
-set(PARAMETERS "-no-warnings")
-build_loadable_extension(icu ${PARAMETERS} ${ICU_EXTENSION_FILES})
-
-target_link_libraries(icu_loadable_extension xicu::xicu_static)
-
-install(
-        TARGETS icu_extension
-        EXPORT "${GOOSE_EXPORT_SET}"
-        LIBRARY DESTINATION "${INSTALL_LIB_DIR}"
-        ARCHIVE DESTINATION "${INSTALL_LIB_DIR}")
+goose_cc_extension(
+        NAMESPACE ${PROJECT_NAME}
+        NAME icu
+        SOURCES
+        ${ICU_SRC}
+        ABI_TYPE
+        "CPP"
+        INCLUDES
+        include
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        PLINKS
+        goose::goose_static
+        ${KMCMAKE_DEPS_LINK}
+        PUBLIC
+)

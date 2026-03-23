@@ -1,6 +1,6 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/common/radix.h>
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 
 #include <cfloat>
 #include <iostream>

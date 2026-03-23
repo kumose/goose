@@ -1,4 +1,4 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 
 #include <goose/common/serializer/binary_deserializer.h>
 #include <goose/common/serializer/binary_serializer.h>

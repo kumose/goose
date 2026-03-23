@@ -46,10 +46,9 @@ namespace OrderedStructs {
      * @brief Namespace for the C++ Rolling Median.
      */
     namespace RollingMedian {
-
-/**
- * Error codes.
- */
+        /**
+         * Error codes.
+         */
         enum RollingMedianResult {
             ROLLING_MEDIAN_SUCCESS = 0,
             ROLLING_MEDIAN_SOURCE_STRIDE,
@@ -57,9 +56,9 @@ namespace OrderedStructs {
             ROLLING_MEDIAN_WIN_LENGTH,
         };
 
-/**
- * Return an error code.
- */
+        /**
+         * Return an error code.
+         */
 #define ROLLING_MEDIAN_ERROR_CHECK                      \
     do {                                                \
         if (src_stride == 0) {                          \
@@ -73,60 +72,60 @@ namespace OrderedStructs {
         }                                               \
     } while (0)
 
-/* Helpers for the destination memory area.
- * Iterating through the destination to see the replaced values is done thus:
- *
- * for (int i = 0;
- *      i < RollingMedian::dest_size(COUNT, WIN_LENGTH, DEST_STRIDE);
- *      i += DEST_STRIDE) {
- *    ...
- * }
- */
+        /* Helpers for the destination memory area.
+         * Iterating through the destination to see the replaced values is done thus:
+         *
+         * for (int i = 0;
+         *      i < RollingMedian::dest_size(COUNT, WIN_LENGTH, DEST_STRIDE);
+         *      i += DEST_STRIDE) {
+         *    ...
+         * }
+         */
 
-/**
- * Returns the size of the destination array for a rolling median on an array
- * of count values with a window of win_length and a destination stride.
- *
- * @param count Number of input values.
- * @param win_length Window length.
- * @return Number of destination values.
- */
+        /**
+         * Returns the size of the destination array for a rolling median on an array
+         * of count values with a window of win_length and a destination stride.
+         *
+         * @param count Number of input values.
+         * @param win_length Window length.
+         * @return Number of destination values.
+         */
         size_t dest_count(size_t count, size_t win_length) {
             return 1 + count - win_length;
         }
 
-/**
- * Returns the size of the destination array for a rolling median on an array
- * of count values with a window of win_length and a destination stride.
- *
- * @param count Number of input values.
- * @param win_length Window length.
- * @param dest_stride The destination stride given a 2D array.
- * @return Size of destination array.
- */
+        /**
+         * Returns the size of the destination array for a rolling median on an array
+         * of count values with a window of win_length and a destination stride.
+         *
+         * @param count Number of input values.
+         * @param win_length Window length.
+         * @param dest_stride The destination stride given a 2D array.
+         * @return Size of destination array.
+         */
         size_t dest_size(size_t count,
                          size_t win_length,
                          size_t dest_stride) {
             return dest_count(count, win_length) * dest_stride;
         }
 
-/**
- * Rolling median where only the odd mid-index is considered.
- * If the win_length is even then (win_length - 1) / 2 value is used.
- * See even_odd_index() for a different treatment of even lengths.
- * This is valid for all types T.
- * It is up to the caller to ensure that there is enough space in dest for
- * the results, use dest_size() for this.
- *
- * @tparam T Type of the value(s).
- * @param src Source array of values.
- * @param src_stride Source stride for 2D arrays.
- * @param count Number of input values.
- * @param win_length Window length.
- * @param dest The destination array.
- * @param dest_stride The destination stride given a 2D array.
- * @return The result of the Rolling Median operation as a RollingMedianResult enum.
- */
+        /**
+         * Rolling median where only the odd mid-index is considered.
+         * If the win_length is even then (win_length - 1) / 2 value is used.
+         * See even_odd_index() for a different treatment of even lengths.
+         * This is valid for all types T.
+         * It is up to the caller to ensure that there is enough space in dest for
+         * the results, use dest_size() for this.
+         *
+         * @tparam T Type of the value(s).
+         * @param src Source array of values.
+         * @param src_stride Source stride for 2D arrays.
+         * @param count Number of input values.
+         * @param win_length Window length.
+         * @param dest The destination array.
+         * @param dest_stride The destination stride given a 2D array.
+         * @return The result of the Rolling Median operation as a RollingMedianResult enum.
+         */
         template<typename T>
         RollingMedianResult odd_index(const T *src, size_t src_stride,
                                       size_t count, size_t win_length,
@@ -148,24 +147,24 @@ namespace OrderedStructs {
             return ROLLING_MEDIAN_SUCCESS;
         }
 
-/*
- */
-/**
- * Rolling median where the mean of adjacent values is used
- * when the window size is even length.
- * This requires T / 2 to be meaningful.
- * It is up to the caller to ensure that there is enough space in dest for
- * the results, use dest_size() for this.
- *
- * @tparam T Type of the value(s).
- * @param src Source array of values.
- * @param src_stride Source stride for 2D arrays.
- * @param count Number of input values.
- * @param win_length Window length.
- * @param dest The destination array.
- * @param dest_stride The destination stride given a 2D array.
- * @return The result of the Rolling Median operation as a RollingMedianResult enum.
- */
+        /*
+         */
+        /**
+         * Rolling median where the mean of adjacent values is used
+         * when the window size is even length.
+         * This requires T / 2 to be meaningful.
+         * It is up to the caller to ensure that there is enough space in dest for
+         * the results, use dest_size() for this.
+         *
+         * @tparam T Type of the value(s).
+         * @param src Source array of values.
+         * @param src_stride Source stride for 2D arrays.
+         * @param count Number of input values.
+         * @param win_length Window length.
+         * @param dest The destination array.
+         * @param dest_stride The destination stride given a 2D array.
+         * @return The result of the Rolling Median operation as a RollingMedianResult enum.
+         */
         template<typename T>
         RollingMedianResult even_odd_index(const T *src, size_t src_stride,
                                            size_t count, size_t win_length,
@@ -195,7 +194,6 @@ namespace OrderedStructs {
             }
             return ROLLING_MEDIAN_SUCCESS;
         }
-
     } // namespace RollingMedian
 } // namespace OrderedStructs
 

@@ -1,7 +1,7 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/common/file_system.h>
 #include <goose/goose.h>
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 
 #include <signal.h>
 #include <sys/mman.h>

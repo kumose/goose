@@ -1,8 +1,8 @@
 #include "core_functions/scalar/string_functions.h"
 #include <goose/planner/expression/bound_function_expression.h>
 #include <goose/common/limits.h>
-#include <goose/fmt/format.h>
-#include <goose/fmt/printf.h>
+#include <goose/utility/fmt/format.h>
+#include <goose/utility/fmt/printf.h>
 
 namespace goose {
 

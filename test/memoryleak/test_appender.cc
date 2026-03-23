@@ -1,7 +1,7 @@
-#include "catch.h"
-#include "test_helpers.h"
+#include <goose/testing/catch.h>
+#include <goose/testing/test_helpers.h>
 #include <goose/main/config.h>
-#include "test_config.h"
+#include <goose/testing/test_config.h>
 
 using namespace goose;
 using namespace std;

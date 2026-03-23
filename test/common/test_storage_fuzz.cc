@@ -1,12 +1,12 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/goose.h>
 #include <goose/common/common.h>
 #include <goose/common/local_file_system.h>
 #include <goose/common/numeric_utils.h>
 #include <goose/common/virtual_file_system.h>
 #include <goose/main/materialized_query_result.h>
-#include "test_config.h"
-#include "test_helpers.h"
+#include <goose/testing/test_config.h>
+#include <goose/testing/test_helpers.h>
 
 #include <iostream>
 #include <shared_mutex>

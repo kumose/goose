@@ -1,104 +1,31 @@
-# To link extensions into Goose and auto-load them on startup, we generated an
-# include file and a loader function based on the `GOOSE_EXTENSION_NAMES`
-# parameter.
+# Copyright (C) Kumo inc. and its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-# generated_extension_headers.h we first write into a 'candidate' file and
-# then use `configure_file` again the advantage of this is that we don't change
-# modification time if nothing changed
+add_subdirectory(core_functions)
+add_subdirectory(parquet)
+add_subdirectory(json)
+add_subdirectory(icu)
 
-# include generated includes
-include_directories("${PROJECT_BINARY_DIR}/codegen/include/")
-
-add_library(dummy_static_extension_loader
-            loader/dummy_static_extension_loader.cc)
-
-install(
-  TARGETS dummy_static_extension_loader
-  EXPORT "${GOOSE_EXPORT_SET}"
-  LIBRARY DESTINATION "${INSTALL_LIB_DIR}"
-  ARCHIVE DESTINATION "${INSTALL_LIB_DIR}")
-
-add_extension_definitions()
-
-configure_file(
-  generated_extension_headers.h.in
-  "${PROJECT_BINARY_DIR}/codegen/include/generated_extension_headers.h.cand")
-
-get_statically_linked_extensions("${GOOSE_EXTENSION_NAMES}"
-                                 STATICALLY_LINKED_EXTENSIONS)
-foreach(EXT_NAME IN LISTS STATICALLY_LINKED_EXTENSIONS)
-  string(TOUPPER ${EXT_NAME} EXT_NAME_UPPERCASE)
-  if(${GOOSE_EXTENSION_${EXT_NAME_UPPERCASE}_SHOULD_LINK})
-    set(GOOSE_EXTENSION_HEADER "${EXT_NAME}_extension.h")
-    file(
-      APPEND
-      "${PROJECT_BINARY_DIR}/codegen/include/generated_extension_headers.h.cand"
-      "#include \"${GOOSE_EXTENSION_HEADER}\"\n")
-  endif()
-endforeach()
-
-configure_file(
-  "${PROJECT_BINARY_DIR}/codegen/include/generated_extension_headers.h.cand"
-  "${PROJECT_BINARY_DIR}/codegen/include/generated_extension_headers.h")
-
-# generated_extension_loader.h
-set(EXT_LOADER_NAME_LIST "")
-set(EXT_LOADER_BODY "")
-foreach(EXT_NAME IN LISTS STATICALLY_LINKED_EXTENSIONS)
-  string(TOUPPER ${EXT_NAME} EXT_NAME_UPPERCASE)
-  if(${GOOSE_EXTENSION_${EXT_NAME_UPPERCASE}_SHOULD_LINK})
-
-    # Assumes lowercase input!
-    string(REPLACE "_" ";" EXT_NAME_SPLIT ${EXT_NAME})
-    set(EXT_NAME_CAMELCASE "")
-    foreach(EXT_NAME_PART IN LISTS EXT_NAME_SPLIT)
-      string(SUBSTRING ${EXT_NAME_PART} 0 1 FIRST_LETTER)
-      string(SUBSTRING ${EXT_NAME_PART} 1 -1 REMAINDER)
-      string(TOUPPER ${FIRST_LETTER} FIRST_LETTER)
-      set(EXT_NAME_CAMELCASE "${EXT_NAME_CAMELCASE}${FIRST_LETTER}${REMAINDER}")
-    endforeach()
-
-    set(EXT_LOADER_NAME_LIST "${EXT_LOADER_NAME_LIST},\n\t\"${EXT_NAME}\"")
-    set(EXT_LOADER_BODY
-        "${EXT_LOADER_BODY}\
-    if (extension==\"${EXT_NAME}\") {
-        db.LoadStaticExtension<${EXT_NAME_CAMELCASE}Extension>();
-        return ExtensionLoadResult::LOADED_EXTENSION;
-    }
-")
-  endif()
-endforeach()
-
-# trim comma
-if(NOT ${EXT_LOADER_NAME_LIST} STREQUAL "")
-  string(SUBSTRING ${EXT_LOADER_NAME_LIST} 1 -1 EXT_NAME_VECTOR_INITIALIZER)
-endif()
-
-# Load test paths for extensions whose SQLLogicTests need to be registered
-set(EXT_TEST_PATH_LIST "")
-foreach(EXT_NAME IN LISTS GOOSE_EXTENSION_NAMES)
-  string(TOUPPER ${EXT_NAME} EXT_NAME_UPPERCASE)
-  if(${GOOSE_EXTENSION_${EXT_NAME_UPPERCASE}_LOAD_TESTS})
-    set(EXT_TEST_PATH_LIST
-        "${EXT_TEST_PATH_LIST},\n\t\"${GOOSE_EXTENSION_${EXT_NAME_UPPERCASE}_TEST_PATH}\""
-    )
-  endif()
-endforeach()
-
-if(NOT ${EXT_TEST_PATH_LIST} STREQUAL "")
-  string(SUBSTRING ${EXT_TEST_PATH_LIST} 1 -1 EXT_TEST_PATH_INITIALIZER)
-endif()
-
-set(GENERATED_CPP_FILE
-    ${PROJECT_BINARY_DIR}/codegen/src/generated_extension_loader.cc)
-configure_file(generated_extension_loader.cc.in "${GENERATED_CPP_FILE}")
-add_definitions(-DGENERATED_EXTENSION_HEADERS=1)
-add_definitions(-DGOOSE_MAJOR_VERSION=${GOOSE_MAJOR_VERSION})
-add_definitions(-DGOOSE_MINOR_VERSION=${GOOSE_MINOR_VERSION})
-add_definitions(-DGOOSE_PATCH_VERSION=${GOOSE_PATCH_VERSION})
-
-add_library(goose_generated_extension_loader OBJECT ${GENERATED_CPP_FILE})
-
-set(ALL_OBJECT_FILES
-    ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:goose_generated_extension_loader>
-    PARENT_SCOPE)
+kmcmake_cc_library(
+        NAMESPACE ${PROJECT_NAME}
+        NAME dummy_static_extension_loader
+        SOURCES
+        loader/dummy_static_extension_loader.cc
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        PLINKS
+        ${KMCMAKE_DEPS_LINK}
+        PUBLIC
+)

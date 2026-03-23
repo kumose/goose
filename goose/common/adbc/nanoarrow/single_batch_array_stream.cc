@@ -1,5 +1,5 @@
 #include <goose/common/adbc/single_batch_array_stream.h>
-#include "goose/common/arrow/nanoarrow/nanoarrow.h"
+#include <goose/common/arrow/nanoarrow/nanoarrow.h>
 #include <goose/common/adbc/adbc-goose.h>
 
 #include <goose/goose-c.h>

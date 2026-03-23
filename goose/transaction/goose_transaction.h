@@ -39,7 +39,7 @@ namespace goose {
     class GooseTransaction : public Transaction {
     public:
         GooseTransaction(GooseTransactionManager &manager, ClientContext &context, transaction_t start_time,
-                        transaction_t transaction_id, idx_t catalog_version);
+                         transaction_t transaction_id, idx_t catalog_version);
 
         ~GooseTransaction() override;
 

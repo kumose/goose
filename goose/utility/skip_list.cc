@@ -15,26 +15,23 @@
 #include <goose/utility/SkipList.h>
 
 namespace goose_skiplistlib {
-namespace skip_list {
-
-// This throws an IndexError when the index value >= size.
-// If possible the error will have an informative message.
+    namespace skip_list {
+        // This throws an IndexError when the index value >= size.
+        // If possible the error will have an informative message.
 #ifdef INCLUDE_METHODS_THAT_USE_STREAMS
-void _throw_exceeds_size(size_t index) {
-    std::ostringstream oss;
-    oss << "Index out of range 0 <= index < " << index;
-    std::string err_msg = oss.str();
+        void _throw_exceeds_size(size_t index) {
+            std::ostringstream oss;
+            oss << "Index out of range 0 <= index < " << index;
+            std::string err_msg = oss.str();
 #else
-void _throw_exceeds_size(size_t /* index */) {
-    std::string err_msg = "Index out of range.";
+        void _throw_exceeds_size(size_t /* index */) {
+            std::string err_msg = "Index out of range.";
 #endif
-    throw IndexError(err_msg);
-}
+            throw IndexError(err_msg);
+        }
 
 #ifdef SKIPLIST_THREAD_SUPPORT
-    std::mutex gSkipListMutex;
+        std::mutex gSkipListMutex;
 #endif
-
-
-} // namespace SkipList
+    } // namespace SkipList
 } // namespace OrderedStructs

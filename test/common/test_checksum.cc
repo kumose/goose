@@ -1,4 +1,4 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/common/checksum.h>
 
 #include <vector>

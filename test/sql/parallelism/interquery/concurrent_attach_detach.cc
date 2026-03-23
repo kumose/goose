@@ -1,4 +1,4 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 
 #include <goose/common/types-import.h>
 #include <goose/common/types-import.h>
@@ -7,7 +7,7 @@
 #include <goose/common/profiler.h>
 #include <goose/common/vector.h>
 
-#include "test_helpers.h"
+#include <goose/testing/test_helpers.h>
 
 #include <unordered_set>
 #include <thread>

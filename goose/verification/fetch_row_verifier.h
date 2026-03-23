@@ -18,17 +18,17 @@
 #include <goose/verification/statement_verifier.h>
 
 namespace goose {
+    class FetchRowVerifier : public StatementVerifier {
+    public:
+        explicit FetchRowVerifier(unique_ptr<SQLStatement> statement_p,
+                                  optional_ptr<case_insensitive_map_t<BoundParameterData> > parameters);
 
-class FetchRowVerifier : public StatementVerifier {
-public:
-	explicit FetchRowVerifier(unique_ptr<SQLStatement> statement_p,
-	                          optional_ptr<case_insensitive_map_t<BoundParameterData>> parameters);
-	static unique_ptr<StatementVerifier> Create(const SQLStatement &statement_p,
-	                                            optional_ptr<case_insensitive_map_t<BoundParameterData>> parameters);
+        static unique_ptr<StatementVerifier> Create(const SQLStatement &statement_p,
+                                                    optional_ptr<case_insensitive_map_t<BoundParameterData> >
+                                                    parameters);
 
-	bool ForceFetchRow() const override {
-		return true;
-	}
-};
-
+        bool ForceFetchRow() const override {
+            return true;
+        }
+    };
 } // namespace goose

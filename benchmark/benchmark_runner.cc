@@ -8,7 +8,7 @@
 #include "interpreted_benchmark.hpp"
 
 #define CATCH_CONFIG_RUNNER
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <xre2/re2.h>
 
 #include <fstream>

@@ -23,55 +23,57 @@
 #include <goose/common/types-import.h>
 
 namespace goose {
+    class AttachedDatabase;
+    class ClientContext;
+    class Catalog;
+    struct ClientLockWrapper;
+    class DatabaseInstance;
+    class Transaction;
 
-class AttachedDatabase;
-class ClientContext;
-class Catalog;
-struct ClientLockWrapper;
-class DatabaseInstance;
-class Transaction;
+    //! The Transaction Manager is responsible for creating and managing
+    //! transactions
+    class TransactionManager {
+    public:
+        explicit TransactionManager(AttachedDatabase &db);
 
-//! The Transaction Manager is responsible for creating and managing
-//! transactions
-class TransactionManager {
-public:
-	explicit TransactionManager(AttachedDatabase &db);
-	virtual ~TransactionManager();
+        virtual ~TransactionManager();
 
-	//! Start a new transaction
-	virtual Transaction &StartTransaction(ClientContext &context) = 0;
-	//! Commit the given transaction. Returns a non-empty error message on failure.
-	virtual ErrorData CommitTransaction(ClientContext &context, Transaction &transaction) = 0;
-	//! Rollback the given transaction
-	virtual void RollbackTransaction(Transaction &transaction) = 0;
+        //! Start a new transaction
+        virtual Transaction &StartTransaction(ClientContext &context) = 0;
 
-	virtual void Checkpoint(ClientContext &context, bool force = false) = 0;
+        //! Commit the given transaction. Returns a non-empty error message on failure.
+        virtual ErrorData CommitTransaction(ClientContext &context, Transaction &transaction) = 0;
 
-	static TransactionManager &Get(AttachedDatabase &db);
+        //! Rollback the given transaction
+        virtual void RollbackTransaction(Transaction &transaction) = 0;
 
-	virtual bool IsGooseTransactionManager() {
-		return false;
-	}
+        virtual void Checkpoint(ClientContext &context, bool force = false) = 0;
 
-	AttachedDatabase &GetDB() {
-		return db;
-	}
+        static TransactionManager &Get(AttachedDatabase &db);
 
-protected:
-	//! The attached database
-	AttachedDatabase &db;
+        virtual bool IsGooseTransactionManager() {
+            return false;
+        }
 
-public:
-	template <class TARGET>
-	TARGET &Cast() {
-		DynamicCastCheck<TARGET>(this);
-		return reinterpret_cast<TARGET &>(*this);
-	}
-	template <class TARGET>
-	const TARGET &Cast() const {
-		D_ASSERT(dynamic_cast<const TARGET *>(this));
-		return reinterpret_cast<const TARGET &>(*this);
-	}
-};
+        AttachedDatabase &GetDB() {
+            return db;
+        }
 
+    protected:
+        //! The attached database
+        AttachedDatabase &db;
+
+    public:
+        template<class TARGET>
+        TARGET &Cast() {
+            DynamicCastCheck<TARGET>(this);
+            return reinterpret_cast<TARGET &>(*this);
+        }
+
+        template<class TARGET>
+        const TARGET &Cast() const {
+            D_ASSERT(dynamic_cast<const TARGET *>(this));
+            return reinterpret_cast<const TARGET &>(*this);
+        }
+    };
 } // namespace goose

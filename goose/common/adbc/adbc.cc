@@ -9,7 +9,7 @@
 #include <goose/common/arrow/nanoarrow/nanoarrow-goose.h>
 
 #include <goose/main/connection.h>
-#include "goose/common/adbc/options.h"
+#include <goose/common/adbc/options.h>
 #include <goose/common/adbc/single_batch_array_stream.h>
 #include <goose/function/table/arrow.h>
 #include <goose/common/adbc/wrappers.h>

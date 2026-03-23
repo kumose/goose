@@ -1,4 +1,4 @@
-#include "catch.h"
+#include <goose/testing/catch.h>
 #include <goose/function/scalar/strftime_format.h>
 #include <goose/common/types/timestamp.h>
 #include <goose/common/types/date.h>
