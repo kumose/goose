@@ -5,6 +5,7 @@
 #include <goose/common/serializer/deserializer.h>
 #include "parquet_crypto.h"
 #include <goose/function/table_function.h>
+#include <goose/version.h>
 
 namespace goose {
 

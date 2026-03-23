@@ -1,3 +1,19 @@
+// Copyright (c) 2025 DuckDB.
+// Copyright (C) 2026 Kumo inc. and its affiliates. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
 #include "catch.h"
 #include "test_helpers.h"
 #include <goose/goose.h>
@@ -12,66 +28,73 @@ using namespace goose;
 using namespace std;
 
 struct TestSecretLog {
-	goose::mutex lock;
-	goose::vector<string> remove_secret_requests;
-	goose::vector<string> write_secret_requests;
+    goose::mutex lock;
+    goose::vector<string> remove_secret_requests;
+    goose::vector<string> write_secret_requests;
 };
 
 // Demo secret type
 struct DemoSecretType {
-	static goose::unique_ptr<BaseSecret> CreateDemoSecret(ClientContext &context, CreateSecretInput &input) {
-		auto scope = input.scope;
-		if (scope.empty()) {
-			scope = {""};
-		}
-		auto return_value = make_uniq<KeyValueSecret>(scope, input.type, input.provider, input.name);
-		return std::move(return_value);
-	}
+    static goose::unique_ptr<BaseSecret> CreateDemoSecret(ClientContext &context, CreateSecretInput &input) {
+        auto scope = input.scope;
+        if (scope.empty()) {
+            scope = {""};
+        }
+        auto return_value = make_uniq<KeyValueSecret>(scope, input.type, input.provider, input.name);
+        return return_value;
+    }
 
-	static void RegisterDemoSecret(DatabaseInstance &instance, const string &type_name) {
-		ExtensionInfo extension_info {};
-		ExtensionActiveLoad load_info {instance, extension_info, "demo_secret_type_" + type_name};
-		ExtensionLoader loader {load_info};
-		SecretType secret_type;
-		secret_type.name = type_name;
-		secret_type.deserializer = KeyValueSecret::Deserialize<KeyValueSecret>;
-		secret_type.default_provider = "config";
-		loader.RegisterSecretType(secret_type);
+    static void RegisterDemoSecret(DatabaseInstance &instance, const string &type_name) {
+        ExtensionInfo extension_info{};
+        ExtensionActiveLoad load_info{instance, extension_info, "demo_secret_type_" + type_name};
+        ExtensionLoader loader{load_info};
+        SecretType secret_type;
+        secret_type.name = type_name;
+        secret_type.deserializer = KeyValueSecret::Deserialize<KeyValueSecret>;
+        secret_type.default_provider = "config";
+        loader.RegisterSecretType(secret_type);
 
-		CreateSecretFunction secret_fun = {type_name, "config", CreateDemoSecret};
-		loader.RegisterFunction(secret_fun);
-	}
+        CreateSecretFunction secret_fun = {type_name, "config", CreateDemoSecret};
+        loader.RegisterFunction(secret_fun);
+    }
 };
 
 // Demo pluggable secret storage
 class TestSecretStorage : public CatalogSetSecretStorage {
 public:
-	TestSecretStorage(const string &name_p, DatabaseInstance &db, TestSecretLog &logger_p, int64_t tie_break_offset_p)
-	    : CatalogSetSecretStorage(db, name_p, tie_break_offset_p), logger(logger_p) {
-		secrets = make_uniq<CatalogSet>(Catalog::GetSystemCatalog(db));
-		persistent = true;
-		include_in_lookups = true;
-	}
-	bool IncludeInLookups() override {
-		return include_in_lookups;
-	}
+    TestSecretStorage(const string &name_p, DatabaseInstance &db, TestSecretLog &logger_p, int64_t tie_break_offset_p)
+        : CatalogSetSecretStorage(db, name_p, tie_break_offset_p), logger(logger_p) {
+        secrets = make_uniq<CatalogSet>(Catalog::GetSystemCatalog(db));
+        persistent = true;
+        include_in_lookups = true;
+    }
 
-	bool include_in_lookups;
+    bool IncludeInLookups() override {
+        return include_in_lookups;
+    }
+
+    bool include_in_lookups;
 
 protected:
-	void WriteSecret(const BaseSecret &secret, OnCreateConflict on_conflict) override {
-		goose::lock_guard<goose::mutex> lock(logger.lock);
-		logger.write_secret_requests.push_back(secret.GetName());
-	};
-	virtual void RemoveSecret(const string &secret, OnEntryNotFound on_entry_not_found) override {
-		goose::lock_guard<goose::mutex> lock(logger.lock);
-		logger.remove_secret_requests.push_back(secret);
-	};
+    void WriteSecret(const BaseSecret &secret, OnCreateConflict on_conflict) override {
+        goose::lock_guard<goose::mutex> lock(logger.lock);
+        logger.write_secret_requests.push_back(secret.GetName());
+    };
 
-	TestSecretLog &logger;
+    virtual void RemoveSecret(const string &secret, OnEntryNotFound on_entry_not_found) override {
+        goose::lock_guard<goose::mutex> lock(logger.lock);
+        logger.remove_secret_requests.push_back(secret);
+    };
+
+    TestSecretLog &logger;
 };
 
-TEST_CASE("Test secret lookups by secret type", "[secret][.]") {
+TEST_CASE (
+"Test secret lookups by secret type"
+,
+"[secret][.]"
+)
+ {
 	Goose db(nullptr);
 	Connection con(db);
 
@@ -98,7 +121,12 @@ TEST_CASE("Test secret lookups by secret type", "[secret][.]") {
 	REQUIRE(res2->GetValue(0, 0).ToString() == "s2");
 }
 
-TEST_CASE("Test adding a custom secret storage", "[secret][.]") {
+TEST_CASE (
+"Test adding a custom secret storage"
+,
+"[secret][.]"
+)
+ {
 	Goose db(nullptr);
 	Connection con(db);
 
@@ -178,7 +206,12 @@ TEST_CASE("Test adding a custom secret storage", "[secret][.]") {
 	REQUIRE(log.remove_secret_requests[1] == "s1");
 }
 
-TEST_CASE("Test tie-break behaviour for custom secret storage", "[secret][.]") {
+TEST_CASE (
+"Test tie-break behaviour for custom secret storage"
+,
+"[secret][.]"
+)
+ {
 	Goose db(nullptr);
 	Connection con(db);
 
@@ -248,7 +281,12 @@ TEST_CASE("Test tie-break behaviour for custom secret storage", "[secret][.]") {
 	REQUIRE(log2.remove_secret_requests[0] == "s3");
 }
 
-TEST_CASE("Secret storage tie-break penalty collision: manager loaded after", "[secret][.]") {
+TEST_CASE (
+"Secret storage tie-break penalty collision: manager loaded after"
+,
+"[secret][.]"
+)
+ {
 	Goose db(nullptr);
 	Connection con(db);
 
@@ -272,7 +310,12 @@ TEST_CASE("Secret storage tie-break penalty collision: manager loaded after", "[
 	REQUIRE_FAIL(con.Query("FROM goose_secrets();"));
 }
 
-TEST_CASE("Secret storage tie-break penalty collision: manager loaded before", "[secret][.]") {
+TEST_CASE (
+"Secret storage tie-break penalty collision: manager loaded before"
+,
+"[secret][.]"
+)
+ {
 	Goose db(nullptr);
 	Connection con(db);
 
@@ -296,7 +339,12 @@ TEST_CASE("Secret storage tie-break penalty collision: manager loaded before", "
 	REQUIRE_THROWS(secret_manager.LoadSecretStorage(std::move(storage_ptr)));
 }
 
-TEST_CASE("Secret storage name collision: manager loaded before", "[secret][.]") {
+TEST_CASE (
+"Secret storage name collision: manager loaded before"
+,
+"[secret][.]"
+)
+ {
 	Goose db(nullptr);
 	Connection con(db);
 
@@ -320,7 +368,12 @@ TEST_CASE("Secret storage name collision: manager loaded before", "[secret][.]")
 	REQUIRE_THROWS(secret_manager.LoadSecretStorage(std::move(storage_ptr)));
 }
 
-TEST_CASE("Secret storage name collision: manager loaded after", "[secret][.]") {
+TEST_CASE (
+"Secret storage name collision: manager loaded after"
+,
+"[secret][.]"
+)
+ {
 	Goose db(nullptr);
 	Connection con(db);
 

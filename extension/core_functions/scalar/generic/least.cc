@@ -3,6 +3,7 @@
 #include <goose/function/create_sort_key.h>
 #include <goose/planner/expression/bound_function_expression.h>
 #include <goose/planner/expression_binder.h>
+#include <goose/version.h>
 
 namespace goose {
 

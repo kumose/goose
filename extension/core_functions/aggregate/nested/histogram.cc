@@ -4,6 +4,7 @@
 #include <goose/common/string_map_set.h>
 #include "core_functions/aggregate/histogram_helpers.h"
 #include <goose/common/owning_string_map.h>
+#include <goose/version.h>
 
 namespace goose {
 

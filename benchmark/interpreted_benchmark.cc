@@ -598,7 +598,7 @@ unique_ptr<BenchmarkState> InterpretedBenchmark::Initialize(BenchmarkConfigurati
 		state->con.Query("PRAGMA enable_profiling");
 		state->con.Query("PRAGMA profiling_mode='detailed'");
 	}
-	return std::move(state);
+	return state;
 }
 
 string InterpretedBenchmark::GetQuery() {

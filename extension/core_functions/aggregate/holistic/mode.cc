@@ -12,7 +12,7 @@
 #include <goose/function/aggregate/sort_key_helpers.h>
 #include <goose/common/types-import.h>
 #include <functional>
-
+#include <goose/version.h>
 // MODE( <expr1> )
 // Returns the most frequent value for the values within expr1.
 // NULL values are ignored. If all the values are NULL, or there are 0 rows, then the function returns NULL.

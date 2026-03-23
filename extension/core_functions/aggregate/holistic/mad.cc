@@ -3,6 +3,7 @@
 #include <goose/common/operator/cast_operators.h>
 #include <goose/common/operator/abs.h>
 #include "core_functions/aggregate/quantile_state.h"
+#include <goose/version.h>
 
 namespace goose {
 

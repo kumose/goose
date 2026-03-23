@@ -101,7 +101,7 @@ public:
 	goose::unique_ptr<BenchmarkState> Initialize(BenchmarkConfiguration &config) override {
 		auto state = CreateBenchmarkState();
 		Load(state.get());
-		return std::move(state);
+		return state;
 	}
 
 	void Run(BenchmarkState *state_p) override {

@@ -1,6 +1,6 @@
 
 #include "sqllogic_test_runner.h"
-
+#include  <goose/version.h>
 #include "catch.h"
 #include <goose/common/file_open_flags.h>
 #include <goose/common/virtual_file_system.h>

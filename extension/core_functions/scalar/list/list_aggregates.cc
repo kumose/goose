@@ -12,6 +12,7 @@
 #include <goose/function/function_binder.h>
 #include <goose/function/create_sort_key.h>
 #include <goose/common/owning_string_map.h>
+#include <goose/version.h>
 
 namespace goose {
 

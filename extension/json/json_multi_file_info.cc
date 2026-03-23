@@ -2,6 +2,7 @@
 #include "json_scan.h"
 #include <goose/common/types/value.h>
 #include <goose/parallel/async_result.h>
+#include <goose/version.h>
 
 namespace goose {
 

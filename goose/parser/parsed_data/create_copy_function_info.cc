@@ -1,0 +1,15 @@
+#include <goose/parser/parsed_data/create_copy_function_info.h>
+
+namespace goose {
+    CreateCopyFunctionInfo::CreateCopyFunctionInfo(CopyFunction function_p)
+        : CreateInfo(CatalogType::COPY_FUNCTION_ENTRY), function(std::move(function_p)) {
+        this->name = function.name;
+        internal = true;
+    }
+
+    unique_ptr<CreateInfo> CreateCopyFunctionInfo::Copy() const {
+        auto result = make_uniq<CreateCopyFunctionInfo>(function);
+        CopyProperties(*result);
+        return result;
+    }
+} // namespace goose

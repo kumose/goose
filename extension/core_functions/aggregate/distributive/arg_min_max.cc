@@ -9,6 +9,7 @@
 #include <goose/planner/expression_binder.h>
 #include <goose/function/create_sort_key.h>
 #include <goose/function/aggregate/minmax_n_helpers.h>
+#include <goose/version.h>
 
 namespace goose {
 

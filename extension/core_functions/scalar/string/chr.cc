@@ -1,6 +1,7 @@
 #include "core_functions/scalar/string_functions.h"
 #include <goose/utility/utf8proc.h>
 #include <goose/utility/utf8proc_wrapper.h>
+#include <goose/version.h>
 
 namespace goose {
 

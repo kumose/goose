@@ -6,6 +6,7 @@
 #include "core_functions/scalar/generic_functions.h"
 #include <goose/common/vector_operations/vector_operations.h>
 #include <goose/common/types-import.h>
+#include <goose/version.h>
 
 namespace goose {
 

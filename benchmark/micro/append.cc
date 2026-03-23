@@ -65,7 +65,7 @@ struct GoosePreparedState : public GooseBenchmarkState {
 #define APPEND_BENCHMARK_PREPARED(CREATE_STATEMENT)                                                                    \
 	goose::unique_ptr<GooseBenchmarkState> CreateBenchmarkState() override {                                         \
 		auto result = make_uniq<GoosePreparedState>(GetDatabasePath());                                               \
-		return std::move(result);                                                                                      \
+		return result;                                                                                      \
 	}                                                                                                                  \
 	void Load(GooseBenchmarkState *state_p) override {                                                                \
 		auto state = (GoosePreparedState *)state_p;                                                                   \

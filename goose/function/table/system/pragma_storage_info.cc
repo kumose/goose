@@ -1,0 +1,183 @@
+// Copyright (c) 2025 DuckDB.
+// Copyright (C) 2026 Kumo inc. and its affiliates. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+#include <goose/function/table/system_functions.h>
+
+#include <goose/catalog/catalog.h>
+#include <goose/catalog/catalog_entry/table_catalog_entry.h>
+#include <goose/catalog/catalog_entry/view_catalog_entry.h>
+#include <goose/parser/qualified_name.h>
+#include <goose/planner/constraints/bound_not_null_constraint.h>
+#include <goose/planner/constraints/bound_unique_constraint.h>
+
+#include <goose/common/exception.h>
+#include <goose/common/limits.h>
+#include <goose/storage/data_table.h>
+#include <goose/storage/table_storage_info.h>
+#include <goose/planner/binder.h>
+#include <goose/storage/table/column_data.h>
+
+#include <algorithm>
+
+namespace goose {
+    struct PragmaStorageFunctionData : public TableFunctionData {
+        explicit PragmaStorageFunctionData(TableCatalogEntry &table_entry) : table_entry(table_entry) {
+        }
+
+        TableCatalogEntry &table_entry;
+        vector<ColumnSegmentInfo> column_segments_info;
+    };
+
+    struct PragmaStorageOperatorData : public GlobalTableFunctionState {
+        PragmaStorageOperatorData() : offset(0) {
+        }
+
+        idx_t offset;
+    };
+
+    static unique_ptr<FunctionData> PragmaStorageInfoBind(ClientContext &context, TableFunctionBindInput &input,
+                                                          vector<LogicalType> &return_types, vector<string> &names) {
+        names.emplace_back("row_group_id");
+        return_types.emplace_back(LogicalType::BIGINT);
+
+        names.emplace_back("column_name");
+        return_types.emplace_back(LogicalType::VARCHAR);
+
+        names.emplace_back("column_id");
+        return_types.emplace_back(LogicalType::BIGINT);
+
+        names.emplace_back("column_path");
+        return_types.emplace_back(LogicalType::VARCHAR);
+
+        names.emplace_back("segment_id");
+        return_types.emplace_back(LogicalType::BIGINT);
+
+        names.emplace_back("segment_type");
+        return_types.emplace_back(LogicalType::VARCHAR);
+
+        names.emplace_back("start");
+        return_types.emplace_back(LogicalType::BIGINT);
+
+        names.emplace_back("count");
+        return_types.emplace_back(LogicalType::BIGINT);
+
+        names.emplace_back("compression");
+        return_types.emplace_back(LogicalType::VARCHAR);
+
+        names.emplace_back("stats");
+        return_types.emplace_back(LogicalType::VARCHAR);
+
+        names.emplace_back("has_updates");
+        return_types.emplace_back(LogicalType::BOOLEAN);
+
+        names.emplace_back("persistent");
+        return_types.emplace_back(LogicalType::BOOLEAN);
+
+        names.emplace_back("block_id");
+        return_types.emplace_back(LogicalType::BIGINT);
+
+        names.emplace_back("block_offset");
+        return_types.emplace_back(LogicalType::BIGINT);
+
+        names.emplace_back("segment_info");
+        return_types.emplace_back(LogicalType::VARCHAR);
+
+        names.emplace_back("additional_block_ids");
+        return_types.emplace_back(LogicalType::LIST(LogicalTypeId::BIGINT));
+
+        auto qname = QualifiedName::Parse(input.inputs[0].GetValue<string>());
+
+        // look up the table name in the catalog
+        Binder::BindSchemaOrCatalog(context, qname.catalog, qname.schema);
+        auto &table_entry = Catalog::GetEntry<TableCatalogEntry>(context, qname.catalog, qname.schema, qname.name);
+        auto result = make_uniq<PragmaStorageFunctionData>(table_entry);
+        result->column_segments_info = table_entry.GetColumnSegmentInfo(context);
+        return result;
+    }
+
+    unique_ptr<GlobalTableFunctionState> PragmaStorageInfoInit(ClientContext &context, TableFunctionInitInput &input) {
+        return make_uniq<PragmaStorageOperatorData>();
+    }
+
+    static Value ValueFromBlockIdList(const vector<block_id_t> &block_ids) {
+        vector<Value> blocks;
+        for (auto &block_id: block_ids) {
+            blocks.push_back(Value::BIGINT(block_id));
+        }
+        return Value::LIST(LogicalTypeId::BIGINT, blocks);
+    }
+
+    static void PragmaStorageInfoFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {
+        auto &bind_data = data_p.bind_data->Cast<PragmaStorageFunctionData>();
+        auto &data = data_p.global_state->Cast<PragmaStorageOperatorData>();
+        idx_t count = 0;
+        auto &columns = bind_data.table_entry.GetColumns();
+        while (data.offset < bind_data.column_segments_info.size() && count < STANDARD_VECTOR_SIZE) {
+            auto &entry = bind_data.column_segments_info[data.offset++];
+
+            idx_t col_idx = 0;
+            // row_group_id
+            output.SetValue(col_idx++, count, Value::BIGINT(NumericCast<int64_t>(entry.row_group_index)));
+            // column_name
+            auto &col = columns.GetColumn(PhysicalIndex(entry.column_id));
+            output.SetValue(col_idx++, count, Value(col.Name()));
+            // column_id
+            output.SetValue(col_idx++, count, Value::BIGINT(NumericCast<int64_t>(entry.column_id)));
+            // column_path
+            output.SetValue(col_idx++, count, Value(entry.column_path));
+            // segment_id
+            output.SetValue(col_idx++, count, Value::BIGINT(NumericCast<int64_t>(entry.segment_idx)));
+            // segment_type
+            output.SetValue(col_idx++, count, Value(entry.segment_type));
+            // start
+            output.SetValue(col_idx++, count, Value::BIGINT(NumericCast<int64_t>(entry.segment_start)));
+            // count
+            output.SetValue(col_idx++, count, Value::BIGINT(NumericCast<int64_t>(entry.segment_count)));
+            // compression
+            output.SetValue(col_idx++, count, Value(entry.compression_type));
+            // stats
+            output.SetValue(col_idx++, count, Value(entry.segment_stats));
+            // has_updates
+            output.SetValue(col_idx++, count, Value::BOOLEAN(entry.has_updates));
+            // persistent
+            output.SetValue(col_idx++, count, Value::BOOLEAN(entry.persistent));
+            // block_id
+            // block_offset
+            if (entry.persistent) {
+                output.SetValue(col_idx++, count, Value::BIGINT(entry.block_id));
+                output.SetValue(col_idx++, count, Value::BIGINT(NumericCast<int64_t>(entry.block_offset)));
+            } else {
+                output.SetValue(col_idx++, count, Value());
+                output.SetValue(col_idx++, count, Value());
+            }
+            // segment_info
+            output.SetValue(col_idx++, count, Value(entry.segment_info));
+            // additional_block_ids
+            if (entry.persistent) {
+                output.SetValue(col_idx++, count, ValueFromBlockIdList(entry.additional_blocks));
+            } else {
+                output.SetValue(col_idx++, count, Value());
+            }
+
+            count++;
+        }
+        output.SetCardinality(count);
+    }
+
+    void PragmaStorageInfo::RegisterFunction(BuiltinFunctions &set) {
+        set.AddFunction(TableFunction("pragma_storage_info", {LogicalType::VARCHAR}, PragmaStorageInfoFunction,
+                                      PragmaStorageInfoBind, PragmaStorageInfoInit));
+    }
+} // namespace goose

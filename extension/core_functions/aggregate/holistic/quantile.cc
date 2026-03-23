@@ -9,6 +9,7 @@
 #include <goose/common/serializer/serializer.h>
 #include <goose/common/serializer/deserializer.h>
 #include <goose/function/aggregate/sort_key_helpers.h>
+#include <goose/version.h>
 
 namespace goose {
 

@@ -14,6 +14,7 @@
 
 #include <memory>
 #include <sstream>
+#include <goose//version.h>
 
 #ifndef GOOSE_BASE_STD
 namespace goose_base_std {

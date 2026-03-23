@@ -1,0 +1,118 @@
+// Copyright (c) 2025 DuckDB.
+// Copyright (C) 2026 Kumo inc. and its affiliates. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+
+#include <goose/parser/parsed_data/create_view_info.h>
+#include <goose/catalog/catalog_entry/schema_catalog_entry.h>
+#include <goose/catalog/catalog.h>
+#include <goose/parser/parser.h>
+#include <goose/planner/binder.h>
+#include <goose/parser/statement/select_statement.h>
+#include <goose/parser/statement/create_statement.h>
+
+namespace goose {
+    CreateViewInfo::CreateViewInfo() : CreateInfo(CatalogType::VIEW_ENTRY, INVALID_SCHEMA) {
+    }
+
+    CreateViewInfo::CreateViewInfo(string catalog_p, string schema_p, string view_name_p)
+        : CreateInfo(CatalogType::VIEW_ENTRY, std::move(schema_p), std::move(catalog_p)),
+          view_name(std::move(view_name_p)) {
+    }
+
+    CreateViewInfo::CreateViewInfo(SchemaCatalogEntry &schema, string view_name)
+        : CreateViewInfo(schema.catalog.GetName(), schema.name, std::move(view_name)) {
+    }
+
+    string CreateViewInfo::ToString() const {
+        string result = GetCreatePrefix("VIEW");
+        result += QualifierToString(temporary ? "" : catalog, schema, view_name);
+        if (!aliases.empty()) {
+            result += " (";
+            result += StringUtil::Join(aliases, aliases.size(), ", ",
+                                       [](const string &name) { return KeywordHelper::WriteOptionallyQuoted(name); });
+            result += ")";
+        }
+        result += " AS ";
+        result += query->ToString();
+        result += ";";
+        return result;
+    }
+
+    unique_ptr<CreateInfo> CreateViewInfo::Copy() const {
+        auto result = make_uniq<CreateViewInfo>(catalog, schema, view_name);
+        CopyProperties(*result);
+        result->aliases = aliases;
+        result->types = types;
+        result->column_comments = column_comments;
+        result->query = unique_ptr_cast<SQLStatement, SelectStatement>(query->Copy());
+        return result;
+    }
+
+    unique_ptr<SelectStatement> CreateViewInfo::ParseSelect(const string &sql) {
+        Parser parser;
+        parser.ParseQuery(sql);
+        if (parser.statements.size() != 1 || parser.statements[0]->type != StatementType::SELECT_STATEMENT) {
+            throw BinderException(
+                "Failed to create view from SQL string - \"%s\" - statement did not contain a single SELECT statement",
+                sql);
+        }
+        D_ASSERT(parser.statements.size() == 1 && parser.statements[0]->type == StatementType::SELECT_STATEMENT);
+        return unique_ptr_cast<SQLStatement, SelectStatement>(std::move(parser.statements[0]));
+    }
+
+    unique_ptr<CreateViewInfo> CreateViewInfo::FromSelect(ClientContext &context, unique_ptr<CreateViewInfo> info) {
+        D_ASSERT(info);
+        D_ASSERT(!info->view_name.empty());
+        D_ASSERT(!info->sql.empty());
+        D_ASSERT(!info->query);
+
+        info->query = ParseSelect(info->sql);
+
+        auto binder = Binder::CreateBinder(context);
+        binder->BindCreateViewInfo(*info);
+
+        return info;
+    }
+
+    unique_ptr<CreateViewInfo> CreateViewInfo::FromCreateView(ClientContext &context, SchemaCatalogEntry &schema,
+                                                              const string &sql) {
+        D_ASSERT(!sql.empty());
+
+        // parse the SQL statement
+        Parser parser;
+        parser.ParseQuery(sql);
+
+        if (parser.statements.size() != 1 || parser.statements[0]->type != StatementType::CREATE_STATEMENT) {
+            throw BinderException(
+                "Failed to create view from SQL string - \"%s\" - statement did not contain a single CREATE VIEW statement",
+                sql);
+        }
+        auto &create_statement = parser.statements[0]->Cast<CreateStatement>();
+        if (create_statement.info->type != CatalogType::VIEW_ENTRY) {
+            throw BinderException(
+                "Failed to create view from SQL string - \"%s\" - view did not contain a CREATE VIEW statement", sql);
+        }
+
+        auto result = unique_ptr_cast<CreateInfo, CreateViewInfo>(std::move(create_statement.info));
+        result->catalog = schema.ParentCatalog().GetName();
+        result->schema = schema.name;
+
+        auto view_binder = Binder::CreateBinder(context);
+        view_binder->BindCreateViewInfo(*result);
+
+        return result;
+    }
+} // namespace goose
