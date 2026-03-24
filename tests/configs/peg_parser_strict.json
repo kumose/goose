@@ -1,0 +1,203 @@
+{
+  "description": "Test PEG Parser + transformer in strict mode",
+  "skip_compiled": "true",
+  "on_init": "set allow_parser_override_extension=strict_when_supported;",
+  "statically_loaded_extensions": [
+    "core_functions",
+    "autocomplete"
+  ],
+  "skip_tests": [
+    {
+      "reason": "Multi-statement containing unimplemented statementType",
+      "paths": [
+        "tests/scripts/sql/delete/test_segment_deletes.test",
+        "tests/scripts/sql/types/union/union_join.test",
+        "tests/scripts/sql/catalog/did_you_mean.test",
+        "tests/scripts/sql/storage/wal/wal_view_storage.test"
+      ]
+    },
+    {
+      "reason": "Requires implementing SelectStatement",
+      "paths": [
+        "tests/scripts/fuzzer/pedro/segment_tree_index_issue.test",
+        "tests/scripts/fuzzer/pedro/delete_using_bindings.test",
+        "tests/scripts/issues/general/test_3997.test",
+        "tests/scripts/issues/fuzz/sqlite_wrapper_crash.test",
+        "tests/scripts/sql/returning/no_crash_when_no_returning_columns.test",
+        "tests/scripts/sql/returning/returning_delete.test",
+        "tests/scripts/sql/returning/returning_delete_list.test",
+        "tests/scripts/sql/update/test_big_string_update.test",
+        "tests/scripts/sql/delete/test_using_delete.test",
+        "tests/scripts/sql/optimizer/test_rowid_pushdown_deletes.test",
+        "tests/scripts/sql/subquery/lateral/pg_lateral.test",
+        "tests/scripts/sql/subquery/scalar/test_delete_subquery.test",
+        "tests/scripts/sql/index/art/constraints/test_art_eager_constraint_checking.test",
+        "tests/scripts/sql/index/art/scan/test_art_scan_coverage.test",
+        "tests/scripts/sql/index/art/storage/test_art_storage.test",
+        "tests/scripts/sql/cte/materialized/dml_materialized_cte.test",
+        "tests/scripts/sql/storage/wal/wal_index_delete_gen.test",
+        "tests/scripts/sql/cte/materialized/dml_materialized_cte.test",
+        "tests/scripts/issues/general/test_15432.test",
+        "tests/scripts/sql/types/list/unnest_aggregate.test",
+        "tests/scripts/sql/generated_columns/virtual/create_table.test",
+        "tests/scripts/sql/binder/function_chaining_19035.test",
+        "tests/scripts/sql/subquery/complex/correlated_internal_issue_5975.test",
+        "tests/scripts/sql/subquery/scalar/test_issue_7079.test",
+        "tests/scripts/sql/aggregate/qualify/test_qualify_macro.test",
+        "tests/scripts/sql/catalog/function/test_complex_macro.test",
+        "tests/scripts/sql/catalog/function/macro_query_table.test",
+        "tests/scripts/sql/catalog/function/test_cte_macro.test",
+        "tests/scripts/sql/catalog/function/test_subquery_macro.test",
+        "tests/scripts/sql/catalog/function/test_macro_with_unknown_types.test",
+        "tests/scripts/sql/catalog/function/test_macro_issue_14276.test",
+        "tests/scripts/sql/catalog/function/test_sequence_macro.test",
+        "tests/scripts/sql/catalog/function/test_simple_macro.test",
+        "tests/scripts/sql/function/list/lambdas/arrow/test_lambda_arrow_storage_deprecated.test",
+        "tests/scripts/sql/function/list/lambdas/arrow/expression_iterator_cases_deprecated.test",
+        "tests/scripts/sql/function/list/lambdas/arrow/lambdas_and_macros_deprecated.test",
+        "tests/scripts/sql/function/list/lambdas/incorrect.test",
+        "tests/scripts/sql/function/list/lambdas/lambdas_and_macros.test",
+        "tests/scripts/sql/function/list/lambdas/expression_iterator_cases.test",
+        "tests/scripts/sql/export/export_macros.test",
+        "tests/scripts/sql/catalog/function/test_recursive_macro.test",
+        "tests/scripts/sql/catalog/function/test_recursive_macro_no_dependency.test",
+        "tests/scripts/sql/catalog/function/test_macro_default_arg_with_dependencies.test",
+        "tests/scripts/sql/attach/reattach_schema.test",
+        "tests/scripts/sql/pivot/pivot_enum.test",
+        "tests/scripts/sql/types/enum/test_5983.test",
+        "tests/scripts/sql/binder/test_alias_map_in_subquery.test"
+      ]
+    },
+    {
+      "reason": "Conversion Error",
+      "paths": [
+        "tests/scripts/sql/storage/types/struct/wal_struct_storage.test",
+        "tests/scripts/sql/storage/types/struct/struct_storage.test"
+      ]
+    },
+    {
+      "reason": "Case insensitive preservation",
+      "paths": [
+        "tests/scripts/sql/settings/setting_preserve_identifier_case.test"
+      ]
+    },
+    {
+      "reason": "Create Table Statement",
+      "paths": [
+        "tests/scripts/sql/export/parquet/export_parquet_enum.test",
+        "tests/scripts/sql/export/export_generated_columns.test",
+        "tests/scripts/sql/export/export_database.test"
+      ]
+    },
+    {
+      "reason": "Parser exception because of dollar-quoted strings",
+      "paths": [
+        "tests/scripts/sql/peg_parser/parser/create_macro.test",
+        "tests/scripts/sql/peg_parser/parser/show_table.test",
+        "tests/scripts/sql/peg_parser/parser/prepare_statement.test",
+        "tests/scripts/sql/peg_parser/parser/support_try.test",
+        "tests/scripts/sql/peg_parser/parser/nested_join.test",
+        "tests/scripts/sql/peg_parser/parser/pivot_statement.test",
+        "tests/scripts/sql/peg_parser/parser/on_conflict.test",
+        "tests/scripts/sql/peg_parser/parser/select_star.test",
+        "tests/scripts/sql/peg_parser/parser/invisible_space.test",
+        "tests/scripts/sql/peg_parser/parser/array_subquery.test",
+        "tests/scripts/sql/peg_parser/parser/update_statement.test",
+        "tests/scripts/sql/peg_parser/parser/use_statement.test",
+        "tests/scripts/sql/peg_parser/parser/dotted_functions.test",
+        "tests/scripts/sql/peg_parser/parser/attach_or_replace.test",
+        "tests/scripts/sql/peg_parser/parser/load_extension.test",
+        "tests/scripts/sql/peg_parser/parser/delete_from.test",
+        "tests/scripts/sql/peg_parser/parser/create_type.test",
+        "tests/scripts/sql/peg_parser/parser/alter.test",
+        "tests/scripts/sql/peg_parser/parser/with_ordinality.test",
+        "tests/scripts/sql/peg_parser/parser/recursive.test",
+        "tests/scripts/sql/peg_parser/parser/analyze_vacuum.test",
+        "tests/scripts/sql/peg_parser/parser/scientific_notation.test",
+        "tests/scripts/sql/peg_parser/parser/index.test",
+        "tests/scripts/sql/peg_parser/parser/type.test",
+        "tests/scripts/sql/peg_parser/parser/empty_map.test",
+        "tests/scripts/sql/peg_parser/parser/copy_expression.test",
+        "tests/scripts/sql/peg_parser/parser/colon_alias.test",
+        "tests/scripts/sql/peg_parser/parser/lambda_functions.test",
+        "tests/scripts/sql/peg_parser/parser/collate.test",
+        "tests/scripts/sql/peg_parser/parser/support_unreserved_keywords.test",
+        "tests/scripts/sql/peg_parser/parser/list_slices.test",
+        "tests/scripts/sql/peg_parser/parser/struct_identifier.test",
+        "tests/scripts/sql/peg_parser/parser/map.test",
+        "tests/scripts/sql/peg_parser/parser/ignore_nulls.test",
+        "tests/scripts/sql/peg_parser/parser/insert.test",
+        "tests/scripts/sql/peg_parser/parser/dollar_quoted.test",
+        "tests/scripts/sql/peg_parser/parser/support_optional_not_null_constraint.test",
+        "tests/scripts/sql/peg_parser/parser/window_function.test",
+        "tests/scripts/sql/peg_parser/parser/create_table.test",
+        "tests/scripts/sql/peg_parser/parser/sample.test",
+        "tests/scripts/sql/peg_parser/parser/merge_into.test",
+        "tests/scripts/sql/peg_parser/parser/custom_operator.test"
+      ]
+    },
+    {
+      "reason": "Quotations",
+      "paths": [
+        "tests/scripts/sql/pragma/test_show_tables_from.test",
+        "tests/scripts/sql/attach/attach_dbname_quotes.test",
+        "tests/scripts/sql/table_function/sqlite_master_quotes.test",
+        "tests/scripts/sql/keywords/escaped_quotes_expressions.test",
+        "tests/scripts/sql/keywords/keywords_in_expressions.test",
+        "tests/scripts/sql/show_select/test_describe_quoted.test",
+        "tests/scripts/sql/show_select/test_summarize_quoted.test",
+        "tests/scripts/sql/pragma/test_show_tables.test",
+        "tests/scripts/sql/export/export_quoted_enum.test"
+      ]
+    },
+    {
+      "reason": "Parser error",
+      "paths": [
+        "tests/scripts/sql/catalog/issue_9459.test"
+      ]
+    },
+    {
+      "reason": "Timeout",
+      "paths": [
+        "tests/scripts/sql/storage/encryption/temp_files/encrypted_offloading_block_files.test_slow",
+        "tests/scripts/sql/storage/temp_directory/offloading_block_files.test_slow"
+      ]
+    },
+    {
+      "reason": "Setting option to 'strict' changes behavior of first tests",
+      "paths": [
+        "tests/scripts/extension/loadable_parser_override.test",
+        "tests/scripts/sql/peg_parser/transformer/peg_transformer.test"
+      ]
+    },
+    {
+      "reason": "Unclassified failures",
+      "paths": [
+        "tests/scripts/extension/install_extension.test",
+        "tests/scripts/optimizer/pushdown/pushdown_in_to_parquet.test",
+        "tests/scripts/optimizer/remove_unused_filter_column.test",
+        "tests/scripts/fuzzer/pedro/export_parquet_generated.test",
+        "tests/scripts/fuzzer/pedro/incomplete_checkpoint.test",
+        "tests/scripts/parquet/test_internal_5021.test",
+        "tests/scripts/parquet/timens_parquet.test",
+        "tests/scripts/sql/settings/allowed_directories.test",
+        "tests/scripts/sql/types/enum/test_enum.test",
+        "tests/scripts/sql/types/struct/nested_struct_projection_pushdown.test",
+        "tests/scripts/sql/types/struct/struct_cast_superset.test",
+        "tests/scripts/sql/attach/attach_new_compression.test",
+        "tests/scripts/sql/attach/attach_wal_alter.test",
+        "tests/scripts/sql/attach/attach_storage_version.test",
+        "tests/scripts/sql/storage/compression/string/blob.test",
+        "tests/scripts/sql/storage/compression/alprd/alprd_min_max.test",
+        "tests/scripts/sql/storage/compression/rle/rle_nulls_edge_case.test",
+        "tests/scripts/sql/storage/compression/alp/alp_min_max.test",
+        "tests/scripts/sql/pragma/test_metadata_info.test",
+        "tests/scripts/sql/secrets/create_secret_persistence_no_client_context.test",
+        "tests/scripts/sql/pragma/profiling/call_enable_profiling_function.test",
+        "tests/scripts/sql/secrets/create_secret_persistence_no_client_context.test",
+        "tests/scripts/sql/storage/wal/wal_replay_consistency_add_column_current_timestamp.test",
+        "tests/scripts/sql/storage/wal/wal_replay_consistency_add_column_random.test"
+      ]
+    }
+  ]
+}

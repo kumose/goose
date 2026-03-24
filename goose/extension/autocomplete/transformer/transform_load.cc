@@ -11,7 +11,7 @@ namespace goose {
         info->load_type = LoadType::LOAD;
         info->filename = transformer.Transform<string>(list_pr.Child<ListParseResult>(1));
         result->info = std::move(info);
-        return std::move(result);
+        return result;
     }
 
     unique_ptr<SQLStatement> PEGTransformerFactory::TransformInstallStatement(PEGTransformer &transformer,

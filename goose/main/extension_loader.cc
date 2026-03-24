@@ -35,6 +35,12 @@ namespace goose {
                 return ExtensionLoadResult::LOADED_EXTENSION;
             }
         },
+        {
+            "core_functions", [](Goose &db) {
+                db.LoadStaticExtension<CoreFunctionsExtension>();
+                return ExtensionLoadResult::LOADED_EXTENSION;
+            }
+        },
 #endif
 #if defined(STATIC_LOAD_JSON)
         {
@@ -96,7 +102,7 @@ namespace goose {
     std::vector<std::string> auto_load_extensions() {
         std::vector<std::string> extensions;
         std::lock_guard<std::mutex> lock(extension_loader_mutex);
-        for (auto it = extension_loaders.begin();it != extension_loaders.end(); ++it) {
+        for (auto it = extension_loaders.begin(); it != extension_loaders.end(); ++it) {
             extensions.push_back(it->first);
         }
         return extensions;
@@ -135,7 +141,7 @@ namespace goose {
     std::vector<std::string> auto_load_test_extensions() {
         std::vector<std::string> extensions;
         std::lock_guard<std::mutex> lock(test_extension_loader_mutex);
-        for (auto it = test_extension_loaders.begin();it != test_extension_loaders.end(); ++it) {
+        for (auto it = test_extension_loaders.begin(); it != test_extension_loaders.end(); ++it) {
             extensions.push_back(it->first);
         }
         return extensions;

@@ -1,0 +1,21 @@
+# name: tests/scripts/sql/table_function/goose_extensions.test
+# description: Test goose_extensions function
+# group: [table_function]
+
+statement ok
+SELECT * FROM goose_extensions();
+
+query I
+SELECT aliases FROM goose_extensions() WHERE extension_name='postgres_scanner';
+----
+[postgres]
+
+require tpch
+
+statement ok
+LOAD tpch;
+
+query I
+SELECT extension_name FROM goose_extensions() WHERE loaded AND extension_name='tpch';
+----
+tpch

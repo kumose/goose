@@ -48,8 +48,8 @@ foreach (test IN LISTS ARROW_TEST_SRC)
             ${test}.cc
             CXXOPTS ${KMCMAKE_CXX_OPTIONS}
             LINKS
-            goose::goose_testing_static
             goose::goose_testing_main_static
+            goose::goose_testing_static
             goose::goose_static
             ${KMCMAKE_DEPS_LINK}
     )

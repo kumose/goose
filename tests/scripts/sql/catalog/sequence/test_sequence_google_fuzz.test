@@ -1,0 +1,16 @@
+# name: tests/scripts/sql/catalog/sequence/test_sequence_google_fuzz.test
+# description: Test Sequence on results produce by the google fuzzer
+# group: [sequence]
+
+statement error
+;creAte
+sequence
+uGeõó±õõõõ.õõõ.õ;creAte
+sequence
+uGeõõõõõ..õ;creAte
+sequence
+uGeõõõõõ..õ;creAte
+sequence
+uGeõõõõ
+----
+Catalog with name uGeõó±õõõõ does not exist!

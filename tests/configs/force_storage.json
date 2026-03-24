@@ -1,0 +1,31 @@
+{
+  "description": "Run on persistent databases as storage.",
+  "initial_db": "{TEST_DIR}/{BASE_TEST_NAME}__test__config__force_storage.db",
+  "skip_compiled": "true",
+  "skip_tests": [
+    {
+      "reason": "Contains explicit use of the memory catalog.",
+      "paths": [
+        "tests/scripts/sql/show_select/test_describe_all.test",
+        "tests/scripts/sql/catalog/function/attached_macro.test",
+        "tests/scripts/sql/catalog/test_temporary.test",
+        "tests/scripts/sql/pragma/test_show_tables_temp_views.test",
+        "tests/scripts/sql/pg_catalog/system_functions.test",
+        "tests/scripts/sql/pg_catalog/sqlalchemy.test",
+        "tests/scripts/sql/attach/attach_table_info.test",
+        "tests/scripts/sql/attach/attach_defaults.test",
+        "tests/scripts/sql/attach/attach_did_you_mean.test",
+        "tests/scripts/sql/attach/attach_default_table.test",
+        "tests/scripts/sql/attach/attach_show_all_tables.test",
+        "tests/scripts/sql/attach/attach_issue7711.test",
+        "tests/scripts/sql/attach/attach_issue_7660.test",
+        "tests/scripts/sql/attach/show_databases.test",
+        "tests/scripts/sql/attach/attach_views.test",
+        "tests/scripts/sql/copy_database/copy_table_with_sequence.test",
+        "tests/scripts/sql/storage/read_goose/concurrent_goose_read.test_slow",
+        "tests/scripts/sql/storage/wal/wal_replay_consistency_add_column_current_timestamp.test",
+        "tests/scripts/sql/storage/wal/wal_replay_consistency_add_column_random.test"
+      ]
+    }
+  ]
+}

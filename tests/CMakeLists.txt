@@ -49,3 +49,4 @@ endif()
 configure_file(${PROJECT_SOURCE_DIR}/tests/config.h.in ${PROJECT_SOURCE_DIR}/tests/config.h @ONLY)
 
 add_subdirectory(cpp)
+add_subdirectory(scripts)

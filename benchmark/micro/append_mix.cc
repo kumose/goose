@@ -1,4 +1,4 @@
-#include "benchmark_runner.hpp"
+#include <goose/benchmark/benchmark_runner.h>
 #include "goose_benchmark_macro.hpp"
 #include <goose/main/appender.h>
 #include <goose/common/random_engine.h>

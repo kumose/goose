@@ -150,17 +150,6 @@ kmcmake_cc_library(
         PUBLIC
 )
 
-kmcmake_cc_library(
-        NAMESPACE ${PROJECT_NAME}
-        NAME goose_testing_main
-        SOURCES
-        ${PROJECT_SOURCE_DIR}/goose/testing/goose_testing_main.cc
-        CXXOPTS
-        ${KMCMAKE_CXX_OPTIONS}
-        PLINKS
-        ${KMCMAKE_DEPS_LINK}
-        PUBLIC
-)
 #######################################################
 # other extensions
 add_subdirectory(extension/autocomplete)

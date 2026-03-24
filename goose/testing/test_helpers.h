@@ -36,7 +36,7 @@
 #include <iostream>
 
 namespace goose {
-    void RegisterSqllogictests();
+    void register_sqllogic_tests();
 
     bool SummarizeFailures();
 

@@ -299,7 +299,7 @@ CMakeUserPresets.json
 docs
 
 # tests
-test/test.sql
+tests/scipts/test.sql
 goose_benchmark_data/
 
 # SQLite logic tests
@@ -356,5 +356,5 @@ extension_external
 .pyodide-xbuildenv
 .venv-pyodide
 
-test/sql/pragma/output.json
+tests/sql/sql/pragma/output.json
 tools/pythonpkg/goose_build/

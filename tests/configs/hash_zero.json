@@ -1,0 +1,47 @@
+{
+  "description": "Run with a (terrible) hash function that always returns 0.",
+  "skip_compiled": "true",
+  "skip_tests": [
+    {
+      "reason": "Too slow.",
+      "paths": [
+        "tests/scripts/optimizer/pushdown/no_mark_to_semi_if_mark_index_is_projected.test",
+        "tests/scripts/optimizer/joins/tpcds_nofail.test",
+        "tests/scripts/fuzzer/goosefuzz/bind_limit_num.test",
+        "tests/scripts/sql/types/enum/test_5983.test",
+        "tests/scripts/sql/insert/insert_from_many_grouping_sets.test",
+        "tests/scripts/sql/subquery/lateral/pg_lateral.test",
+        "tests/scripts/sql/aggregate/aggregates/test_perfect_ht.test",
+        "tests/scripts/sql/upsert/upsert_duplicates_issue.test",
+        "tests/scripts/sql/storage/lazy_load/lazy_load_limit.test",
+        "tests/scripts/sql/transactions/test_multi_version_large.test",
+        "tests/scripts/sql/copy/csv/auto/test_auto_cranlogs.test",
+        "tests/scripts/sql/copy/csv/test_8890.test",
+        "tests/scripts/sql/copy/csv/test_15211.test",
+        "tests/scripts/sql/copy/csv/csv_limit_copy.test"
+      ]
+    },
+    {
+      "reason": "HyperLogLog doesn't work.",
+      "paths": [
+        "tests/scripts/optimizer/joins/better_ce_estimates_for_bad_join_conditions.test",
+        "tests/scripts/fuzzer/pedro/vacuum_table_with_generated_column.test",
+        "tests/scripts/sql/types/nested/array/array_summarize.test",
+        "tests/scripts/sql/types/timestamp/test_infinite_time.test",
+        "tests/scripts/sql/show_select/test_summarize.test",
+        "tests/scripts/sql/vacuum/test_analyze.test",
+        "tests/scripts/sql/aggregate/aggregates/test_approximate_distinct_count.test",
+        "tests/scripts/sql/function/list/aggregates/approx_count_distinct.test",
+        "tests/scripts/sql/copy/csv/test_glob_reorder_lineitem.test",
+        "tests/scripts/sql/types/geo/geometry_stats.test"
+      ]
+    },
+    {
+      "reason": "Relies on exact hash function output.",
+      "paths": [
+        "tests/scripts/sql/function/generic/hash_func.test",
+        "tests/scripts/sql/copy/file_size_bytes.test"
+      ]
+    }
+  ]
+}

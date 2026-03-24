@@ -77,13 +77,13 @@
 /// Git Version Information
 ////////////////////////////////////////////////////////////////////////////////
 // Full Git commit hash (e.g., "a1b2c3d4e5f67890abcdef1234567890abcdef12")
-#define GOOSE_GIT_COMMIT_HASH "a1f0bb3b4f78163ae50886d416ad70c31be02e40"
+#define GOOSE_GIT_COMMIT_HASH "e3653397e89e346b1878a53dba1abe19cb05410b"
 // Short Git commit hash (e.g., "a1b2c3d")
-#define GOOSE_GIT_COMMIT_SHORT_HASH "a1f0bb3"
+#define GOOSE_GIT_COMMIT_SHORT_HASH "e365339"
 // Git dirty flag (0 = clean working tree, 1 = uncommitted changes)
 #define GOOSE_GIT_IS_DIRTY 1
 // Combined Git version string (e.g., "0.6.0-a1b2c3d" or "0.6.0-a1b2c3d-dirty")
-#define GOOSE_GIT_VERSION_STRING "v0.5.5-a1f0bb3-dirty"
+#define GOOSE_GIT_VERSION_STRING "v0.5.5-e365339-dirty"
 
 #define GOOSE_CUSTOM_PLATFORM_ENABLE 0
 

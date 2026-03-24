@@ -1,0 +1,21 @@
+# name: tests/scripts/sql/table_function/goose_schemas.test
+# description: Test goose_schemas function
+# group: [table_function]
+
+query I
+SELECT COUNT(*) FROM goose_schemas;
+----
+0
+
+statement ok
+CREATE SCHEMA scheme;
+
+query I
+SELECT COUNT(*) FROM goose_schemas() WHERE schema_name='scheme';
+----
+1
+
+query I
+SELECT COUNT(*) FROM goose_schemas WHERE schema_name='scheme';
+----
+1

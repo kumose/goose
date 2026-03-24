@@ -1,0 +1,69 @@
+{
+  "description": "Test PEG Parser + transformer with fallback mode",
+  "skip_compiled": "true",
+  "on_init": "set allow_parser_override_extension=fallback;",
+  "statically_loaded_extensions": [
+    "core_functions",
+    "autocomplete"
+  ],
+  "skip_tests": [
+    {
+      "reason": "Arithmetic expression",
+      "paths": [
+        "tests/scripts/sql/function/operator/test_arithmetic_sqllogic.test",
+        "tests/scripts/sql/projection/test_row_id_expression.test",
+        "tests/scripts/sql/function/numeric/test_trigo.test",
+        "tests/scripts/sql/function/generic/test_between.test"
+      ]
+    },
+    {
+      "reason": "Quotations",
+      "paths": [
+        "tests/scripts/sql/pragma/test_show_tables_from.test",
+        "tests/scripts/sql/attach/attach_dbname_quotes.test",
+        "tests/scripts/sql/table_function/sqlite_master_quotes.test",
+        "tests/scripts/sql/keywords/escaped_quotes_expressions.test"
+      ]
+    },
+    {
+      "reason": "Conversion Error",
+      "paths": [
+        "tests/scripts/sql/storage/types/struct/wal_struct_storage.test",
+        "tests/scripts/sql/storage/types/struct/struct_storage.test"
+      ]
+    },
+    {
+      "reason": "Case insensitive preservation",
+      "paths": [
+        "tests/scripts/sql/settings/setting_preserve_identifier_case.test"
+      ]
+    },
+    {
+      "reason": "Create macro with param",
+      "paths": [
+        "tests/scripts/sql/catalog/function/test_complex_macro.test"
+      ]
+    },
+    {
+      "reason": "Timeout",
+      "paths": [
+        "tests/scripts/sql/storage/encryption/temp_files/encrypted_offloading_block_files.test_slow",
+        "tests/scripts/sql/storage/temp_directory/offloading_block_files.test_slow"
+      ]
+    },
+    {
+      "reason": "Setting option to 'fallback' changes behavior of first tests",
+      "paths": [
+        "tests/scripts/extension/loadable_parser_override.test"
+      ]
+    },
+    {
+      "reason": "Unclassified failures",
+      "paths": [
+        "tests/scripts/sql/types/enum/test_enum.test",
+        "tests/scripts/sql/storage/wal/wal_replay_consistency_add_column_current_timestamp.test",
+        "tests/scripts/sql/storage/wal/wal_replay_consistency_add_column_random.test"
+      ]
+    }
+  ]
+}
