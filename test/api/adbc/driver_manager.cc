@@ -23,7 +23,7 @@
 
 #include <goose/common/numeric_utils.h>
 #include "driver_manager.h"
-#include "goose/common/adbc/adbc.h"
+#include <goose/common/adbc/adbc.h>
 #include <goose/common/adbc/adbc-goose.h>
 
 #include <algorithm>

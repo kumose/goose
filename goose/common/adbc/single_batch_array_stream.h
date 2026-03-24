@@ -16,7 +16,7 @@
 #pragma once
 
 #include <goose/common/arrow/arrow.h>
-#include "goose/common/adbc/adbc.h"
+#include <goose/common/adbc/adbc.h>
 
 namespace goose_adbc {
 

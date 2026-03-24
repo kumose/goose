@@ -105,6 +105,7 @@ kmcmake_cc_library(
 )
 
 file(GLOB_RECURSE testing_SRC "testing/*.cc")
+list(REMOVE_ITEM ${PROJECT_SOURCE_DIR}/goose/testing/goose_testing_main.cc)
 kmcmake_cc_library(
         NAMESPACE ${PROJECT_NAME}
         NAME goose_testing
@@ -113,8 +114,18 @@ kmcmake_cc_library(
         CXXOPTS
         ${KMCMAKE_CXX_OPTIONS}
         PLINKS
-        goose::dummy_static_extension_loader_static
-        goose::goose_static
+        ${KMCMAKE_DEPS_LINK}
+        PUBLIC
+)
+
+kmcmake_cc_library(
+        NAMESPACE ${PROJECT_NAME}
+        NAME goose_testing_main
+        SOURCES
+        ${PROJECT_SOURCE_DIR}/goose/testing/goose_testing_main.cc
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        PLINKS
         ${KMCMAKE_DEPS_LINK}
         PUBLIC
 )

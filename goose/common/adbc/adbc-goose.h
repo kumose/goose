@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "goose/common/adbc/adbc.h"
+#include <goose/common/adbc/adbc.h>
 
 #include <goose/main/capi/capi_internal.h>
 

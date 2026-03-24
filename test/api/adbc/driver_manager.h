@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "goose/common/adbc/adbc.h"
+#include <goose/common/adbc/adbc.h>
 
 #ifdef __cplusplus
 extern "C" {

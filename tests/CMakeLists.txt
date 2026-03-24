@@ -52,16 +52,4 @@ set(C_TEST_SRC
     api/test_api.cc
 )
 
-kmcmake_cc_test(
-        NAME test
-        MODULE capi
-        SOURCES
-        ${C_TEST_SRC}
-        unittest.cc
-        CXXOPTS ${KMCMAKE_CXX_OPTIONS}
-        LINKS
-        goose::dummy_static_extension_loader_static
-        goose::goose_testing_static
-        goose::goose_static
-        ${KMCMAKE_DEPS_LINK}
-)
+add_subdirectory(api)

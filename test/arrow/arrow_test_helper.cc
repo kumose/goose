@@ -1,4 +1,4 @@
-#include "arrow/arrow_test_helper.h"
+#include <goose/testing/arrow/arrow_test_helper.h>
 #include <goose/common/arrow/physical_arrow_collector.h>
 #include <goose/common/arrow/arrow_query_result.h>
 #include <goose/main/relation/setop_relation.h>

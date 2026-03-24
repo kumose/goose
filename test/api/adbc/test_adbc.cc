@@ -1,4 +1,4 @@
-#include "arrow/arrow_test_helper.h"
+#include <goose/testing/arrow/arrow_test_helper.h>
 #include <goose/testing/catch.h>
 #include <goose/common/adbc/adbc-goose.h>
 #include <goose/common/adbc/wrappers.h>
