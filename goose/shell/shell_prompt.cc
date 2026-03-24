@@ -323,7 +323,7 @@ namespace goose_shell {
             start_pos = i;
         }
         // add the final components
-        truncated_text += "... D ";
+        truncated_text += "... K ";
         length += 6;
         return truncated_text;
     }

@@ -101,7 +101,7 @@ kmcmake_cc_library(
 )
 
 file(GLOB_RECURSE shell_SRC "shell/*.cc")
-
+list(REMOVE_ITEM ${PROJECT_SOURCE_DIR}/goose/shell/shell.cc)
 if(WIN32 AND NOT MINGW)
     string(TIMESTAMP GOOSE_COPYRIGHT_YEAR "%Y")
     ensure_variable_is_number(GOOSE_MAJOR_VERSION RC_MAJOR_VERSION)
@@ -136,8 +136,9 @@ kmcmake_cc_library(
         PUBLIC
 )
 
+
+
 file(GLOB_RECURSE testing_SRC "testing/*.cc")
-list(REMOVE_ITEM ${PROJECT_SOURCE_DIR}/goose/testing/goose_testing_main.cc)
 kmcmake_cc_library(
         NAMESPACE ${PROJECT_NAME}
         NAME goose_testing
@@ -154,4 +155,17 @@ kmcmake_cc_library(
 # other extensions
 add_subdirectory(extension/autocomplete)
 
-###kmcmake_example
+kmcmake_cc_binary(
+        NAMESPACE ${PROJECT_NAME}
+        NAME ksql
+        SOURCES
+        shell/shell.cc
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        LINKS
+        goose::goose_shell_static
+        goose::goose_static
+        goose::goose_autocomplete
+        ${KMCMAKE_DEPS_LINK}
+        PUBLIC
+)

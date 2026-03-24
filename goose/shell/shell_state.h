@@ -80,7 +80,7 @@ namespace goose_shell {
         LATEX, /* Latex tabular formatting */
         TRASH, /* Discard output */
         JSONLINES, /* Output JSON Lines */
-        DUCKBOX /* Unicode box drawing - using Goose's own renderer */
+        GOOSEBOX /* Unicode box drawing - using Goose's own renderer */
     };
 
     enum class PrintOutput { STDOUT, STDERR };
@@ -194,19 +194,19 @@ namespace goose_shell {
         string rowSepPrior; /* Saved row separator */
         vector<int> colWidth; /* Requested width of each column in columnar modes */
         string nullValue; /* The text to print when a NULL comes back from the database */
-        int columns = 0; /* Column-wise DuckBox rendering */
+        int columns = 0; /* Column-wise GooseBox rendering */
         string outfile; /* Filename for *out */
         string zDbFilename; /* name of the database file */
         FILE *pLog = nullptr; /* Write log output here */
-        size_t max_rows = 0; /* The maximum number of rows to render in DuckBox mode */
-        size_t max_width = 0; /* The maximum number of characters to render horizontally in DuckBox mode */
-        //! The maximum number of rows to analyze in order to determine column widths in DuckBox mode
+        size_t max_rows = 0; /* The maximum number of rows to render in GooseBox mode */
+        size_t max_width = 0; /* The maximum number of characters to render horizontally in GooseBox mode */
+        //! The maximum number of rows to analyze in order to determine column widths in GooseBox mode
         idx_t max_analyze_rows = 0;
         //! Decimal separator (if any)
         char decimal_separator = '\0';
         //! Thousand separator (if any)
         char thousand_separator = '\0';
-        //! When to use formatting of large numbers (in DuckBox mode)
+        //! When to use formatting of large numbers (in GooseBox mode)
         LargeNumberRendering large_number_rendering = LargeNumberRendering::DEFAULT;
         //! The command to execute when `-ui` is passed in
         string ui_command = "CALL start_ui()";
@@ -247,7 +247,7 @@ namespace goose_shell {
         OptionType highlight_errors = OptionType::DEFAULT;
         //! Whether or not we are highlighting results
         OptionType highlight_results = OptionType::DEFAULT;
-        //! Path to .duckdbrc file
+        //! Path to .goosedbrc file
         string goose_rc_path;
         //! Startup text to display
         StartupText startup_text = StartupText::ALL;
