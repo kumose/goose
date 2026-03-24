@@ -20,26 +20,29 @@
 #include <goose/common/error_data.h>
 
 namespace goose {
+    class QueryResult;
 
-class QueryResult;
+    class QueryResultChunkScanState : public ChunkScanState {
+    public:
+        explicit QueryResultChunkScanState(QueryResult &result);
 
-class QueryResultChunkScanState : public ChunkScanState {
-public:
-	explicit QueryResultChunkScanState(QueryResult &result);
-	~QueryResultChunkScanState() override;
+        ~QueryResultChunkScanState() override;
 
-public:
-	bool LoadNextChunk(ErrorData &error) override;
-	bool HasError() const override;
-	ErrorData &GetError() override;
-	const vector<LogicalType> &Types() const override;
-	const vector<string> &Names() const override;
+    public:
+        bool LoadNextChunk(ErrorData &error) override;
 
-private:
-	bool InternalLoad(ErrorData &error);
+        bool HasError() const override;
 
-private:
-	QueryResult &result;
-};
+        ErrorData &GetError() override;
 
+        const vector<LogicalType> &Types() const override;
+
+        const vector<string> &Names() const override;
+
+    private:
+        bool InternalLoad(ErrorData &error);
+
+    private:
+        QueryResult &result;
+    };
 } // namespace goose

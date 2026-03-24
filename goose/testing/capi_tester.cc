@@ -1,4 +1,4 @@
-#include "capi_tester.h"
+#include <goose/testing/capi_tester.h>
 
 bool NO_FAIL(goose::CAPIResult &result) {
 	if (result.HasError()) {

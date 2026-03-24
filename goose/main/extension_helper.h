@@ -18,13 +18,12 @@
 #include <goose/goose.h>
 #include <goose/main/extension_entries.h>
 #include <goose/main/extension_install_info.h>
+#include <goose/main/extension_loader.h>
 #include <goose//version.h>
 #include <string>
 
 namespace goose {
     class Goose;
-
-    enum class ExtensionLoadResult : uint8_t { LOADED_EXTENSION = 0, EXTENSION_UNKNOWN = 1, NOT_LOADED = 2 };
 
     struct DefaultExtension {
         const char *name;

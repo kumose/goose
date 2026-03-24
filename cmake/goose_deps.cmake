@@ -44,6 +44,7 @@ find_package(unofficial-brotli CONFIG REQUIRED)
 find_package(MbedTLS CONFIG REQUIRED)
 find_package(zstd CONFIG REQUIRED)
 find_package(cantor CONFIG REQUIRED)
+find_package(xicu CONFIG REQUIRED)
 ############################################################
 #
 # add you libs to the KMCMAKE_DEPS_LINK variable eg as turbo
@@ -55,6 +56,7 @@ set(KMCMAKE_DEPS_LINK
         xre2::xre2_static
         turbo::turbo_static
         xfsst::xfsst_static
+        xicu::xicu_static
         lz4::lz4
         Snappy::snappy
         zstd::libzstd

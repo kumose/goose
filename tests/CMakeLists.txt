@@ -48,8 +48,4 @@ endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/tests/config.h.in ${PROJECT_SOURCE_DIR}/tests/config.h @ONLY)
 
-set(C_TEST_SRC
-    api/test_api.cc
-)
-
-add_subdirectory(api)
+add_subdirectory(cpp)

@@ -19,68 +19,72 @@
 #include <goose/common/winapi.h>
 
 namespace goose {
-class ExtensionLoader;
+    class ExtensionLoader;
 
-//! The Extension class is the base class used to define extensions
-class Extension {
-public:
-	GOOSE_API virtual ~Extension();
+    //! The Extension class is the base class used to define extensions
+    class Extension {
+    public:
+        GOOSE_API virtual ~Extension();
 
-	GOOSE_API virtual void Load(ExtensionLoader &db) = 0;
-	GOOSE_API virtual std::string Name() = 0;
-	GOOSE_API virtual std::string Version() const {
-		return "";
-	}
-	GOOSE_API static const char *DefaultVersion();
-};
+        GOOSE_API virtual void Load(ExtensionLoader &db) = 0;
 
-enum class ExtensionABIType : uint8_t {
-	UNKNOWN = 0,
-	//! Uses C++ ABI, version needs to match precisely
-	CPP = 1,
-	//! Uses C ABI using the goose_ext_api_v1 struct, version needs to be equal or higher
-	C_STRUCT = 2,
-	//! Uses C ABI using the goose_ext_api_v1 struct including "unstable" functions, version needs to match precisely
-	C_STRUCT_UNSTABLE = 3
-};
+        GOOSE_API virtual std::string Name() = 0;
 
-//! The parsed extension metadata footer
-struct ParsedExtensionMetaData {
-	static constexpr const idx_t FOOTER_SIZE = 512;
-	static constexpr const idx_t SIGNATURE_SIZE = 256;
-	static constexpr const char *EXPECTED_MAGIC_VALUE = {
-	    "4\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"};
+        GOOSE_API virtual std::string Version() const {
+            return "";
+        }
 
-	string magic_value;
+        GOOSE_API static const char *DefaultVersion();
+    };
 
-	ExtensionABIType abi_type;
+    enum class ExtensionABIType : uint8_t {
+        UNKNOWN = 0,
+        //! Uses C++ ABI, version needs to match precisely
+        CPP = 1,
+        //! Uses C ABI using the goose_ext_api_v1 struct, version needs to be equal or higher
+        C_STRUCT = 2,
+        //! Uses C ABI using the goose_ext_api_v1 struct including "unstable" functions, version needs to match precisely
+        C_STRUCT_UNSTABLE = 3
+    };
 
-	string platform;
-	// (For ExtensionABIType::CPP or ExtensionABIType::C_STRUCT_UNSTABLE) the Goose version this extension is compiled
-	// for
-	string goose_version;
-	// (only for ExtensionABIType::C_STRUCT) the CAPI version of the C_STRUCT (Currently interpreted as the minimum
-	// Goose version)
-	string goose_capi_version;
-	string extension_version;
-	string signature;
-	string extension_abi_metadata;
+    //! The parsed extension metadata footer
+    struct ParsedExtensionMetaData {
+        static constexpr const idx_t FOOTER_SIZE = 512;
+        static constexpr const idx_t SIGNATURE_SIZE = 256;
+        static constexpr const char *EXPECTED_MAGIC_VALUE = {
+            "4\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+        };
 
-	bool AppearsValid() {
-		return magic_value == EXPECTED_MAGIC_VALUE;
-	}
+        string magic_value;
 
-	// Returns an error string describing which parts of the metadata are mismatcheds
-	string GetInvalidMetadataError();
-};
+        ExtensionABIType abi_type;
 
-struct VersioningUtils {
-	//! Note: only supports format v{major}.{minor}.{patch}
-	static bool ParseSemver(string &semver, idx_t &major_out, idx_t &minor_out, idx_t &patch_out);
+        string platform;
+        // (For ExtensionABIType::CPP or ExtensionABIType::C_STRUCT_UNSTABLE) the Goose version this extension is compiled
+        // for
+        string goose_version;
+        // (only for ExtensionABIType::C_STRUCT) the CAPI version of the C_STRUCT (Currently interpreted as the minimum
+        // Goose version)
+        string goose_capi_version;
+        string extension_version;
+        string signature;
+        string extension_abi_metadata;
 
-	//! Note: only supports format v{major}.{minor}.{patch}
-	static bool IsSupportedCAPIVersion(string &capi_version_string);
-	static bool IsSupportedCAPIVersion(idx_t major, idx_t minor, idx_t patch);
-};
+        bool AppearsValid() {
+            return magic_value == EXPECTED_MAGIC_VALUE;
+        }
 
+        // Returns an error string describing which parts of the metadata are mismatcheds
+        string GetInvalidMetadataError();
+    };
+
+    struct VersioningUtils {
+        //! Note: only supports format v{major}.{minor}.{patch}
+        static bool ParseSemver(string &semver, idx_t &major_out, idx_t &minor_out, idx_t &patch_out);
+
+        //! Note: only supports format v{major}.{minor}.{patch}
+        static bool IsSupportedCAPIVersion(string &capi_version_string);
+
+        static bool IsSupportedCAPIVersion(idx_t major, idx_t minor, idx_t patch);
+    };
 } // namespace goose

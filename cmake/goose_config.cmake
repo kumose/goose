@@ -69,6 +69,7 @@ option(DEBUG_ALLOCATION "Debug setting: keep track of outstanding allocations to
 option(CLANG_TIDY "Enable build for clang-tidy, this disables all source files excluding the core database. This does not produce a working build." FALSE)
 option(SMALLER_BINARY "Produce a smaller binary by trimming specialized code paths. This can negatively affect performance." FALSE)
 option(FORCE_ASSERT "Enable checking of assertions, even in release mode" FALSE)
+option(SHADOW_FORBIDDEN_FUNCTIONS "Compile time test on usage of deprecated functions" FALSE)
 
 set(STANDARD_VECTOR_SIZE "" CACHE STRING "Set a custom STANDARD_VECTOR_SIZE at compile time")
 
@@ -96,3 +97,11 @@ option(GENERATE_EXTENSION_ENTRIES "Build for generating extension_entries.h" FAL
 option(DISABLE_EXTENSION_LOAD "Disable support for loading and installing extensions" FALSE)
 option(HAVE_LINENOISE "enable linenoise" ON)
 option(SQLITE_SHELL_UTF8 "shell using utf8" ON)
+
+option(STATIC_LOAD_CORE_FUNCTION "enable static auto load core function module" ON)
+option(STATIC_LOAD_JSON "enable static auto load json module" ON)
+option(STATIC_LOAD_PARQUET "enable static auto load parquet module" ON)
+option(STATIC_LOAD_ICU "enable static auto load icu module" ON)
+
+set(GOOSE_BUILTIN_EXTENSION)
+set(EXT_INCLUDES)

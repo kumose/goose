@@ -211,3 +211,16 @@
 #else
 #define SQLITE_SHELL_IS_UTF8 0
 #endif
+
+/// enable static auto load core function module
+#cmakedefine STATIC_LOAD_CORE_FUNCTION
+
+/// enable static auto load json module
+#cmakedefine STATIC_LOAD_JSON
+
+/// enable static auto load parquet module
+#cmakedefine STATIC_LOAD_PARQUET
+
+/// enable static auto load icu module
+#cmakedefine STATIC_LOAD_ICU
+

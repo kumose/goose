@@ -19,48 +19,52 @@
 #include <goose/main/extension_install_info.h>
 
 namespace goose {
-class ErrorData;
+    class ErrorData;
 
-class ExtensionInfo {
-public:
-	ExtensionInfo();
+    class ExtensionInfo {
+    public:
+        ExtensionInfo();
 
-	mutex lock;
-	atomic<bool> is_loaded;
-	unique_ptr<ExtensionInstallInfo> install_info;
-	unique_ptr<ExtensionLoadedInfo> load_info;
-};
+        mutex lock;
+        atomic<bool> is_loaded;
+        unique_ptr<ExtensionInstallInfo> install_info;
+        unique_ptr<ExtensionLoadedInfo> load_info;
+    };
 
-class ExtensionActiveLoad {
-public:
-	ExtensionActiveLoad(DatabaseInstance &db, ExtensionInfo &info, string extension_name);
+    class ExtensionActiveLoad {
+    public:
+        ExtensionActiveLoad(DatabaseInstance &db, ExtensionInfo &info, string extension_name);
 
-	DatabaseInstance &db;
-	unique_lock<mutex> load_lock;
-	ExtensionInfo &info;
-	string extension_name;
+        DatabaseInstance &db;
+        unique_lock<mutex> load_lock;
+        ExtensionInfo &info;
+        string extension_name;
 
-public:
-	void FinishLoad(ExtensionInstallInfo &install_info);
-	void LoadFail(const ErrorData &error);
-};
+    public:
+        void FinishLoad(ExtensionInstallInfo &install_info);
 
-class ExtensionManager {
-public:
-	explicit ExtensionManager(DatabaseInstance &db);
+        void LoadFail(const ErrorData &error);
+    };
 
-	GOOSE_API bool ExtensionIsLoaded(const string &name);
-	GOOSE_API vector<string> GetExtensions();
-	GOOSE_API optional_ptr<ExtensionInfo> GetExtensionInfo(const string &name);
-	GOOSE_API unique_ptr<ExtensionActiveLoad> BeginLoad(const string &extension);
+    class ExtensionManager {
+    public:
+        explicit ExtensionManager(DatabaseInstance &db);
 
-	GOOSE_API static ExtensionManager &Get(DatabaseInstance &db);
-	GOOSE_API static ExtensionManager &Get(ClientContext &context);
+        GOOSE_API bool ExtensionIsLoaded(const string &name);
 
-private:
-	DatabaseInstance &db;
-	mutex lock;
-	unordered_map<string, unique_ptr<ExtensionInfo>> loaded_extensions_info;
-};
+        GOOSE_API vector<string> GetExtensions();
 
+        GOOSE_API optional_ptr<ExtensionInfo> GetExtensionInfo(const string &name);
+
+        GOOSE_API unique_ptr<ExtensionActiveLoad> BeginLoad(const string &extension);
+
+        GOOSE_API static ExtensionManager &Get(DatabaseInstance &db);
+
+        GOOSE_API static ExtensionManager &Get(ClientContext &context);
+
+    private:
+        DatabaseInstance &db;
+        mutex lock;
+        unordered_map<string, unique_ptr<ExtensionInfo> > loaded_extensions_info;
+    };
 } // namespace goose

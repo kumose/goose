@@ -17,11 +17,12 @@
 ###########################################################################
 ###kmcmake_example
 
-option(SHADOW_FORBIDDEN_FUNCTIONS "Compile time test on usage of deprecated functions" FALSE)
 if (SHADOW_FORBIDDEN_FUNCTIONS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -include 'goose/common/shadow_forbidden_functions.h'")
 endif ()
 
+##########################################################
+# db files
 file(GLOB_RECURSE CATALOG_SRC "catalog/*.cc")
 file(GLOB_RECURSE COMMON_SRC "common/*.cc")
 file(GLOB_RECURSE execution_SRC "execution/*.cc")
@@ -55,7 +56,36 @@ set(LIB_SRC
         ${utility_SRC}
         ${verification_SRC}
 )
-list(REMOVE_ITEM ALL_SRC ${PROJECT_SOURCE_DIR}/goose/utility/utf8proc_data.cc)
+
+#
+if (STATIC_LOAD_CORE_FUNCTION)
+    file(GLOB_RECURSE core_function_SRC "extension/core_functions/*.cc")
+    list(APPEND LIB_SRC  ${core_function_SRC})
+else ()
+    add_subdirectory(extension/core_functions)
+endif ()
+
+if (STATIC_LOAD_JSON)
+    file(GLOB_RECURSE json_SRC "extension/json/*.cc")
+    list(APPEND LIB_SRC  ${json_SRC})
+else ()
+    add_subdirectory(extension/json)
+endif ()
+
+if (STATIC_LOAD_PARQUET)
+    file(GLOB_RECURSE parquet_SRC "extension/parquet/*.cc")
+    list(APPEND LIB_SRC  ${parquet_SRC})
+else ()
+    add_subdirectory(extension/parquet)
+endif ()
+
+if (STATIC_LOAD_ICU)
+    file(GLOB_RECURSE icu_SRC "extension/icu/*.cc")
+    list(APPEND LIB_SRC  ${icu_SRC})
+else ()
+    add_subdirectory(extension/icu)
+endif ()
+
 kmcmake_cc_library(
         NAMESPACE ${PROJECT_NAME}
         NAME goose
@@ -63,6 +93,8 @@ kmcmake_cc_library(
         ${LIB_SRC}
         CXXOPTS
         ${KMCMAKE_CXX_OPTIONS}
+        INCLUDES
+        ${EXT_INCLUDES}
         PLINKS
         ${KMCMAKE_DEPS_LINK}
         PUBLIC
@@ -129,4 +161,8 @@ kmcmake_cc_library(
         ${KMCMAKE_DEPS_LINK}
         PUBLIC
 )
+#######################################################
+# other extensions
+add_subdirectory(extension/autocomplete)
+
 ###kmcmake_example

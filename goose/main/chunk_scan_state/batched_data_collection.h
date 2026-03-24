@@ -21,31 +21,36 @@
 #include <goose/common/error_data.h>
 
 namespace goose {
+    class BatchCollectionChunkScanState : public ChunkScanState {
+    public:
+        BatchCollectionChunkScanState(BatchedDataCollection &collection, BatchedChunkIteratorRange &range,
+                                      ClientContext &context);
 
-class BatchCollectionChunkScanState : public ChunkScanState {
-public:
-	BatchCollectionChunkScanState(BatchedDataCollection &collection, BatchedChunkIteratorRange &range,
-	                              ClientContext &context);
-	~BatchCollectionChunkScanState() override;
+        ~BatchCollectionChunkScanState() override;
 
-public:
-	BatchCollectionChunkScanState(const BatchCollectionChunkScanState &other) = delete;
-	BatchCollectionChunkScanState &operator=(const BatchCollectionChunkScanState &other) = delete;
-	BatchCollectionChunkScanState(BatchCollectionChunkScanState &&other) = default;
+    public:
+        BatchCollectionChunkScanState(const BatchCollectionChunkScanState &other) = delete;
 
-public:
-	bool LoadNextChunk(ErrorData &error) override;
-	bool HasError() const override;
-	ErrorData &GetError() override;
-	const vector<LogicalType> &Types() const override;
-	const vector<string> &Names() const override;
+        BatchCollectionChunkScanState &operator=(const BatchCollectionChunkScanState &other) = delete;
 
-private:
-	void InternalLoad(ErrorData &error);
+        BatchCollectionChunkScanState(BatchCollectionChunkScanState &&other) = default;
 
-private:
-	BatchedDataCollection &collection;
-	BatchedChunkScanState state;
-};
+    public:
+        bool LoadNextChunk(ErrorData &error) override;
 
+        bool HasError() const override;
+
+        ErrorData &GetError() override;
+
+        const vector<LogicalType> &Types() const override;
+
+        const vector<string> &Names() const override;
+
+    private:
+        void InternalLoad(ErrorData &error);
+
+    private:
+        BatchedDataCollection &collection;
+        BatchedChunkScanState state;
+    };
 } // namespace goose

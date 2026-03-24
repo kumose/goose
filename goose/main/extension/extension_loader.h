@@ -24,96 +24,109 @@
 #include <goose/main/extension_manager.h>
 
 namespace goose {
+    class DatabaseInstance;
+    struct CreateMacroInfo;
+    struct CreateCollationInfo;
+    struct CreateAggregateFunctionInfo;
+    struct CreateScalarFunctionInfo;
+    struct CreateTableFunctionInfo;
 
-class DatabaseInstance;
-struct CreateMacroInfo;
-struct CreateCollationInfo;
-struct CreateAggregateFunctionInfo;
-struct CreateScalarFunctionInfo;
-struct CreateTableFunctionInfo;
+    class ExtensionLoader {
+        friend class Goose;
+        friend class ExtensionHelper;
 
-class ExtensionLoader {
-	friend class Goose;
-	friend class ExtensionHelper;
+    public:
+        explicit ExtensionLoader(ExtensionActiveLoad &load_info);
 
-public:
-	explicit ExtensionLoader(ExtensionActiveLoad &load_info);
-	ExtensionLoader(DatabaseInstance &db, const string &extension_name);
+        ExtensionLoader(DatabaseInstance &db, const string &extension_name);
 
-	//! Returns the DatabaseInstance associated with this extension loader
-	GOOSE_API DatabaseInstance &GetDatabaseInstance();
+        //! Returns the DatabaseInstance associated with this extension loader
+        GOOSE_API DatabaseInstance &GetDatabaseInstance();
 
-public:
-	//! Set the description of the extension
-	GOOSE_API void SetDescription(const string &description);
+    public:
+        //! Set the description of the extension
+        GOOSE_API void SetDescription(const string &description);
 
-public:
-	//! Register a new scalar function - merge overloads if the function already exists
-	GOOSE_API void RegisterFunction(ScalarFunction function);
-	GOOSE_API void RegisterFunction(ScalarFunctionSet function);
-	GOOSE_API void RegisterFunction(CreateScalarFunctionInfo info);
+    public:
+        //! Register a new scalar function - merge overloads if the function already exists
+        GOOSE_API void RegisterFunction(ScalarFunction function);
 
-	//! Register a new aggregate function - merge overloads if the function already exists
-	GOOSE_API void RegisterFunction(AggregateFunction function);
-	GOOSE_API void RegisterFunction(AggregateFunctionSet function);
-	GOOSE_API void RegisterFunction(CreateAggregateFunctionInfo info);
+        GOOSE_API void RegisterFunction(ScalarFunctionSet function);
 
-	//! Register a new table function - merge overloads if the function already exists
-	GOOSE_API void RegisterFunction(TableFunction function);
-	GOOSE_API void RegisterFunction(TableFunctionSet function);
-	GOOSE_API void RegisterFunction(CreateTableFunctionInfo info);
+        GOOSE_API void RegisterFunction(CreateScalarFunctionInfo info);
 
-	//! Register a new pragma function - throw an exception if the function already exists
-	GOOSE_API void RegisterFunction(PragmaFunction function);
+        //! Register a new aggregate function - merge overloads if the function already exists
+        GOOSE_API void RegisterFunction(AggregateFunction function);
 
-	//! Register a new pragma function set - throw an exception if the function already exists
-	GOOSE_API void RegisterFunction(PragmaFunctionSet function);
+        GOOSE_API void RegisterFunction(AggregateFunctionSet function);
 
-	//! Register a CreateSecretFunction
-	GOOSE_API void RegisterFunction(CreateSecretFunction function);
+        GOOSE_API void RegisterFunction(CreateAggregateFunctionInfo info);
 
-	//! Register a new copy function - throw an exception if the function already exists
-	GOOSE_API void RegisterFunction(CopyFunction function);
-	//! Register a new macro function - throw an exception if the function already exists
-	GOOSE_API void RegisterFunction(CreateMacroInfo &info);
+        //! Register a new table function - merge overloads if the function already exists
+        GOOSE_API void RegisterFunction(TableFunction function);
 
-	//! Register a new collation
-	GOOSE_API void RegisterCollation(CreateCollationInfo &info);
+        GOOSE_API void RegisterFunction(TableFunctionSet function);
 
-	//! Returns a reference to the function in the catalog - throws an exception if it does not exist
-	GOOSE_API ScalarFunctionCatalogEntry &GetFunction(const string &name);
-	GOOSE_API TableFunctionCatalogEntry &GetTableFunction(const string &name);
-	GOOSE_API optional_ptr<CatalogEntry> TryGetFunction(const string &name);
-	GOOSE_API optional_ptr<CatalogEntry> TryGetTableFunction(const string &name);
+        GOOSE_API void RegisterFunction(CreateTableFunctionInfo info);
 
-	//! Add a function overload
-	GOOSE_API void AddFunctionOverload(ScalarFunction function);
-	GOOSE_API void AddFunctionOverload(ScalarFunctionSet function);
-	GOOSE_API void AddFunctionOverload(TableFunctionSet function);
+        //! Register a new pragma function - throw an exception if the function already exists
+        GOOSE_API void RegisterFunction(PragmaFunction function);
 
-	//! Registers a new type
-	GOOSE_API void RegisterType(string type_name, LogicalType type,
-	                             bind_logical_type_function_t bind_function = nullptr);
+        //! Register a new pragma function set - throw an exception if the function already exists
+        GOOSE_API void RegisterFunction(PragmaFunctionSet function);
 
-	//! Registers a new secret type
-	GOOSE_API void RegisterSecretType(SecretType secret_type);
+        //! Register a CreateSecretFunction
+        GOOSE_API void RegisterFunction(CreateSecretFunction function);
 
-	//! Registers a cast between two types
-	GOOSE_API void RegisterCastFunction(const LogicalType &source, const LogicalType &target,
-	                                     bind_cast_function_t function, int64_t implicit_cast_cost = -1);
-	GOOSE_API void RegisterCastFunction(const LogicalType &source, const LogicalType &target, BoundCastInfo function,
-	                                     int64_t implicit_cast_cost = -1);
+        //! Register a new copy function - throw an exception if the function already exists
+        GOOSE_API void RegisterFunction(CopyFunction function);
 
-private:
-	void FinalizeLoad();
+        //! Register a new macro function - throw an exception if the function already exists
+        GOOSE_API void RegisterFunction(CreateMacroInfo &info);
 
-private:
-	DatabaseInstance &db;
-	string extension_name;
-	string extension_description;
-	optional_ptr<ExtensionInfo> extension_info;
-};
+        //! Register a new collation
+        GOOSE_API void RegisterCollation(CreateCollationInfo &info);
 
+        //! Returns a reference to the function in the catalog - throws an exception if it does not exist
+        GOOSE_API ScalarFunctionCatalogEntry &GetFunction(const string &name);
+
+        GOOSE_API TableFunctionCatalogEntry &GetTableFunction(const string &name);
+
+        GOOSE_API optional_ptr<CatalogEntry> TryGetFunction(const string &name);
+
+        GOOSE_API optional_ptr<CatalogEntry> TryGetTableFunction(const string &name);
+
+        //! Add a function overload
+        GOOSE_API void AddFunctionOverload(ScalarFunction function);
+
+        GOOSE_API void AddFunctionOverload(ScalarFunctionSet function);
+
+        GOOSE_API void AddFunctionOverload(TableFunctionSet function);
+
+        //! Registers a new type
+        GOOSE_API void RegisterType(string type_name, LogicalType type,
+                                    bind_logical_type_function_t bind_function = nullptr);
+
+        //! Registers a new secret type
+        GOOSE_API void RegisterSecretType(SecretType secret_type);
+
+        //! Registers a cast between two types
+        GOOSE_API void RegisterCastFunction(const LogicalType &source, const LogicalType &target,
+                                            bind_cast_function_t function, int64_t implicit_cast_cost = -1);
+
+        GOOSE_API void RegisterCastFunction(const LogicalType &source, const LogicalType &target,
+                                            BoundCastInfo function,
+                                            int64_t implicit_cast_cost = -1);
+
+    private:
+        void FinalizeLoad();
+
+    private:
+        DatabaseInstance &db;
+        string extension_name;
+        string extension_description;
+        optional_ptr<ExtensionInfo> extension_info;
+    };
 } // namespace goose
 
 //! Helper macro to define the entrypoint for a C++ extension

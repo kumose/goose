@@ -13,19 +13,53 @@
 # limitations under the License.
 #
 
-add_subdirectory(core_functions)
-add_subdirectory(parquet)
-add_subdirectory(json)
-add_subdirectory(icu)
+set(EXT_INCLUDES)
+message(STATUS "extensions:")
 
+
+if (STATIC_LOAD_CORE_FUNCTION)
+    add_subdirectory(core_functions)
+    list(APPEND GOOSE_BUILTIN_EXTENSION goose::goose_core_functions)
+    set(GOOSE_BUILTIN_EXTENSION ${GOOSE_BUILTIN_EXTENSION} PARENT_SCOPE)
+    set(EXT_INCLUDES ${EXT_INCLUDES} ${PROJECT_SOURCE_DIR}/extension/core_functions/include PARENT_SCOPE)
+endif ()
+
+
+if (STATIC_LOAD_PARQUET)
+    add_subdirectory(parquet)
+    list(APPEND GOOSE_BUILTIN_EXTENSION goose::goose_parquet)
+    set(GOOSE_BUILTIN_EXTENSION ${GOOSE_BUILTIN_EXTENSION} PARENT_SCOPE)
+    set(EXT_INCLUDES ${EXT_INCLUDES} ${PROJECT_SOURCE_DIR}/extension/parquet/include PARENT_SCOPE)
+endif ()
+
+if (STATIC_LOAD_JSON)
+    add_subdirectory(json)
+    list(APPEND GOOSE_BUILTIN_EXTENSION goose::goose_json)
+    set(GOOSE_BUILTIN_EXTENSION ${GOOSE_BUILTIN_EXTENSION} PARENT_SCOPE)
+    set(EXT_INCLUDES ${EXT_INCLUDES} ${PROJECT_SOURCE_DIR}/extension/json/include PARENT_SCOPE)
+endif ()
+
+if (STATIC_LOAD_ICU)
+    add_subdirectory(icu)
+    list(APPEND GOOSE_BUILTIN_EXTENSION goose::goose_icu)
+    set(GOOSE_BUILTIN_EXTENSION ${GOOSE_BUILTIN_EXTENSION} PARENT_SCOPE)
+    set(EXT_INCLUDES ${EXT_INCLUDES} ${PROJECT_SOURCE_DIR}/extension/icu/include PARENT_SCOPE)
+endif ()
+
+#[[
+message(STATUS "${GOOSE_BUILTIN_EXTENSION}")
 kmcmake_cc_library(
         NAMESPACE ${PROJECT_NAME}
-        NAME dummy_static_extension_loader
+        NAME static_extension_loader
         SOURCES
-        loader/dummy_static_extension_loader.cc
+        loader/static_extension_loader.cc
+        INCLUDES
+        ${EXT_INCLUDES}
         CXXOPTS
         ${KMCMAKE_CXX_OPTIONS}
-        PLINKS
+        LINKS
+        ${GOOSE_BUILTIN_EXTENSION}
         ${KMCMAKE_DEPS_LINK}
         PUBLIC
 )
+]]

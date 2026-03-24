@@ -75,7 +75,7 @@ string(TOUPPER ${CMAKE_BUILD_TYPE} UPPERCASE_BUILD_TYPE)
 configure_file(${PROJECT_SOURCE_DIR}/goose/version.h.in ${PROJECT_SOURCE_DIR}/goose/version.h @ONLY)
 
 add_subdirectory(goose)
-add_subdirectory(extension)
+
 ####################################################################
 # belows are auto, edit it be cation
 ####################################################################
