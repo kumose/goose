@@ -59,24 +59,31 @@ namespace goose {
     }
 
     const char *Goose::LibraryVersion() {
-        return GOOSE_VERSION_STRING;
+        return GOOSE_VERSION_STRING_V;
     }
 
     const char *Goose::ReleaseCodename() {
         // dev releases have no name
-        if (StringUtil::Contains(GOOSE_VERSION_STRING, "-dev")) {
+        if (StringUtil::Contains(GOOSE_VERSION_STRING_V, "-dev")) {
             return "Development Version";
         }
-        if (StringUtil::StartsWith(GOOSE_VERSION_STRING, "v1.2.")) {
+        if (StringUtil::StartsWith(GOOSE_VERSION_STRING_V, "v0.5.")) {
+            return "Archimedes";
+        }
+
+        if (StringUtil::StartsWith(GOOSE_VERSION_STRING_V, "v0.6.")) {
+            return "Galileo";
+        }
+        if (StringUtil::StartsWith(GOOSE_VERSION_STRING_V, "v1.2.")) {
             return "Histrionicus";
         }
-        if (StringUtil::StartsWith(GOOSE_VERSION_STRING, "v1.3.")) {
+        if (StringUtil::StartsWith(GOOSE_VERSION_STRING_V, "v1.3.")) {
             return "Ossivalis";
         }
-        if (StringUtil::StartsWith(GOOSE_VERSION_STRING, "v1.4.")) {
+        if (StringUtil::StartsWith(GOOSE_VERSION_STRING_V, "v1.4.")) {
             return "Andium";
         }
-        if (StringUtil::StartsWith(GOOSE_VERSION_STRING, "v1.5.")) {
+        if (StringUtil::StartsWith(GOOSE_VERSION_STRING_V, "v1.5.")) {
             return "Variegata";
         }
         // add new version names here
