@@ -358,3 +358,4 @@ extension_external
 
 tests/sql/sql/pragma/output.json
 tools/pythonpkg/goose_build/
+goose/version.h
