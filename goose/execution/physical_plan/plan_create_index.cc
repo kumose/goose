@@ -11,6 +11,8 @@
 #include <goose/execution/operator/order/physical_order.h>
 #include <goose/execution/operator/projection/physical_projection.h>
 #include <goose/execution/operator/schema/physical_create_index.h>
+#include <goose/catalog/catalog_entry/table_catalog_entry.h>
+#include <goose/catalog/catalog_entry/goose_table_entry.h>
 
 namespace goose {
 

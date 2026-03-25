@@ -6,10 +6,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <goose/common/winapi.h>
 
 #pragma once
 
+#include <goose/common/winapi.h>
 // clang-format off
 #if ( \
     /* Not a debug build */ \
@@ -25,8 +25,9 @@
 //! Only the 'else' condition is supposed to check the assertions
 #include <assert.h>
 #define D_ASSERT assert
+
 namespace goose {
-GOOSE_API void GooseAssertInternal(bool condition, const char *condition_name, const char *file, int linenr);
+    GOOSE_API void GooseAssertInternal(bool condition, const char *condition_name, const char *file, int linenr);
 }
 
 #else
