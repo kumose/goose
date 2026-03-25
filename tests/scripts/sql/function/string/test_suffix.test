@@ -1,0 +1,232 @@
+# name: tests/scripts/sql/function/string/test_suffix.test
+# description: Suffix test
+# group: [string]
+
+statement ok
+PRAGMA enable_verification
+
+# Short string (4bytes)
+query T
+SELECT suffix('abcd', 'd')
+----
+1
+
+query T
+SELECT suffix('abcd', 'cd')
+----
+1
+
+query T
+SELECT suffix('abcd', 'bcd')
+----
+1
+
+query T
+SELECT suffix('abcd', 'abcd')
+----
+1
+
+query T
+SELECT suffix('abcd', 'X')
+----
+0
+
+# Medium string (8bytes)
+query T
+SELECT suffix('abcdefgh', 'h')
+----
+1
+
+query T
+SELECT suffix('abcdefgh', 'gh')
+----
+1
+
+query T
+SELECT suffix('abcdefgh', 'fgh')
+----
+1
+
+query T
+SELECT suffix('abcdefgh', 'efgh')
+----
+1
+
+query T
+SELECT suffix('abcdefgh', 'defgh')
+----
+1
+
+query T
+SELECT suffix('abcdefgh', 'X')
+----
+0
+
+query T
+SELECT suffix('abcdefgh', 'abcdefgh')
+----
+1
+
+# Long string (> 15bytes)
+query T
+SELECT suffix('abcdefghijklmnopqrstuvwxyz', 'z')
+----
+1
+
+query T
+SELECT suffix('abcdefghijklmnopqrstuvwxyz', 'yz')
+----
+1
+
+query T
+SELECT suffix('abcdefghijklmnopqrstuvwxyz', 'xyz')
+----
+1
+
+query T
+SELECT suffix('abcdefghijklmnopqrstuvwxyz', 'wxyz')
+----
+1
+
+query T
+SELECT suffix('abcdefghijklmnopqrstuvwxyz', 'vwxyz')
+----
+1
+
+query T
+SELECT suffix('abcdefghijklmnopqrstuvwxyz', 'X')
+----
+0
+
+query T
+SELECT suffix('abcdefghijklmnopqrstuvwxyz', 'defghijklmnopqrstuvwxyz')
+----
+1
+
+# Empty string and suffix
+query T
+SELECT suffix('', 'aaa')
+----
+0
+
+query T
+SELECT suffix('aaa', '')
+----
+1
+
+# NULL string and suffix
+query T
+SELECT suffix(NULL, 'aaa')
+----
+NULL
+
+query T
+SELECT suffix('aaa', NULL)
+----
+NULL
+
+query T
+SELECT suffix(NULL, NULL)
+----
+NULL
+
+# Suffix test with UTF8
+# inverse "átomo" (atom)
+query T
+SELECT suffix('omotá', 'á')
+----
+1
+
+query T
+SELECT suffix('omotá', 'á')
+----
+1
+
+query T
+SELECT suffix('omotá', 'a')
+----
+0
+
+# inverse "olá mundo" (hello world)
+query T
+SELECT suffix('mundo olá', 'olá')
+----
+1
+
+query T
+SELECT suffix('mundo olá', 'olá')
+----
+1
+
+query T
+SELECT suffix('mundo olá', 'mundo olá')
+----
+1
+
+query T
+SELECT suffix('mundo olá', 'ola')
+----
+0
+
+# eftñ
+query T
+SELECT suffix('eftñ', 'ñ')
+----
+1
+
+query T
+SELECT suffix('ñeft', 'ñeft')
+----
+1
+
+query T
+SELECT suffix('ñeft', 'neft')
+----
+0
+
+# two ñ three ₡ four 🦆 end
+query T
+SELECT suffix('two ñ three ₡ four 🦆 end', '🦆 end')
+----
+1
+
+query T
+SELECT suffix('two ñ three ₡ four 🦆 end', '🦆 end')
+----
+1
+
+query T
+SELECT suffix('two ñ three ₡ four 🦆 end', 'three ₡ four 🦆 end')
+----
+1
+
+query T
+SELECT suffix('two ñ three ₡ four 🦆 end', 'three ₡ four 🦆 end')
+----
+1
+
+query T
+SELECT suffix('two ñ three ₡ four 🦆 end', 'two ñ three ₡ four 🦆 end')
+----
+1
+
+query T
+SELECT suffix('two ñ three ₡ four 🦆 end', 'two ñ three ₡ four 🦆 end')
+----
+1
+
+query T
+SELECT suffix('two ñ three ₡ four 🦆 end', 'two ñ three ₡ four 🦆 end')
+----
+1
+
+query T
+SELECT suffix('two ñ three ₡ four 🦆 end', 'two n three ₡ four 🦆 end')
+----
+0
+
+query T
+SELECT suffix('two ñ three ₡ four 🦆 end', 'XXXtwo ñ three ₡ four 🦆 end')
+----
+0
+

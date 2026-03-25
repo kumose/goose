@@ -1,0 +1,142 @@
+// Copyright (c) 2025 DuckDB.
+// Copyright (C) 2026 Kumo inc. and its affiliates. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+
+#include <goose/catalog/catalog_entry/sequence_catalog_entry.h>
+
+#include <goose/catalog/catalog.h>
+#include <goose/catalog/catalog_entry/schema_catalog_entry.h>
+#include <goose/common/exception.h>
+#include <goose/parser/parsed_data/create_sequence_info.h>
+#include <goose/catalog/dependency_manager.h>
+#include <goose/common/operator/add.h>
+#include <goose/transaction/goose_transaction.h>
+
+#include <algorithm>
+#include <sstream>
+
+namespace goose {
+    constexpr const char *SequenceCatalogEntry::Name;
+
+    SequenceData::SequenceData(CreateSequenceInfo &info)
+        : usage_count(info.usage_count), counter(info.start_value), last_value(info.start_value),
+          increment(info.increment),
+          start_value(info.start_value), min_value(info.min_value), max_value(info.max_value), cycle(info.cycle) {
+    }
+
+    SequenceCatalogEntry::SequenceCatalogEntry(Catalog &catalog, SchemaCatalogEntry &schema, CreateSequenceInfo &info)
+        : StandardEntry(CatalogType::SEQUENCE_ENTRY, schema, catalog, info.name), data(info) {
+        this->temporary = info.temporary;
+        this->comment = info.comment;
+        this->tags = info.tags;
+    }
+
+    unique_ptr<CatalogEntry> SequenceCatalogEntry::Copy(ClientContext &context) const {
+        auto info_copy = GetInfo();
+        auto &cast_info = info_copy->Cast<CreateSequenceInfo>();
+
+        auto result = make_uniq<SequenceCatalogEntry>(catalog, schema, cast_info);
+        result->data = GetData();
+
+        return result;
+    }
+
+    SequenceData SequenceCatalogEntry::GetData() const {
+        lock_guard<mutex> seqlock(lock);
+        return data;
+    }
+
+    int64_t SequenceCatalogEntry::CurrentValue() {
+        lock_guard<mutex> seqlock(lock);
+        int64_t result;
+        if (data.usage_count == 0u) {
+            throw SequenceException("currval: sequence is not yet defined in this session");
+        }
+        result = data.last_value;
+        return result;
+    }
+
+    int64_t SequenceCatalogEntry::NextValue(GooseTransaction &transaction) {
+        lock_guard<mutex> seqlock(lock);
+        int64_t result;
+        result = data.counter;
+        bool overflow = !TryAddOperator::Operation(data.counter, data.increment, data.counter);
+        if (data.cycle) {
+            if (overflow) {
+                data.counter = data.increment < 0 ? data.max_value : data.min_value;
+            } else if (data.counter < data.min_value) {
+                data.counter = data.max_value;
+            } else if (data.counter > data.max_value) {
+                data.counter = data.min_value;
+            }
+        } else {
+            if (result < data.min_value || (overflow && data.increment < 0)) {
+                throw SequenceException("nextval: reached minimum value of sequence \"%s\" (%lld)", name,
+                                        data.min_value);
+            }
+            if (result > data.max_value || overflow) {
+                throw SequenceException("nextval: reached maximum value of sequence \"%s\" (%lld)", name,
+                                        data.max_value);
+            }
+        }
+        data.last_value = result;
+        data.usage_count++;
+        if (!temporary) {
+            transaction.PushSequenceUsage(*this, data);
+        }
+        return result;
+    }
+
+    void SequenceCatalogEntry::ReplayValue(uint64_t v_usage_count, int64_t v_counter) {
+        if (v_usage_count > data.usage_count) {
+            data.usage_count = v_usage_count;
+            data.counter = v_counter;
+        }
+    }
+
+    unique_ptr<CreateInfo> SequenceCatalogEntry::GetInfo() const {
+        auto seq_data = GetData();
+
+        auto result = make_uniq<CreateSequenceInfo>();
+        result->catalog = catalog.GetName();
+        result->schema = schema.name;
+        result->name = name;
+        result->usage_count = seq_data.usage_count;
+        result->increment = seq_data.increment;
+        result->min_value = seq_data.min_value;
+        result->max_value = seq_data.max_value;
+        result->start_value = seq_data.counter;
+        result->cycle = seq_data.cycle;
+        result->dependencies = dependencies;
+        result->comment = comment;
+        result->tags = tags;
+        return result;
+    }
+
+    string SequenceCatalogEntry::ToSQL() const {
+        auto seq_data = GetData();
+
+        goose::stringstream ss;
+        ss << "CREATE SEQUENCE ";
+        ss << name;
+        ss << " INCREMENT BY " << seq_data.increment;
+        ss << " MINVALUE " << seq_data.min_value;
+        ss << " MAXVALUE " << seq_data.max_value;
+        ss << " START " << seq_data.counter;
+        ss << " " << (seq_data.cycle ? "CYCLE" : "NO CYCLE") << ";";
+        return ss.str();
+    }
+} // namespace goose

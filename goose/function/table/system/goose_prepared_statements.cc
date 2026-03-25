@@ -1,0 +1,108 @@
+#include <goose/function/table/system_functions.h>
+
+#include <goose/common/exception.h>
+#include <goose/main/client_context.h>
+#include <goose/parser/parser.h>
+#include <goose/main/client_data.h>
+#include <goose/main/prepared_statement_data.h>
+
+namespace goose {
+    struct GoosePreparedStatementsData : public GlobalTableFunctionState {
+        GoosePreparedStatementsData() : offset(0) {
+        }
+
+        vector<std::pair<string, shared_ptr<PreparedStatementData> > > entries;
+        idx_t offset;
+    };
+
+    static unique_ptr<FunctionData> GoosePreparedStatementsBind(ClientContext &context, TableFunctionBindInput &input,
+                                                                vector<LogicalType> &return_types,
+                                                                vector<string> &names) {
+        names.emplace_back("name");
+        return_types.emplace_back(LogicalType::VARCHAR);
+
+        names.emplace_back("statement");
+        return_types.emplace_back(LogicalType::VARCHAR);
+
+        names.emplace_back("parameter_types");
+        return_types.emplace_back(LogicalType::LIST(LogicalType::VARCHAR));
+
+        names.emplace_back("result_types");
+        return_types.emplace_back(LogicalType::LIST(LogicalType::VARCHAR));
+        return nullptr;
+    }
+
+    unique_ptr<GlobalTableFunctionState> GoosePreparedStatementsInit(ClientContext &context,
+                                                                     TableFunctionInitInput &input) {
+        auto result = make_uniq<GoosePreparedStatementsData>();
+        auto &prepared_statements = context.client_data->prepared_statements;
+        for (auto &it: prepared_statements) {
+            result->entries.emplace_back(it.first, it.second);
+        }
+        return result;
+    }
+
+    void GoosePreparedStatementsFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {
+        auto &data = data_p.global_state->Cast<GoosePreparedStatementsData>();
+        if (data.offset >= data.entries.size()) {
+            // finished returning values
+            return;
+        }
+        // start returning values
+        // either fill up the chunk or return all the remaining columns
+        idx_t count = 0;
+        while (data.offset < data.entries.size() && count < STANDARD_VECTOR_SIZE) {
+            auto &entry = data.entries[data.offset++];
+            auto &name = entry.first;
+            auto &prepared_statement = *entry.second;
+
+            // name, VARCHAR
+            output.SetValue(0, count, Value(name));
+            // statement, VARCHAR
+            output.SetValue(1, count, Value(prepared_statement.unbound_statement->ToString()));
+            // parameter_types, VARCHAR[]
+            auto &named_parameter_map = prepared_statement.unbound_statement->named_param_map;
+            if (named_parameter_map.empty()) {
+                output.SetValue(2, count, Value(LogicalType::LIST(LogicalType::VARCHAR)));
+            } else {
+                vector<Value> parameter_types;
+                for (idx_t i = 0; i < prepared_statement.properties.parameter_count; i++) {
+                    parameter_types.push_back(LogicalType(LogicalTypeId::UNKNOWN).ToString());
+                }
+                output.SetValue(2, count, Value::LIST(std::move(parameter_types)));
+            }
+            // result_types, VARCHAR[]
+            switch (prepared_statement.properties.return_type) {
+                case StatementReturnType::QUERY_RESULT: {
+                    if (prepared_statement.physical_plan) {
+                        auto plan_types = prepared_statement.physical_plan->Root().GetTypes();
+                        vector<Value> return_types;
+                        for (auto &type: plan_types) {
+                            return_types.push_back(type.ToString());
+                        }
+                        output.SetValue(3, count, Value::LIST(return_types));
+                    } else {
+                        output.SetValue(3, count, Value(LogicalType::LIST(LogicalType::VARCHAR)));
+                    }
+                    break;
+                }
+                case StatementReturnType::CHANGED_ROWS: {
+                    output.SetValue(3, count, Value::LIST({"BIGINT"}));
+                    break;
+                }
+                case StatementReturnType::NOTHING:
+                default: {
+                    output.SetValue(3, count, Value(LogicalType::LIST(LogicalType::VARCHAR)));
+                    break;
+                }
+            }
+            count++;
+        }
+        output.SetCardinality(count);
+    }
+
+    void GoosePreparedStatementsFun::RegisterFunction(BuiltinFunctions &set) {
+        set.AddFunction(TableFunction("goose_prepared_statements", {}, GoosePreparedStatementsFunction,
+                                      GoosePreparedStatementsBind, GoosePreparedStatementsInit));
+    }
+} // namespace goose

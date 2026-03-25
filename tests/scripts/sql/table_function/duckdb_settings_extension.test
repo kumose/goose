@@ -1,0 +1,24 @@
+# name: tests/scripts/sql/table_function/goose_settings_extension.test
+# description: Test goose_settings function with extensions
+# group: [table_function]
+
+statement ok
+SET default_null_order='nulls_first';
+
+require parquet
+
+statement ok
+SELECT * FROM goose_settings();
+
+query II
+SELECT name, value FROM goose_settings() WHERE name='default_null_order';
+----
+default_null_order	NULLS_FIRST
+
+statement ok
+SET default_null_order='nulls_last'
+
+query II
+SELECT name, value FROM goose_settings() WHERE name='default_null_order';
+----
+default_null_order	NULLS_LAST

@@ -1,4 +1,4 @@
-#include "benchmark_runner.hpp"
+#include <goose/benchmark/benchmark_runner.h>
 #include "goose_benchmark_macro.hpp"
 
 using namespace goose;

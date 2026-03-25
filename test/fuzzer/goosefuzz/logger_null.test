@@ -1,9 +1,0 @@
-# name: test/fuzzer/goosefuzz/logger_null.test
-# description: Test table function with named parameter that is NULL
-# group: [goosefuzz]
-
-
-statement error
-FROM goose_logs(denormalized_table := NULL)
-----
-Invalid Input Error: denormalized_table cannot be NULL

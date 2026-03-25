@@ -1,0 +1,8 @@
+# name: tests/scripts/sql/error/missing_type.test
+# description: Test typos in types (type-o's)
+# group: [error]
+
+statement error
+SELECT ''::blobb
+----
+Did you mean "blob"?

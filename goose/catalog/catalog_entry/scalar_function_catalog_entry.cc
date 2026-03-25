@@ -1,0 +1,58 @@
+// Copyright (c) 2025 DuckDB.
+// Copyright (C) 2026 Kumo inc. and its affiliates. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+
+#include <goose/catalog/catalog_entry/scalar_function_catalog_entry.h>
+#include <goose/common/vector.h>
+#include <goose/parser/parsed_data/alter_scalar_function_info.h>
+#include <goose/main/attached_database.h>
+
+namespace goose {
+    constexpr const char *ScalarFunctionCatalogEntry::Name;
+
+    ScalarFunctionCatalogEntry::ScalarFunctionCatalogEntry(Catalog &catalog, SchemaCatalogEntry &schema,
+                                                           CreateScalarFunctionInfo &info)
+        : FunctionEntry(CatalogType::SCALAR_FUNCTION_ENTRY, catalog, schema, info), functions(info.functions) {
+        for (auto &function: functions.functions) {
+            function.catalog_name = catalog.GetAttached().GetName();
+            function.schema_name = schema.name;
+        }
+    }
+
+    unique_ptr<CatalogEntry> ScalarFunctionCatalogEntry::AlterEntry(CatalogTransaction transaction, AlterInfo &info) {
+        if (info.type != AlterType::ALTER_SCALAR_FUNCTION) {
+            throw InternalException("Attempting to alter ScalarFunctionCatalogEntry with unsupported alter type");
+        }
+        auto &function_info = info.Cast<AlterScalarFunctionInfo>();
+        if (function_info.alter_scalar_function_type != AlterScalarFunctionType::ADD_FUNCTION_OVERLOADS) {
+            throw InternalException(
+                "Attempting to alter ScalarFunctionCatalogEntry with unsupported alter scalar function type");
+        }
+        auto &add_overloads = function_info.Cast<AddScalarFunctionOverloadInfo>();
+
+        ScalarFunctionSet new_set = functions;
+        if (!new_set.MergeFunctionSet(add_overloads.new_overloads->functions, true)) {
+            throw BinderException(
+                "Failed to add new function overloads to function \"%s\": function overload already exists", name);
+        }
+        CreateScalarFunctionInfo new_info(std::move(new_set));
+        new_info.internal = internal;
+        new_info.descriptions = descriptions;
+        new_info.descriptions.insert(new_info.descriptions.end(), add_overloads.new_overloads->descriptions.begin(),
+                                     add_overloads.new_overloads->descriptions.end());
+        return make_uniq<ScalarFunctionCatalogEntry>(catalog, schema, new_info);
+    }
+} // namespace goose

@@ -1,0 +1,15 @@
+# name: tests/scripts/fuzzer/goosefuzz/array_slice_nullness.test
+# description: array_slice did not early out on NULL
+# group: [goosefuzz]
+
+statement ok
+PRAGMA enable_verification
+
+# simplified
+query I
+SELECT array_reverse(NULL::INTEGER[])
+----
+NULL
+
+statement ok
+SELECT NULL LIMIT array_reverse(TRY_CAST(5722 AS TIMESTAMP WITH TIME ZONE[]))

@@ -1,0 +1,23 @@
+# name: tests/scripts/sql/attach/attach_goose_type.test
+# description: Test attaching a file with type GOOSE.
+# group: [attach]
+
+statement ok
+ATTACH '__TEST_DIR__/first.db' (TYPE GOOSE);
+
+query I
+SELECT database_name FROM goose_databases() WHERE database_name = 'first';
+----
+first
+
+# GOOSE type does not allow unrecognized options.
+
+statement error
+ATTACH '__TEST_DIR__/error.db' (TYPE GOOSE, HELLO, OPTION 2);
+----
+<REGEX>:Binder Error.*Unrecognized option for attach.*
+
+statement error
+ATTACH '__TEST_DIR__/error.db' (HELLO, OPTION 2);
+----
+<REGEX>:Binder Error.*Unrecognized option for attach.*

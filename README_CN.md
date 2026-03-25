@@ -14,7 +14,7 @@ goose
 [English](./README.md)
 
 
-goose 项目说明
+goose 是  `Kumo` SQL IR 基础框架。
 
 ## 🛠️ Build
 

@@ -1,6 +1,3 @@
-include_directories(${PROJECT_SOURCE_DIR}/test/include)
-include_directories(include)
-
 
 add_subdirectory(micro)
 list(FIND GOOSE_EXTENSION_NAMES tpch _index)

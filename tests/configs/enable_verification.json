@@ -1,0 +1,244 @@
+{
+  "description": "Run with verification enabled.",
+  "on_init": "PRAGMA enable_verification;",
+  "skip_compiled": "true",
+  "skip_tests": [
+    {
+      "reason": "Contains random() or gen_random_uuid().",
+      "paths": [
+        "tests/scripts/fuzzer/pedro/nan_as_seed.test",
+        "tests/scripts/optimizer/pushdown/issue_16104.test",
+        "tests/scripts/sql/function/numeric/test_random.test",
+        "tests/scripts/sql/function/uuid/test_uuid.test",
+        "tests/scripts/sql/window/test_volatile_independence.test"
+      ]
+    },
+    {
+      "reason": "Contains SEQUENCE.",
+      "paths": [
+        "tests/scripts/fuzzer/pedro/having_query_wrong_result.test",
+        "tests/scripts/fuzzer/pedro/temp_sequence_durability.test",
+        "tests/scripts/issues/fuzz/sequence_overflow.test",
+        "tests/scripts/sql/aggregate/aggregates/test_avg.test",
+        "tests/scripts/sql/aggregate/aggregates/test_bit_and.test",
+        "tests/scripts/sql/aggregate/aggregates/test_bit_or.test",
+        "tests/scripts/sql/aggregate/aggregates/test_bit_xor.test",
+        "tests/scripts/sql/attach/attach_sequence.test",
+        "tests/scripts/sql/attach/reattach_schema.test",
+        "tests/scripts/sql/catalog/comment_on_wal.test",
+        "tests/scripts/sql/catalog/dependencies/test_alter_dependency_ownership.test",
+        "tests/scripts/sql/catalog/function/test_sequence_macro.test",
+        "tests/scripts/sql/catalog/sequence/sequence_cycle.test",
+        "tests/scripts/sql/catalog/sequence/sequence_offset_increment.test",
+        "tests/scripts/sql/catalog/sequence/sequence_overflow.test",
+        "tests/scripts/sql/catalog/sequence/test_goose_sequences.test",
+        "tests/scripts/sql/catalog/sequence/test_sequence.test",
+        "tests/scripts/sql/catalog/test_temporary.test",
+        "tests/scripts/sql/copy_database/copy_database_different_types.test",
+        "tests/scripts/sql/export/export_database.test",
+        "tests/scripts/sql/function/list/aggregates/avg.test",
+        "tests/scripts/sql/function/list/aggregates/bit_and.test",
+        "tests/scripts/sql/function/list/aggregates/bit_or.test",
+        "tests/scripts/sql/function/list/aggregates/bit_xor.test",
+        "tests/scripts/sql/storage/catalog/test_sequence_uncommitted_transaction.test",
+        "tests/scripts/sql/storage/catalog/test_store_default_sequence.test",
+        "tests/scripts/sql/storage/catalog/test_store_sequences.test",
+        "tests/scripts/sql/storage/wal/wal_sequence_uncommitted_transaction.test",
+        "tests/scripts/sql/storage/wal/wal_store_default_sequence.test",
+        "tests/scripts/sql/storage/wal/wal_store_sequences.test"
+      ]
+    },
+    {
+      "reason": "Contains SAMPLE (non-deterministic).",
+      "paths": [
+        "tests/scripts/fuzzer/pedro/sample_limit_overflow.test",
+        "tests/scripts/sql/function/numeric/set_seed_for_sample.test"
+      ]
+    },
+    {
+      "reason": "Contains current time function.",
+      "paths": [
+        "tests/scripts/sql/function/timestamp/current_time.test",
+        "tests/scripts/sql/parser/test_value_functions.test",
+        "tests/scripts/sql/timezone/test_icu_timezone.test"
+      ]
+    },
+    {
+      "reason": "Contains FIRST (non-deterministic).",
+      "paths": [
+        "tests/scripts/sql/parallelism/intraquery/test_parallel_nested_aggregates.test"
+      ]
+    },
+    {
+      "reason": "Non-deterministic query (subqueries return multiple rows).",
+      "paths": [
+        "tests/scripts/sql/subquery/scalar/test_issue_6136.test"
+      ]
+    },
+    {
+      "reason": "Running verification creates extra output.",
+      "paths": [
+        "tests/scripts/sql/copy/csv/rejects/csv_incorrect_columns_amount_rejects.test",
+        "tests/scripts/sql/copy/csv/rejects/csv_rejects_auto.test",
+        "tests/scripts/sql/copy/csv/rejects/csv_rejects_flush_cast.test",
+        "tests/scripts/sql/copy/csv/rejects/csv_rejects_flush_message.test",
+        "tests/scripts/sql/copy/csv/rejects/csv_rejects_maximum_line.test",
+        "tests/scripts/sql/copy/csv/rejects/csv_rejects_read.test",
+        "tests/scripts/sql/copy/csv/rejects/csv_rejects_two_tables.test",
+        "tests/scripts/sql/copy/csv/rejects/csv_unquoted_rejects.test",
+        "tests/scripts/sql/copy/csv/rejects/test_invalid_utf_rejects.test",
+        "tests/scripts/sql/copy/csv/rejects/test_mixed.test",
+        "tests/scripts/sql/copy/csv/rejects/test_multiple_errors_same_line.test",
+        "tests/scripts/sql/copy/csv/test_non_unicode_header.test",
+        "tests/scripts/sql/logging/file_system_logging.test",
+        "tests/scripts/sql/logging/logging.test",
+        "tests/scripts/sql/logging/logging_buffer_size.test",
+        "tests/scripts/sql/logging/logging_csv.test",
+        "tests/scripts/sql/logging/logging_types.test",
+        "tests/scripts/sql/logging/test_logging_function.test",
+        "tests/scripts/sql/pragma/test_query_log.test",
+        "tests/scripts/sql/function/list/lambdas/arrow/warn_deprecated_arrow.test"
+      ]
+    },
+    {
+      "reason": "Unoptimized statement differs from original result (cross product, conversion, overflow, statistics).",
+      "paths": [
+        "tests/scripts/fuzzer/goosefuzz/semi_join_has_correct_left_right_relations.test",
+        "tests/scripts/fuzzer/pedro/force_no_cross_product.test",
+        "tests/scripts/fuzzer/pedro/strptime_null_argument.test",
+        "tests/scripts/fuzzer/sqlsmith/bitstring_agg_overflow.test",
+        "tests/scripts/issues/rigger/overflow_filter_pushdown.test",
+        "tests/scripts/sql/aggregate/aggregates/test_bitstring_agg.test",
+        "tests/scripts/sql/catalog/function/test_table_macro_complex.test",
+        "tests/scripts/sql/copy/parquet/parquet_filename_filter.test",
+        "tests/scripts/sql/copy/parquet/parquet_hive.test",
+        "tests/scripts/sql/copy/parquet/union_by_name_hive_partitioning.test",
+        "tests/scripts/sql/optimizer/test_in_rewrite_rule.test",
+        "tests/scripts/sql/storage/compression/rle/rle_constant.test",
+        "tests/scripts/sql/types/geo/geometry_stats.test",
+        "tests/scripts/sql/window/test_window_constant_allocator.test"
+      ]
+    },
+    {
+      "reason": "Prepared statement differs from original result (statistics, pg_prepared_statements).",
+      "paths": [
+        "tests/scripts/fuzzer/pedro/vacuum_table_with_generated_column.test",
+        "tests/scripts/optimizer/statistics/statistics_numeric.test",
+        "tests/scripts/parquet/parquet_stats_function.test",
+        "tests/scripts/sql/alter/add_col/test_add_col_stats.test",
+        "tests/scripts/sql/function/generic/test_stats.test",
+        "tests/scripts/sql/pg_catalog/pg_prepared_statements.test",
+        "tests/scripts/sql/storage/distinct_statistics_storage.test",
+        "tests/scripts/sql/table_function/goose_prepared_statements.test",
+        "tests/scripts/sql/types/list/list_stats.test",
+        "tests/scripts/sql/types/nested/array/array_statistics.test",
+        "tests/scripts/sql/types/struct/struct_stats.test",
+        "tests/scripts/sql/storage/types/variant/variant_shredding.test",
+        "tests/scripts/sql/storage/types/variant/variant_stats_merging.test",
+        "tests/scripts/sql/storage/types/variant/variant_extract_stats.test",
+        "tests/scripts/sql/vacuum/test_analyze.test"
+      ]
+    },
+    {
+      "reason": "Deserialized statement differs from original result.",
+      "paths": [
+        "tests/scripts/sql/function/list/lambdas/arrow/test_deprecated_lambda.test"
+      ]
+    },
+    {
+      "reason": "Round-trip of literals changes type, e.g., DOUBLE -> DECIMAL.",
+      "paths": [
+        "tests/scripts/sql/types/decimal/large_decimal_constants.test",
+        "tests/scripts/sql/types/hugeint/test_hugeint_conversion.test",
+        "tests/scripts/sql/types/uhugeint/test_uhugeint_conversion.test"
+      ]
+    },
+    {
+      "reason": "Time-out without optimizer.",
+      "paths": [
+        "tests/scripts/optimizer/join_dependent_filter.test",
+        "tests/scripts/optimizer/joins/no_duplicate_elimination_join.test",
+        "tests/scripts/optimizer/joins/tpcds_nofail.test",
+        "tests/scripts/sql/limit/test_limit0.test",
+        "tests/scripts/sql/optimizer/plan/test_filter_pushdown_large.test"
+      ]
+    },
+    {
+      "reason": "Runs too long in release mode.",
+      "paths": [
+        "tests/scripts/sql/limit/test_limit0.test",
+        "tests/scripts/sql/parallelism/intraquery/depth_first_evaluation_union_and_join.test",
+        "tests/scripts/sql/sample/reservoir_testing_percentage.test",
+        "tests/scripts/sql/window/test_constant_orderby.test"
+      ]
+    },
+    {
+      "reason": "FIXME: Unexpected Parser Error",
+      "paths": [
+        "tests/scripts/issues/general/test_16524.test",
+        "tests/scripts/sql/alter/test_alter_if_exists.test",
+        "tests/scripts/sql/catalog/comment_on.test",
+        "tests/scripts/sql/catalog/comment_on_column.test",
+        "tests/scripts/sql/catalog/comment_on_dependencies.test",
+        "tests/scripts/sql/catalog/comment_on_extended.test",
+        "tests/scripts/sql/catalog/comment_on_pg_description.test",
+        "tests/scripts/sql/collate/test_collate_between.test",
+        "tests/scripts/sql/index/create_index_options.test",
+        "tests/scripts/sql/pragma/test_show_tables.test",
+        "tests/scripts/sql/peg_parser/transformer/use_statement.test"
+      ]
+    },
+    {
+      "reason": "FIXME: Unexpected catalog duplicate/missing entry error.",
+      "paths": [
+        "tests/scripts/sql/catalog/function/test_macro_issue_13104.test",
+        "tests/scripts/sql/catalog/function/test_macro_relpersistence_conflict.test",
+        "tests/scripts/sql/catalog/function/test_recursive_macro.test",
+        "tests/scripts/sql/catalog/function/test_recursive_macro_no_dependency.test",
+        "tests/scripts/sql/catalog/test_set_schema.test",
+        "tests/scripts/sql/catalog/test_set_search_path.test",
+        "tests/scripts/sql/function/list/lambdas/arrow/lambdas_and_functions_deprecated.test",
+        "tests/scripts/sql/function/list/lambdas/lambdas_and_functions.test"
+      ]
+    },
+    {
+      "reason": "FIXME: Misc. unexpected failures (including internal exception).",
+      "paths": [
+        "tests/scripts/fuzzer/goosefuzz/null_arguments.test",
+        "tests/scripts/sql/aggregate/aggregates/test_state_export.test",
+        "tests/scripts/sql/copy/parquet/bloom_filters.test",
+        "tests/scripts/sql/copy/parquet/corrupt_stats.test",
+        "tests/scripts/sql/create/create_table_compression.test",
+        "tests/scripts/sql/logging/logging_file_bind_replace.test",
+        "tests/scripts/sql/optimizer/test_rowid_pushdown_plan.test",
+        "tests/scripts/sql/pg_catalog/system_functions.test",
+        "tests/scripts/sql/storage/compression/test_using_compression.test",
+        "tests/scripts/sql/error/error_position.test"
+      ]
+    },
+    {
+      "reason": "Serialization Error: Unsupported type for deserialization of AlterInfo!",
+      "paths": [
+        "tests/scripts/sql/alter/test_alter_database_rename.test"
+      ]
+    },
+    {
+      "reason": "Profiling in combination with verification is disabled for SELECT statements",
+      "paths": [
+        "tests/scripts/sql/pragma/profiling/test_profiling_fs.test"
+      ]
+    },
+    {
+      "reason": "Verification query results are not buffer managed",
+      "paths": [
+        "tests/scripts/sql/outofcore/buffer_managed_query_result.test_slow"
+      ]
+    },
+    {
+      "reason": "Geometry with CRS is not always string round-trippable",
+      "paths": [
+        "tests/scripts/geoparquet/with_crs.test"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "description": "Run on persistent encrypted databases as storage.",
+  "on_init": "ATTACH '__TEST_DIR__/{BASE_TEST_NAME}__test__config__crypto.db' AS __test__config__crypto (ENCRYPTION_KEY 'key={BASE_TEST_NAME}');",
+  "on_new_connection": "USE __test__config__crypto;",
+  "on_load": "skip",
+  "skip_compiled": "true",
+  "statically_loaded_extensions": [
+    "core_functions",
+    "httpfs"
+  ],
+  "skip_tests": [
+    {
+      "reason": "TODO",
+      "paths": [
+        "tests/scripts/extension/test_tags.test",
+        "tests/scripts/extension/load_extension.test",
+        "tests/scripts/extension/autoloading_types.test",
+        "tests/scripts/sql/settings/drop_set_schema.test",
+        "tests/scripts/sql/show_select/test_describe_all.test",
+        "tests/scripts/extension/test_custom_type_modifier_cast.test",
+        "tests/scripts/extension/test_alias_point.test",
+        "tests/scripts/extension/load_test_alias.test",
+        "tests/scripts/fuzzer/pedro/incomplete_checkpoint.test",
+        "tests/scripts/sql/catalog/test_set_search_path.test",
+        "tests/scripts/sql/catalog/function/attached_macro.test",
+        "tests/scripts/sql/catalog/test_temporary.test",
+        "tests/scripts/sql/pragma/test_show_tables_temp_views.test",
+        "tests/scripts/sql/storage/temp_directory/max_swap_space_error.test",
+        "tests/scripts/sql/pg_catalog/system_functions.test",
+        "tests/scripts/sql/attach/attach_table_info.test",
+        "tests/scripts/sql/attach/attach_did_you_mean.test",
+        "tests/scripts/sql/attach/show_databases.test",
+        "tests/scripts/sql/attach/attach_show_all_tables.test",
+        "tests/scripts/sql/attach/attach_default_table.test",
+        "tests/scripts/sql/attach/attach_icu_collation.test",
+        "tests/scripts/sql/function/list/lambdas/incorrect.test",
+        "tests/scripts/sql/json/test_json_serialize_sql.test",
+        "tests/scripts/sql/attach/attach_views.test",
+        "tests/scripts/sql/table_function/goose_databases.test",
+        "tests/scripts/sql/copy_database/copy_table_with_sequence.test",
+        "tests/scripts/sql/logging/file_system_logging_attach.test",
+        "tests/scripts/sql/logging/file_system_logging_attach_deadlock.test",
+        "tests/scripts/sql/storage/read_goose/read_goose_basic.test"
+      ]
+    },
+    {
+      "reason": "Attached databases have a main schema, which is not implicit.",
+      "paths": [
+        "tests/scripts/fuzzer/sqlsmith/current_schemas_null.test"
+      ]
+    },
+    {
+      "reason": "Expects httpfs to not be present",
+      "paths" : [
+          "tests/scripts/sql/secrets/create_secret_hffs_autoload.test",
+          "tests/scripts/sql/secrets/secret_autoloading_errors.test",
+          "tests/scripts/sql/partitioning/hive_partitioning_autodetect.test"
+      ]
+    },
+    {
+      "reason": "Unclassified failures",
+      "paths": [
+        "tests/scripts/sql/storage/encryption/wal/encrypted_wal_lazy_creation.test",
+        "tests/scripts/sql/storage/encryption/temp_files/temp_directory_enable_external_access.test",
+        "tests/scripts/sql/copy/encryption/different_aes_engines.test"
+      ]
+    }
+  ]
+}
