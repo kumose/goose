@@ -4,6 +4,7 @@
     "cantor",
     "lz4",
     "mbedtls",
+    "openssl",
     {
       "name": "snappy",
       "features": [
@@ -13,8 +14,9 @@
     "snowball",
     "turbo",
     "xfsst",
+    "xicu",
     "xre2",
     "zstd",
-    "xicu"
+    "curl"
   ]
 }

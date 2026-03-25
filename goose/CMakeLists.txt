@@ -155,6 +155,7 @@ kmcmake_cc_library(
 # other extensions
 add_subdirectory(extension/autocomplete)
 add_subdirectory(extension/vss)
+add_subdirectory(extension/httpfs)
 
 kmcmake_cc_binary(
         NAMESPACE ${PROJECT_NAME}
@@ -168,7 +169,9 @@ kmcmake_cc_binary(
         goose::goose_static
         goose::goose_autocomplete
         goose::goose_vss
+        goose::goose_httpfs
         ${KMCMAKE_DEPS_LINK}
+        ${HTTPFS_DEPS_LINK}
         LINKOPTS
         ${KMCMAKE_STATIC_BIN_OPTION}
         PUBLIC

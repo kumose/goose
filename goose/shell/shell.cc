@@ -17,7 +17,8 @@
 #include <goose/shell/shell.h>
 #include <goose/goose.h>
 #include  <goose/extension/autocomplete/autocomplete_extension.h>
-
+#include  <goose/extension/httpfs/httpfs_extension.h>
+#include  <goose/extension/vss/vss_extension.h>
 namespace goose {
 
     /// user need impl this function
@@ -25,6 +26,16 @@ namespace goose {
         goose::UserConfig::instance().alter_string = "KSQL";
         auto rs = enable_extension_autoload("autocomplete", [](Goose &db) {
                 db.LoadStaticExtension<AutocompleteExtension>();
+                return ExtensionLoadResult::LOADED_EXTENSION;
+            });
+        TURBO_UNUSED(rs);
+        rs = enable_extension_autoload("httpfs", [](Goose &db) {
+                db.LoadStaticExtension<HttpfsExtension>();
+                return ExtensionLoadResult::LOADED_EXTENSION;
+            });
+        TURBO_UNUSED(rs);
+        rs = enable_extension_autoload("vss", [](Goose &db) {
+                db.LoadStaticExtension<VssExtension>();
                 return ExtensionLoadResult::LOADED_EXTENSION;
             });
         TURBO_UNUSED(rs);

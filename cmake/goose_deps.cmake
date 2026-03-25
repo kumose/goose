@@ -45,6 +45,8 @@ find_package(MbedTLS CONFIG REQUIRED)
 find_package(zstd CONFIG REQUIRED)
 find_package(cantor CONFIG REQUIRED)
 find_package(xicu CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(CURL REQUIRED)
 ############################################################
 #
 # add you libs to the KMCMAKE_DEPS_LINK variable eg as turbo
@@ -64,8 +66,16 @@ set(KMCMAKE_DEPS_LINK
         unofficial::brotli::brotlidec
         unofficial::brotli::brotlienc
         cantor::cantor_static
+        ${CURL_LIBRARIES}
+        OpenSSL::SSL
+        OpenSSL::Crypto
         ${KMCMAKE_SYSTEM_DYLINK}
         )
+set(HTTPFS_DEPS_LINK
+        ${CURL_LIBRARIES}
+        OpenSSL::SSL
+        OpenSSL::Crypto
+)
 list(REMOVE_DUPLICATES KMCMAKE_DEPS_LINK)
 kmcmake_print_list_label("Denpendcies:" KMCMAKE_DEPS_LINK)
 

@@ -68,3 +68,28 @@ Run in the project root directory:
 ```shell
 ctest --test-dir build
 ```
+
+## LICENSE
+
+## LICENSE
+
+This project is primarily licensed under the **Apache License 2.0**,
+see the [LICENSE](LICENSE) file for details.
+
+This project incorporates code from third-party libraries:
+
+- duckdb: <https://github.com/duckdb/duckdb>
+  Licensed under the MIT license, see [duckdb.license](licenses/duckdb.license)
+
+- pdqsort: <https://github.com/orlp/pdqsort>
+  Licensed under the zlib/libpng license, see [licenses/pdq.license](licenses/pdq.license)
+
+- skasort (ska_sort): <https://github.com/skarupke/ska_sort>
+  Licensed under the Boost Software License, see [licenses/ska.license](licenses/ska.license)
+
+- vergesort: <https://github.com/Morwenn/vergesort>
+  Licensed under the Mit License, see [licenses/vergesort.license](licenses/vergesort.license)
+
+These third-party libraries remain under their original respective licenses.
+The Apache 2.0 license applies **only to the integration work and original code
+developed as part of the kumo project**, not to the third-party libraries themselves.
