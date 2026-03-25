@@ -127,11 +127,11 @@ HEADER = '''// Copyright (C) 2026 Kumo inc. and its affiliates. All Rights Reser
 //===----------------------------------------------------------------------===//
 
 {include_list}
-namespace duckdb {{
+namespace goose {{
 '''
 
 FOOTER = '''
-} // namespace duckdb
+} // namespace goose
 '''
 
 TEMPLATED_BASE_FORMAT = '''
@@ -537,7 +537,7 @@ class SerializableClass:
             if parameters != '':
                 parameters = f'({parameters})'
             return f'\t{self.return_class} result{parameters};\n'
-        return f'\tauto result = duckdb::{self.pointer_type}<{self.return_class}>(new {self.return_class}({parameters}));\n'
+        return f'\tauto result = goose::{self.pointer_type}<{self.return_class}>(new {self.return_class}({parameters}));\n'
 
 
 def generate_base_class_code(base_class: SerializableClass):

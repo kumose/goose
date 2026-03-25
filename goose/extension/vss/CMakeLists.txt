@@ -13,15 +13,20 @@
 # limitations under the License.
 #
 
-kmcmake_cc_test(
-        NAME all_test
-        MODULE scripts
+file(GLOB_RECURSE JSON_SRC "*.cc")
+
+goose_cc_extension(
+        NAMESPACE ${PROJECT_NAME}
+        NAME vss
         SOURCES
-        goose_testing_main.cc
-        CXXOPTS ${KMCMAKE_CXX_OPTIONS}
-        LINKS
-        goose::goose_testing_static
-        goose::goose_static
-        goose::goose_vss
+        ${JSON_SRC}
+        ABI_TYPE
+        "CPP"
+        INCLUDES
+        include
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        PLINKS
         ${KMCMAKE_DEPS_LINK}
+        PUBLIC
 )

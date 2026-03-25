@@ -136,7 +136,7 @@ protected:
 	                                         OperatorSourceInput &input) const;
 
 public:
-	SourceResultType GetData(ExecutionContext &context, DataChunk &chunk, OperatorSourceInput &input) const;
+	virtual SourceResultType GetData(ExecutionContext &context, DataChunk &chunk, OperatorSourceInput &input) const;
 
 	virtual OperatorPartitionData GetPartitionData(ExecutionContext &context, DataChunk &chunk,
 	                                               GlobalSourceState &gstate, LocalSourceState &lstate,
