@@ -8,6 +8,14 @@
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{KMPKG_CMAKE}"
       }
+    },
+    {
+      "name": "ninja",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{KMPKG_CMAKE}"
+      }
     }
   ]
 }

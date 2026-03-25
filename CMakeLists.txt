@@ -31,7 +31,7 @@ endif ()
 set(PROJECT_DESCRIPTION "Goose is an analytical in-process SQL IR database management system.")
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 6)
-set(PROJECT_VERSION_PATCH 7)
+set(PROJECT_VERSION_PATCH 10)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
 set(${PROJECT_NAME}_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
@@ -91,17 +91,18 @@ if (KMCMAKE_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif ()
 if(NOT PYTHON_EXTENSION)
-    ##############################################
-    # header installing
-    #############################################
-    install(DIRECTORY ${PROJECT_NAME}
-            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-            FILES_MATCHING
-            PATTERN "*.inc"
-            PATTERN "*.h"
-            PATTERN "*.hpp"
-            )
+    # install header, avoid empty directory
+    file(GLOB_RECURSE HEADERS
+            RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+            "${PROJECT_NAME}/*.h"
+            "${PROJECT_NAME}/*.hpp"
+            "${PROJECT_NAME}/*.inc")
 
+    foreach(_file ${HEADERS})
+        get_filename_component(_dir ${_file} DIRECTORY)
+        install(FILES ${_file}
+                DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${_dir})
+    endforeach()
     # Layout. This works for all platforms:
     #   * <prefix>//cmake/<PROJECT-NAME>
     #   * <prefix>/*/
