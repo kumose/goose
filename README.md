@@ -14,7 +14,7 @@ goose
 [中文版](./README_CN.md)
 
 
-goose is kumo's `SQL` `IR` mid end. base on duckdb.
+goose is kumo's `SQL` `IR` middle interpreter.
 
 ## 🛠️ Build
 
@@ -69,7 +69,92 @@ Run in the project root directory:
 ctest --test-dir build
 ```
 
-## LICENSE
+## Usage
+
+### build you apps
+
+build you extension
+
+```cmake
+
+file(GLOB_RECURSE JSON_SRC "*.cc")
+
+goose_cc_extension(
+        NAMESPACE ${PROJECT_NAME}
+        NAME json
+        SOURCES
+        ${JSON_SRC}
+        ABI_TYPE
+        "CPP"
+        INCLUDES
+        include
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        PLINKS
+        ${KMCMAKE_DEPS_LINK}
+        PUBLIC
+)
+
+```
+
+config up your app:
+```cpp
+
+#include <goose/shell/shell.h>
+#include <goose/goose.h>
+#include  <goose/extension/autocomplete/autocomplete_extension.h>
+#include  <goose/extension/httpfs/httpfs_extension.h>
+#include  <goose/extension/vss/vss_extension.h>
+namespace goose {
+
+    /// user need impl this function
+    void init_extensions() {
+        goose::UserConfig::instance().alter_string = "KSQL";
+        auto rs = enable_extension_autoload("autocomplete", [](Goose &db) {
+                db.LoadStaticExtension<AutocompleteExtension>();
+                return ExtensionLoadResult::LOADED_EXTENSION;
+            });
+        TURBO_UNUSED(rs);
+        rs = enable_extension_autoload("httpfs", [](Goose &db) {
+                db.LoadStaticExtension<HttpfsExtension>();
+                return ExtensionLoadResult::LOADED_EXTENSION;
+            });
+        TURBO_UNUSED(rs);
+        rs = enable_extension_autoload("vss", [](Goose &db) {
+                db.LoadStaticExtension<VssExtension>();
+                return ExtensionLoadResult::LOADED_EXTENSION;
+            });
+        TURBO_UNUSED(rs);
+    }
+} // namespace goose
+
+
+```
+
+build you app:
+
+```cmake
+kmcmake_cc_binary(
+        NAMESPACE ${PROJECT_NAME}
+        NAME ksql
+        SOURCES
+        shell/shell.cc
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        LINKS
+        goose::goose_shell_static
+        goose::goose_static
+        goose::goose_autocomplete
+        goose::goose_vss
+        goose::goose_httpfs
+        ${KMCMAKE_DEPS_LINK}
+        ${HTTPFS_DEPS_LINK}
+        LINKOPTS
+        ${KMCMAKE_STATIC_BIN_OPTION}
+        PUBLIC
+)
+
+```
 
 ## LICENSE
 

@@ -176,3 +176,9 @@ kmcmake_cc_binary(
         ${KMCMAKE_STATIC_BIN_OPTION}
         PUBLIC
 )
+
+##############################################
+# header installing
+#############################################
+file(GLOB_RECURSE ALL_HEADER "*.h" "*.inc" ".hpp")
+install(FILES ${ALL_HEADER} DESTINATION  ${CMAKE_INSTALL_INCLUDEDIR}/goose)

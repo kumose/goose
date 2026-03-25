@@ -31,7 +31,7 @@ endif ()
 set(PROJECT_DESCRIPTION "Goose is an analytical in-process SQL IR database management system.")
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 6)
-set(PROJECT_VERSION_PATCH 7)
+set(PROJECT_VERSION_PATCH 8)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
 set(${PROJECT_NAME}_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
@@ -91,16 +91,6 @@ if (KMCMAKE_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif ()
 if(NOT PYTHON_EXTENSION)
-    ##############################################
-    # header installing
-    #############################################
-    install(DIRECTORY ${PROJECT_NAME}
-            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-            FILES_MATCHING
-            PATTERN "*.inc"
-            PATTERN "*.h"
-            PATTERN "*.hpp"
-            )
 
     # Layout. This works for all platforms:
     #   * <prefix>//cmake/<PROJECT-NAME>
