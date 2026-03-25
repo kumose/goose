@@ -73,6 +73,9 @@ ctest --test-dir build
 
 ### build you apps
 
+full developments demo for extension see [goose-demo](https://github.com/kumose/goose-demo).
+
+
 build you extension
 
 ```cmake
