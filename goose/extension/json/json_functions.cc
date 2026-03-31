@@ -229,7 +229,7 @@ namespace goose {
             table_function->alias = fs.ExtractBaseName(table_name);
         }
 
-        return table_function;
+        return std::move(table_function);
     }
 
     static bool CastVarcharToJSON(Vector &source, Vector &result, idx_t count, CastParameters &parameters) {

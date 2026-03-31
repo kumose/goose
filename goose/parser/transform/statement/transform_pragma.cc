@@ -64,7 +64,7 @@ namespace goose {
                 }
                 auto set_statement =
                         make_uniq<SetVariableStatement>(info.name, std::move(info.parameters[0]), SetScope::AUTOMATIC);
-                return set_statement;
+                return std::move(set_statement);
             }
             case cantor::PG_PRAGMA_TYPE_CALL:
                 break;
@@ -72,6 +72,6 @@ namespace goose {
                 throw InternalException("Unknown pragma type");
         }
 
-        return result;
+        return std::move(result);
     }
 } // namespace goose

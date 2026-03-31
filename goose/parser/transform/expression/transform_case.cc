@@ -30,6 +30,6 @@ namespace goose {
             case_node->else_expr = make_uniq<ConstantExpression>(Value(LogicalType::SQLNULL));
         }
         SetQueryLocation(*case_node, root.location);
-        return case_node;
+        return std::move(case_node);
     }
 } // namespace goose

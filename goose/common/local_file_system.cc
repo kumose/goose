@@ -486,7 +486,7 @@ namespace goose {
             file_handle->TryAddLogger(*opener);
             GOOSE_LOG_FILE_SYSTEM_OPEN((*file_handle));
         }
-        return file_handle;
+        return std::move(file_handle);
     }
 
     void LocalFileSystem::SetFilePointer(FileHandle &handle, idx_t location) {

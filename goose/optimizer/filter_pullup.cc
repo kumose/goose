@@ -137,7 +137,7 @@ unique_ptr<LogicalOperator> FilterPullup::GeneratePullupFilter(unique_ptr<Logica
 	}
 	expressions.clear();
 	filter->children.push_back(std::move(child));
-	return filter;
+	return std::move(filter);
 }
 
 unique_ptr<LogicalOperator> FilterPullup::FinishPullup(unique_ptr<LogicalOperator> op) {

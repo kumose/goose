@@ -136,7 +136,7 @@ namespace goose {
         auto info = make_uniq<ChunkConstantInfo>(start);
         info->insert_id = 0;
         info->delete_id = 0;
-        return info;
+        return std::move(info);
     }
 
     string ChunkConstantInfo::ToString(idx_t max_count) const {
@@ -538,6 +538,6 @@ namespace goose {
                 deleted[i] = 0;
             }
         }
-        return result;
+        return std::move(result);
     }
 } // namespace goose

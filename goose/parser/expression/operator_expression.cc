@@ -40,6 +40,6 @@ namespace goose {
         for (auto &it: children) {
             copy->children.push_back(it->Copy());
         }
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

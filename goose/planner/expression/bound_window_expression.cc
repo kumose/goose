@@ -185,7 +185,7 @@ namespace goose {
                 new_window->expr_stats.push_back(nullptr);
             }
         }
-        return new_window;
+        return std::move(new_window);
     }
 
     void BoundWindowExpression::Serialize(Serializer &serializer) const {
@@ -241,6 +241,6 @@ namespace goose {
         deserializer.ReadProperty(212, "exclude_clause", result->exclude_clause);
         deserializer.ReadProperty(213, "distinct", result->distinct);
         deserializer.ReadPropertyWithExplicitDefault(214, "arg_orders", result->arg_orders, vector<BoundOrderByNode>());
-        return result;
+        return std::move(result);
     }
 } // namespace goose

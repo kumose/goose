@@ -85,7 +85,7 @@ namespace goose {
         secret->TrySetValue("extra_http_headers", input);
         secret->TrySetValue("bearer_token", input);
 
-        return secret;
+        return std::move(secret);
     }
 
     unique_ptr<BaseSecret> CreateHTTPSecretFunctions::CreateHTTPSecretFromConfig(ClientContext &context,
@@ -102,6 +102,6 @@ namespace goose {
         //! Set redact keys
         secret->redact_keys = {"http_proxy_password"};
 
-        return secret;
+        return std::move(secret);
     }
 } // namespace goose

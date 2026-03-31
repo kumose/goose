@@ -142,7 +142,7 @@ namespace goose {
         auto result = make_uniq<ARTIndexScanState>();
         result->values[0] = value;
         result->expressions[0] = expression_type;
-        return result;
+        return std::move(result);
     }
 
     static unique_ptr<IndexScanState> InitializeScanTwoPredicates(const Value &low_value,
@@ -154,7 +154,7 @@ namespace goose {
         result->expressions[0] = low_expression_type;
         result->values[1] = high_value;
         result->expressions[1] = high_expression_type;
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<IndexScanState> ART::TryInitializeScan(const Expression &expr, const Expression &filter_expr) {
@@ -1111,7 +1111,7 @@ namespace goose {
         }
         auto result = make_uniq<ART>(name, constraint_type, GetColumnIds(), table_io_manager, unbound_expressions, db);
         result->delta_index_type = target_delta_index;
-        return result;
+        return std::move(result);
     }
 
     //===-------------------------------------------------------------------===//

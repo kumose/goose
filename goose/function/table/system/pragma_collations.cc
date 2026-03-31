@@ -46,7 +46,7 @@ namespace goose {
             schema.get().Scan(context, CatalogType::COLLATION_ENTRY,
                               [&](CatalogEntry &entry) { result->entries.push_back(entry.name); });
         }
-        return result;
+        return std::move(result);
     }
 
     static void PragmaCollateFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

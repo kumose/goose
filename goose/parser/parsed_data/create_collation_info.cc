@@ -12,6 +12,6 @@ namespace goose {
     unique_ptr<CreateInfo> CreateCollationInfo::Copy() const {
         auto result = make_uniq<CreateCollationInfo>(name, function, combinable, not_required_for_equality);
         CopyProperties(*result);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

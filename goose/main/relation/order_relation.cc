@@ -39,7 +39,7 @@ namespace goose {
             order_node->orders.emplace_back(orders[i].type, orders[i].null_order, orders[i].expression->Copy());
         }
         select->modifiers.push_back(std::move(order_node));
-        return select;
+        return std::move(select);
     }
 
     string OrderRelation::GetAlias() {

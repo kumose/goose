@@ -14,6 +14,6 @@ namespace goose {
 
         auto result = make_uniq<OperatorExpression>(expr_type, std::move(arg));
         SetQueryLocation(*result, root.location);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

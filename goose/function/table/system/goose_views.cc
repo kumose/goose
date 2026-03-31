@@ -67,7 +67,7 @@ unique_ptr<GlobalTableFunctionState> GooseViewsInit(ClientContext &context, Tabl
 		schema.get().Scan(context, CatalogType::VIEW_ENTRY,
 		                  [&](CatalogEntry &entry) { result->entries.push_back(entry); });
 	};
-	return result;
+	return std::move(result);
 }
 
 void GooseViewsFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

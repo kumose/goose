@@ -355,7 +355,7 @@ namespace goose {
         state->row_ids = make_uniq_array<row_t>(search_result.size());
 
         search_result.dump_to(state->row_ids.get());
-        return state;
+        return std::move(state);
     }
 
     idx_t HNSWIndex::Scan(IndexScanState &state, Vector &result, idx_t result_offset) {
@@ -701,7 +701,7 @@ namespace goose {
         rhs_matcher->type = make_uniq<SpecificTypeMatcher>(LogicalType::ARRAY(LogicalType::FLOAT, GetVectorSize()));
         matcher->matchers.push_back(std::move(rhs_matcher));
 
-        return matcher;
+        return std::move(matcher);
     }
 
     void HNSWIndex::VerifyBuffers(IndexLock &lock) {
@@ -720,7 +720,7 @@ namespace goose {
         index_type.create_instance = [](CreateIndexInput &input) -> unique_ptr<BoundIndex> {
             auto res = make_uniq<HNSWIndex>(input.name, input.constraint_type, input.column_ids, input.table_io_manager,
                                             input.unbound_expressions, input.db, input.options, input.storage_info);
-            return res;
+            return std::move(res);
         };
         index_type.create_plan = HNSWIndex::CreatePlan;
 

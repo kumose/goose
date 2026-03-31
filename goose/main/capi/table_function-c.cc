@@ -136,7 +136,7 @@ namespace goose {
                 throw BinderException(bind_info.error);
             }
 
-            return result;
+            return std::move(result);
         }
 
         unique_ptr<GlobalTableFunctionState>
@@ -149,7 +149,7 @@ namespace goose {
             if (!init_info.success) {
                 throw InvalidInputException(init_info.error);
             }
-            return result;
+            return std::move(result);
         }
 
         unique_ptr<LocalTableFunctionState> CTableFunctionLocalInit(ExecutionContext &context,
@@ -158,7 +158,7 @@ namespace goose {
             auto &bind_data = data_p.bind_data->Cast<CTableBindData>();
             auto result = make_uniq<CTableLocalInitData>();
             if (!bind_data.info.local_init) {
-                return result;
+                return std::move(result);
             }
 
             CTableInternalInitInfo init_info(bind_data, result->init_data, data_p.column_ids, data_p.filters);
@@ -166,7 +166,7 @@ namespace goose {
             if (!init_info.success) {
                 throw InvalidInputException(init_info.error);
             }
-            return result;
+            return std::move(result);
         }
 
         unique_ptr<NodeStatistics> CTableFunctionCardinality(ClientContext &context, const FunctionData *bind_data_p) {

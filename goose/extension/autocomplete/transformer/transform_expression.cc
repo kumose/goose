@@ -125,7 +125,7 @@ namespace goose {
             window_function->function_name = qualified_function.name;
             window_function->children = std::move(function_children);
             window_function->type = WindowExpression::WindowToExpressionType(window_function->function_name);
-            return window_function;
+            return std::move(window_function);
         }
 
         auto result = make_uniq<FunctionExpression>(qualified_function.catalog, qualified_function.schema,
@@ -140,7 +140,7 @@ namespace goose {
         if (filter_expr) {
             result->filter = std::move(filter_expr);
         }
-        return result;
+        return std::move(result);
     }
 
     QualifiedName PEGTransformerFactory::TransformFunctionIdentifier(PEGTransformer &transformer,
@@ -506,7 +506,7 @@ namespace goose {
         auto lower = transformer.Transform<unique_ptr<ParsedExpression> >(list_pr.Child<ListParseResult>(1));
         auto higher = transformer.Transform<unique_ptr<ParsedExpression> >(list_pr.Child<ListParseResult>(3));
         auto result = make_uniq<BetweenExpression>(nullptr, std::move(lower), std::move(higher));
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> PEGTransformerFactory::TransformLikeClause(PEGTransformer &transformer,
@@ -521,7 +521,7 @@ namespace goose {
             throw NotImplementedException("Escape is not yet implemented.");
         }
         auto result = make_uniq<FunctionExpression>(like_variation, std::move(like_children));
-        return result;
+        return std::move(result);
     }
 
     string PEGTransformerFactory::TransformLikeVariations(PEGTransformer &transformer,
@@ -905,7 +905,7 @@ namespace goose {
             auto choice_pr = nested_list.Child<ChoiceParseResult>(0);
             if (choice_pr.result->type == ParseResultType::KEYWORD) {
                 // We have hit the '-'
-                return const_list;
+                return std::move(const_list);
             }
             if (choice_pr.result->type == ParseResultType::LIST) {
                 return transformer.Transform<unique_ptr<ParsedExpression> >(choice_pr.result);
@@ -913,7 +913,7 @@ namespace goose {
             throw InternalException("Unexpected parse result type encountered");
         }
         // return empty list here
-        return const_list;
+        return std::move(const_list);
     }
 
     unique_ptr<ParsedExpression> PEGTransformerFactory::TransformStepSliceBound(PEGTransformer &transformer,
@@ -961,7 +961,7 @@ namespace goose {
             result->rename_list = transformer.Transform<qualified_column_map_t<string> >(
                 rename_list_opt.optional_result);
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<WindowExpression> PEGTransformerFactory::TransformOverClause(PEGTransformer &transformer,
@@ -1066,7 +1066,7 @@ namespace goose {
         for (auto expr: expr_list) {
             result->children.push_back(transformer.Transform<unique_ptr<ParsedExpression> >(expr));
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> PEGTransformerFactory::TransformUnpackExpression(PEGTransformer &transformer,
@@ -1075,7 +1075,7 @@ namespace goose {
         auto extract_parens = ExtractResultFromParens(list_pr.Child<ListParseResult>(1));
         auto result = make_uniq<OperatorExpression>(ExpressionType::OPERATOR_UNPACK);
         result->children.push_back(transformer.Transform<unique_ptr<ParsedExpression> >(extract_parens));
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> PEGTransformerFactory::TransformColumnsExpression(PEGTransformer &transformer,
@@ -1092,7 +1092,7 @@ namespace goose {
             result->expr = std::move(expr);
         }
         result->columns = true;
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> PEGTransformerFactory::TransformExtractExpression(PEGTransformer &transformer,
@@ -1132,7 +1132,7 @@ namespace goose {
         }
         auto rhs_expr = transformer.Transform<unique_ptr<ParsedExpression> >(list_pr.Child<ListParseResult>(3));
         auto result = make_uniq<LambdaExpression>(parameters, std::move(rhs_expr));
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> PEGTransformerFactory::TransformNullIfExpression(PEGTransformer &transformer,
@@ -1158,7 +1158,7 @@ namespace goose {
             results.push_back(transformer.Transform<unique_ptr<ParsedExpression> >(expr));
         }
         auto func_expr = make_uniq<FunctionExpression>("row", std::move(results));
-        return func_expr;
+        return std::move(func_expr);
     }
 
     unique_ptr<ParsedExpression> PEGTransformerFactory::TransformTrimExpression(PEGTransformer &transformer,
@@ -1259,7 +1259,7 @@ namespace goose {
             new_case.then_expr = std::move(case_expr.then_expr);
             result->case_checks.push_back(std::move(new_case));
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> PEGTransformerFactory::TransformCaseElse(PEGTransformer &transformer,
@@ -1288,6 +1288,6 @@ namespace goose {
         auto string_literal = list_pr.Child<StringLiteralParseResult>(1).result;
         auto child = make_uniq<ConstantExpression>(Value(string_literal));
         auto result = make_uniq<CastExpression>(type, std::move(child));
-        return result;
+        return std::move(result);
     }
 } // namespace goose

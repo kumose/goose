@@ -184,7 +184,7 @@ namespace goose {
         for (auto &kv: installed_extensions) {
             result->entries.push_back(std::move(kv.second));
         }
-        return result;
+        return std::move(result);
     }
 
     void GooseExtensionsFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

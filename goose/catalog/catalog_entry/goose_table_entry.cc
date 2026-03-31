@@ -402,7 +402,7 @@ namespace goose {
         vector<unique_ptr<ParsedExpression> > children;
         children.push_back(std::move(expr));
         auto res = make_uniq<FunctionExpression>("struct_pack", std::move(children));
-        return res;
+        return std::move(res);
     }
 
     static child_list_t<LogicalType> GetChildList(const LogicalType &type) {
@@ -1090,7 +1090,7 @@ namespace goose {
                 make_shared_ptr<DataTable>(context, *storage, columns.LogicalToPhysical(LogicalIndex(change_idx)).index,
                                            info.target_type, std::move(storage_oids), *bound_expression);
         auto result = make_uniq<GooseTableEntry>(catalog, schema, *bound_create_info, new_storage);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<CatalogEntry> GooseTableEntry::SetColumnComment(ClientContext &context, SetColumnCommentInfo &info) {
@@ -1233,7 +1233,7 @@ namespace goose {
 
         auto new_storage = make_shared_ptr<DataTable>(context, *storage, *bound_constraint);
         auto new_entry = make_uniq<GooseTableEntry>(catalog, schema, *bound_create_info, new_storage);
-        return new_entry;
+        return std::move(new_entry);
     }
 
     unique_ptr<CatalogEntry> GooseTableEntry::Copy(ClientContext &context) const {

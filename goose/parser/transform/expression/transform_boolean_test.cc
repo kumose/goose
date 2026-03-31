@@ -16,14 +16,14 @@ namespace goose {
 
         auto result = make_uniq<ComparisonExpression>(comparison_type, std::move(cast_argument), std::move(bool_value));
         Transformer::SetQueryLocation(*result, query_location);
-        return result;
+        return std::move(result);
     }
 
     static unique_ptr<ParsedExpression> TransformBooleanTestIsNull(unique_ptr<ParsedExpression> argument,
                                                                    ExpressionType operator_type, int query_location) {
         auto result = make_uniq<OperatorExpression>(operator_type, std::move(argument));
         Transformer::SetQueryLocation(*result, query_location);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> Transformer::TransformBooleanTest(cantor::PGBooleanTest &node) {

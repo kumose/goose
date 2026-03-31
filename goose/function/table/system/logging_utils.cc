@@ -119,7 +119,7 @@ namespace goose {
         return_types.emplace_back(LogicalType::BOOLEAN);
         names.emplace_back("Success");
 
-        return result;
+        return std::move(result);
     }
 
     //! Reset the logmanager to the defaults

@@ -71,7 +71,7 @@ unique_ptr<GlobalTableFunctionState> GooseTypesInit(ClientContext &context, Tabl
 		schema.get().Scan(context, CatalogType::TYPE_ENTRY,
 		                  [&](CatalogEntry &entry) { result->entries.push_back(entry.Cast<TypeCatalogEntry>()); });
 	};
-	return result;
+	return std::move(result);
 }
 
 void GooseTypesFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

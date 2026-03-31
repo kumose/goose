@@ -81,6 +81,6 @@ namespace goose {
             copy->duplicate_eliminated_columns.emplace_back(col->Copy());
         }
         copy->is_implicit = is_implicit;
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

@@ -56,7 +56,7 @@ namespace goose {
 
         auto result = make_uniq<UnnestLocalState>();
         result->operator_state = PhysicalUnnest::GetState(context, gstate.select_list);
-        return result;
+        return std::move(result);
     }
 
     static unique_ptr<GlobalTableFunctionState> UnnestInit(ClientContext &context, TableFunctionInitInput &input) {
@@ -66,7 +66,7 @@ namespace goose {
         auto bound_unnest = make_uniq<BoundUnnestExpression>(ListType::GetChildType(bind_data.input_type));
         bound_unnest->child = std::move(ref);
         result->select_list.push_back(std::move(bound_unnest));
-        return result;
+        return std::move(result);
     }
 
     static OperatorResultType UnnestFunction(ExecutionContext &context, TableFunctionInput &data_p, DataChunk &input,

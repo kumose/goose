@@ -14,6 +14,6 @@ namespace goose {
                                  : OnEntryNotFound::THROW_EXCEPTION;
         info->name = list_pr.Child<IdentifierParseResult>(3).identifier;
         result->info = std::move(info);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

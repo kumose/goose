@@ -218,7 +218,7 @@ namespace goose {
             }
             result->local_states.push_back(std::move(child_state));
         }
-        return result;
+        return std::move(result);
     }
 
     static bool UnionToUnionCast(Vector &source, Vector &result, idx_t count, CastParameters &parameters) {

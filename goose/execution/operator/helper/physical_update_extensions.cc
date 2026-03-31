@@ -51,6 +51,6 @@ namespace goose {
             }
         }
 
-        return res;
+        return std::move(res);
     }
 } // namespace goose

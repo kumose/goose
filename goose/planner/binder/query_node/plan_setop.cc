@@ -88,7 +88,7 @@ namespace goose {
             }
             auto projection = make_uniq<LogicalProjection>(GenerateTableIndex(), std::move(select_list));
             projection->children.push_back(std::move(op));
-            return projection;
+            return std::move(projection);
         }
     }
 

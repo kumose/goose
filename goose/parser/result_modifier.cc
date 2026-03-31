@@ -45,7 +45,7 @@ namespace goose {
         if (offset) {
             copy->offset = offset->Copy();
         }
-        return copy;
+        return std::move(copy);
     }
 
     bool DistinctModifier::Equals(const ResultModifier &other_p) const {
@@ -64,7 +64,7 @@ namespace goose {
         for (auto &expr: distinct_on_targets) {
             copy->distinct_on_targets.push_back(expr->Copy());
         }
-        return copy;
+        return std::move(copy);
     }
 
     bool OrderModifier::Equals(const ResultModifier &other_p) const {
@@ -101,7 +101,7 @@ namespace goose {
         for (auto &order: orders) {
             copy->orders.emplace_back(order.type, order.null_order, order.expression->Copy());
         }
-        return copy;
+        return std::move(copy);
     }
 
     string OrderByNode::ToString() const {
@@ -152,6 +152,6 @@ namespace goose {
         if (offset) {
             copy->offset = offset->Copy();
         }
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

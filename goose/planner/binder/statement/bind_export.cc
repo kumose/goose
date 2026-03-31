@@ -149,7 +149,7 @@ namespace goose {
         }
 
         statement->select_list = std::move(expressions);
-        return statement;
+        return std::move(statement);
     }
 
     unique_ptr<LogicalOperator> Binder::UnionOperators(vector<unique_ptr<LogicalOperator> > nodes) {

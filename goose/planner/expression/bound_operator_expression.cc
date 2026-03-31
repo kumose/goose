@@ -29,7 +29,7 @@ unique_ptr<Expression> BoundOperatorExpression::Copy() const {
 	for (auto &child : children) {
 		copy->children.push_back(child->Copy());
 	}
-	return copy;
+	return std::move(copy);
 }
 
 } // namespace goose

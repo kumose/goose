@@ -31,12 +31,12 @@ namespace goose {
         auto result = make_uniq<SelectNode>();
         result->select_list.push_back(make_uniq<StarExpression>());
         result->from_table = GetTableRef();
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<TableRef> DelimGetRelation::GetTableRef() {
         auto delim_get_ref = make_uniq<DelimGetRef>(chunk_types);
-        return delim_get_ref;
+        return std::move(delim_get_ref);
     }
 
     const vector<ColumnDefinition> &DelimGetRelation::Columns() {

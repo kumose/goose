@@ -136,7 +136,7 @@ namespace goose {
         for (const auto &r: raw) {
             result->quantiles.emplace_back(QuantileValue(r));
         }
-        return result;
+        return std::move(result);
     }
 
     //===--------------------------------------------------------------------===//

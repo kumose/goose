@@ -13,6 +13,6 @@ namespace goose {
         if (root.sample) {
             result->sample = TransformSampleOptions(root.sample);
         }
-        return result;
+        return std::move(result);
     }
 } // namespace goose

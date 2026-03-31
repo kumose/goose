@@ -14,6 +14,6 @@ namespace goose {
             auto value_expr = TransformExpression(PGPointerCast<cantor::PGNode>(cell->data.ptr_value));
             coalesce_op->children.push_back(std::move(value_expr));
         }
-        return coalesce_op;
+        return std::move(coalesce_op);
     }
 } // namespace goose

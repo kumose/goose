@@ -152,7 +152,7 @@ namespace goose {
                 auto expr =
                         make_uniq<BoundColumnRefExpression>(column_name, column_type,
                                                             ColumnBinding(get.table_index, column_index));
-                return expr;
+                return std::move(expr);
             }
             case LogicalOperatorType::LOGICAL_PROJECTION:
                 return op.expressions[column_index]->Copy();

@@ -79,7 +79,7 @@ namespace goose {
                                                         std::move(new_bind_info), aggr_type);
         copy->CopyProperties(*this);
         copy->order_bys = order_bys ? order_bys->Copy() : nullptr;
-        return copy;
+        return std::move(copy);
     }
 
     void BoundAggregateExpression::Serialize(Serializer &serializer) const {
@@ -111,6 +111,6 @@ namespace goose {
         }
         deserializer.ReadPropertyWithExplicitDefault(205, "order_bys", result->order_bys,
                                                      unique_ptr<BoundOrderModifier>());
-        return result;
+        return std::move(result);
     }
 } // namespace goose

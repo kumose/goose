@@ -454,7 +454,7 @@ namespace goose {
         for (auto &sub_column: sub_columns) {
             checkpoint_state->child_states.push_back(sub_column->Checkpoint(row_group, checkpoint_info));
         }
-        return checkpoint_state;
+        return std::move(checkpoint_state);
     }
 
     bool StructColumnData::IsPersistent() {

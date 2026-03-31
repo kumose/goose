@@ -71,7 +71,7 @@ namespace goose {
         };
         gstate->gstate = index_type.build_global_init(global_state_input);
 
-        return gstate;
+        return std::move(gstate);
     }
 
     class CreateIndexLocalSinkState : public LocalSinkState {
@@ -93,7 +93,7 @@ namespace goose {
         lstate->key_chunk.InitializeEmpty(indexed_column_types);
         lstate->row_chunk.InitializeEmpty({LogicalType::ROW_TYPE});
 
-        return lstate;
+        return std::move(lstate);
     }
 
     SinkResultType PhysicalCreateIndex::Sink(ExecutionContext &context, DataChunk &chunk,

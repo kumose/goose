@@ -66,7 +66,7 @@ namespace goose {
         for (auto &val: values) {
             result->children.push_back(make_uniq<BoundConstantExpression>(val));
         }
-        return result;
+        return std::move(result);
     }
 
     bool InFilter::Equals(const TableFilter &other_p) const {

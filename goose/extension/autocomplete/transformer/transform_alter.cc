@@ -12,7 +12,7 @@ namespace goose {
         auto &list_pr = parse_result->Cast<ListParseResult>();
         auto result = make_uniq<AlterStatement>();
         result->info = transformer.Transform<unique_ptr<AlterInfo> >(list_pr.Child<ListParseResult>(1));
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<AlterInfo> PEGTransformerFactory::TransformAlterOptions(PEGTransformer &transformer,
@@ -33,7 +33,7 @@ namespace goose {
         result->schema = table->schema_name;
         result->name = table->table_name;
 
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<AlterInfo> PEGTransformerFactory::TransformAlterDatabaseStmt(PEGTransformer &transformer,
@@ -45,7 +45,7 @@ namespace goose {
         auto catalog_name = list_pr.Child<IdentifierParseResult>(2).identifier;
         auto new_name = list_pr.Child<IdentifierParseResult>(5).identifier;
         auto result = make_uniq<RenameDatabaseInfo>(catalog_name, new_name, not_found);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<AlterInfo> PEGTransformerFactory::TransformAlterViewStmt(PEGTransformer &transformer,
@@ -60,7 +60,7 @@ namespace goose {
         result->schema = base_table->schema_name;
         result->name = base_table->table_name;
         result->if_not_found = if_exists ? OnEntryNotFound::RETURN_NULL : OnEntryNotFound::THROW_EXCEPTION;
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<AlterInfo> PEGTransformerFactory::TransformAlterSequenceStmt(PEGTransformer &transformer,
@@ -183,10 +183,10 @@ namespace goose {
         if (nested_column->column_names.size() == 1) {
             auto result = make_uniq<RemoveColumnInfo>(AlterEntryData(), nested_column->column_names[0], if_exists,
                                                       cascade);
-            return result;
+            return std::move(result);
         }
         auto result = make_uniq<RemoveFieldInfo>(AlterEntryData(), nested_column->column_names, if_exists, cascade);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<AlterTableInfo> PEGTransformerFactory::TransformAlterColumn(PEGTransformer &transformer,
@@ -199,15 +199,15 @@ namespace goose {
             auto set_default_entry = unique_ptr_cast<AlterTableInfo, SetDefaultInfo>(std::move(alter_column_entry));
             // TODO(Dtenwolde) Figure out with nested names;
             set_default_entry->column_name = nested_column_name->column_names[0];
-            return set_default_entry;
+            return std::move(set_default_entry);
         } else if (alter_column_entry->alter_table_type == AlterTableType::DROP_NOT_NULL) {
             auto drop_not_null = unique_ptr_cast<AlterTableInfo, DropNotNullInfo>(std::move(alter_column_entry));
             drop_not_null->column_name = nested_column_name->column_names[0];
-            return drop_not_null;
+            return std::move(drop_not_null);
         } else if (alter_column_entry->alter_table_type == AlterTableType::SET_NOT_NULL) {
             auto set_not_null = unique_ptr_cast<AlterTableInfo, SetNotNullInfo>(std::move(alter_column_entry));
             set_not_null->column_name = nested_column_name->column_names[0];
-            return set_not_null;
+            return std::move(set_not_null);
         } else if (alter_column_entry->alter_table_type == AlterTableType::ALTER_COLUMN_TYPE) {
             auto change_column_type = unique_ptr_cast<AlterTableInfo, ChangeColumnTypeInfo>(
                 std::move(alter_column_entry));
@@ -216,7 +216,7 @@ namespace goose {
                 change_column_type->expression =
                         make_uniq<CastExpression>(change_column_type->target_type, std::move(nested_column_name));
             }
-            return change_column_type;
+            return std::move(change_column_type);
         } else {
             throw NotImplementedException("Unrecognized type for alter column encountered");
         }
@@ -292,10 +292,10 @@ namespace goose {
         if (nested_column->column_names.size() == 1) {
             auto result = make_uniq<
                 RenameColumnInfo>(AlterEntryData(), nested_column->column_names[0], new_column_name);
-            return result;
+            return std::move(result);
         }
         auto result = make_uniq<RenameFieldInfo>(AlterEntryData(), nested_column->column_names, new_column_name);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<AlterTableInfo> PEGTransformerFactory::TransformRenameAlter(PEGTransformer &transformer,
@@ -303,7 +303,7 @@ namespace goose {
         auto &list_pr = parse_result->Cast<ListParseResult>();
         auto new_table_name = list_pr.Child<IdentifierParseResult>(2).identifier;
         auto result = make_uniq<RenameTableInfo>(AlterEntryData(), new_table_name);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<AlterTableInfo> PEGTransformerFactory::TransformSetPartitionedBy(PEGTransformer &transformer,
@@ -343,13 +343,13 @@ namespace goose {
         auto extract_parens = ExtractResultFromParens(list_pr.Child<ListParseResult>(3));
         auto order_by_exprs = transformer.Transform<vector<OrderByNode> >(extract_parens);
         auto result = make_uniq<SetSortedByInfo>(AlterEntryData(), std::move(order_by_exprs));
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<AlterTableInfo> PEGTransformerFactory::TransformResetSortedBy(PEGTransformer &transformer,
                                                                              optional_ptr<ParseResult> parse_result) {
         vector<OrderByNode> order_by_exprs;
         auto result = make_uniq<SetSortedByInfo>(AlterEntryData(), std::move(order_by_exprs));
-        return result;
+        return std::move(result);
     }
 } // namespace goose

@@ -38,6 +38,6 @@ namespace goose {
         copy->at_clause = at_clause ? at_clause->Copy() : nullptr;
         CopyProperties(*copy);
 
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

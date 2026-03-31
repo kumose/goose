@@ -63,7 +63,7 @@ namespace goose {
             children.push_back(make_uniq<ConstantExpression>(std::move(param)));
         }
         table_function->function = make_uniq<FunctionExpression>(info.function_name, std::move(children));
-        return table_function;
+        return std::move(table_function);
     }
 } // namespace goose
 

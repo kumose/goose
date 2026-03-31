@@ -25,7 +25,7 @@ namespace goose {
     unique_ptr<ParsedExpression> PositionalReferenceExpression::Copy() const {
         auto copy = make_uniq<PositionalReferenceExpression>(index);
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 
     hash_t PositionalReferenceExpression::Hash() const {

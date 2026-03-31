@@ -105,6 +105,6 @@ namespace goose {
         for (auto &expr: parsed_expressions) {
             result->parsed_expressions.push_back(expr->Copy());
         }
-        return result;
+        return std::move(result);
     }
 } // namespace goose

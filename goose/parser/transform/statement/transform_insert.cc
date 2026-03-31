@@ -19,7 +19,7 @@ unique_ptr<TableRef> Transformer::TransformValuesList(cantor::PGList *list) {
 		result->values.push_back(std::move(insert_values));
 	}
 	result->alias = "valueslist";
-	return result;
+	return std::move(result);
 }
 
 vector<string> Transformer::TransformInsertColumns(cantor::PGList &cols) {

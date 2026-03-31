@@ -63,7 +63,7 @@ namespace goose {
         auto default_generator = make_uniq<OpenFileDefaultGenerator>(*catalog, schema, view_names, std::move(file));
         catalog_set.SetDefaultGenerator(std::move(default_generator));
 
-        return catalog;
+        return std::move(catalog);
     }
 
     unique_ptr<TransactionManager> OpenFileStorageTransactionManager(optional_ptr<StorageExtensionInfo> storage_info,
@@ -75,6 +75,6 @@ namespace goose {
         auto result = make_uniq<StorageExtension>();
         result->attach = OpenFileStorageAttach;
         result->create_transaction_manager = OpenFileStorageTransactionManager;
-        return result;
+        return std::move(result);
     }
 } // namespace goose

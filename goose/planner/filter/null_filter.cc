@@ -46,7 +46,7 @@ namespace goose {
     unique_ptr<Expression> IsNullFilter::ToExpression(const Expression &column) const {
         auto result = make_uniq<BoundOperatorExpression>(ExpressionType::OPERATOR_IS_NULL, LogicalType::BOOLEAN);
         result->children.push_back(column.Copy());
-        return result;
+        return std::move(result);
     }
 
     IsNotNullFilter::IsNotNullFilter() : TableFilter(TableFilterType::IS_NOT_NULL) {
@@ -75,6 +75,6 @@ namespace goose {
     unique_ptr<Expression> IsNotNullFilter::ToExpression(const Expression &column) const {
         auto result = make_uniq<BoundOperatorExpression>(ExpressionType::OPERATOR_IS_NOT_NULL, LogicalType::BOOLEAN);
         result->children.push_back(column.Copy());
-        return result;
+        return std::move(result);
     }
 } // namespace goose

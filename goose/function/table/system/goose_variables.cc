@@ -63,7 +63,7 @@ namespace goose {
             data.value = entry.second;
             result->variables.push_back(std::move(data));
         }
-        return result;
+        return std::move(result);
     }
 
     void GooseVariablesFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

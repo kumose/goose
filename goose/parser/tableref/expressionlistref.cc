@@ -57,6 +57,6 @@ namespace goose {
         result->expected_names = expected_names;
         result->expected_types = expected_types;
         CopyProperties(*result);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

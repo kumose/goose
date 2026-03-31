@@ -85,14 +85,14 @@ namespace goose {
     static unique_ptr<TableRef> QueryBindReplace(ClientContext &context, TableFunctionBindInput &input) {
         auto query = input.inputs[0].ToString();
         auto subquery_ref = ParseSubquery(query, context.GetParserOptions(), "Expected a single SELECT statement");
-        return subquery_ref;
+        return std::move(subquery_ref);
     }
 
     static unique_ptr<TableRef> TableBindReplace(ClientContext &context, TableFunctionBindInput &input) {
         auto query = UnionTablesQuery(input);
         auto subquery_ref =
                 ParseSubquery(query, context.GetParserOptions(), "Expected a table or a list with tables as input");
-        return subquery_ref;
+        return std::move(subquery_ref);
     }
 
     void QueryTableFunction::RegisterFunction(BuiltinFunctions &set) {

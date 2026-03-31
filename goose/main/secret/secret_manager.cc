@@ -698,7 +698,7 @@ namespace goose {
                 // later
                 persistent_secrets.erase(secret_lu);
 
-                return entry;
+                return std::move(entry);
             }
         } catch (std::exception &ex) {
             ErrorData error(ex);

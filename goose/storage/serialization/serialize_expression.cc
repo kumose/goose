@@ -117,7 +117,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<unique_ptr<Expression> >(202, "upper", result->upper);
         deserializer.ReadPropertyWithDefault<bool>(203, "lower_inclusive", result->lower_inclusive);
         deserializer.ReadPropertyWithDefault<bool>(204, "upper_inclusive", result->upper_inclusive);
-        return result;
+        return std::move(result);
     }
 
     void BoundCaseExpression::Serialize(Serializer &serializer) const {
@@ -132,7 +132,7 @@ namespace goose {
         auto result = goose::unique_ptr<BoundCaseExpression>(new BoundCaseExpression(std::move(return_type)));
         deserializer.ReadPropertyWithDefault<vector<BoundCaseCheck> >(201, "case_checks", result->case_checks);
         deserializer.ReadPropertyWithDefault<unique_ptr<Expression> >(202, "else_expr", result->else_expr);
-        return result;
+        return std::move(result);
     }
 
     void BoundCastExpression::Serialize(Serializer &serializer) const {
@@ -148,7 +148,7 @@ namespace goose {
         auto result = goose::unique_ptr<BoundCastExpression>(
             new BoundCastExpression(deserializer.Get<ClientContext &>(), std::move(child), std::move(return_type)));
         deserializer.ReadPropertyWithDefault<bool>(202, "try_cast", result->try_cast);
-        return result;
+        return std::move(result);
     }
 
     void BoundColumnRefExpression::Serialize(Serializer &serializer) const {
@@ -164,7 +164,7 @@ namespace goose {
         auto depth = deserializer.ReadPropertyWithDefault<idx_t>(202, "depth");
         auto result = goose::unique_ptr<BoundColumnRefExpression>(
             new BoundColumnRefExpression(std::move(return_type), binding, depth));
-        return result;
+        return std::move(result);
     }
 
     void BoundComparisonExpression::Serialize(Serializer &serializer) const {
@@ -178,7 +178,7 @@ namespace goose {
         auto right = deserializer.ReadPropertyWithDefault<unique_ptr<Expression> >(201, "right");
         auto result = goose::unique_ptr<BoundComparisonExpression>(
             new BoundComparisonExpression(deserializer.Get<ExpressionType>(), std::move(left), std::move(right)));
-        return result;
+        return std::move(result);
     }
 
     void BoundConjunctionExpression::Serialize(Serializer &serializer) const {
@@ -190,7 +190,7 @@ namespace goose {
         auto result = goose::unique_ptr<BoundConjunctionExpression>(
             new BoundConjunctionExpression(deserializer.Get<ExpressionType>()));
         deserializer.ReadPropertyWithDefault<vector<unique_ptr<Expression> > >(200, "children", result->children);
-        return result;
+        return std::move(result);
     }
 
     void BoundConstantExpression::Serialize(Serializer &serializer) const {
@@ -201,7 +201,7 @@ namespace goose {
     unique_ptr<Expression> BoundConstantExpression::Deserialize(Deserializer &deserializer) {
         auto value = deserializer.ReadProperty<Value>(200, "value");
         auto result = goose::unique_ptr<BoundConstantExpression>(new BoundConstantExpression(value));
-        return result;
+        return std::move(result);
     }
 
     void BoundDefaultExpression::Serialize(Serializer &serializer) const {
@@ -212,7 +212,7 @@ namespace goose {
     unique_ptr<Expression> BoundDefaultExpression::Deserialize(Deserializer &deserializer) {
         auto return_type = deserializer.ReadProperty<LogicalType>(200, "return_type");
         auto result = goose::unique_ptr<BoundDefaultExpression>(new BoundDefaultExpression(std::move(return_type)));
-        return result;
+        return std::move(result);
     }
 
     void BoundLambdaExpression::Serialize(Serializer &serializer) const {
@@ -231,7 +231,7 @@ namespace goose {
         auto result = goose::unique_ptr<BoundLambdaExpression>(new BoundLambdaExpression(
             deserializer.Get<ExpressionType>(), std::move(return_type), std::move(lambda_expr), parameter_count));
         result->captures = std::move(captures);
-        return result;
+        return std::move(result);
     }
 
     void BoundLambdaRefExpression::Serialize(Serializer &serializer) const {
@@ -249,7 +249,7 @@ namespace goose {
         auto depth = deserializer.ReadPropertyWithDefault<idx_t>(203, "depth");
         auto result = goose::unique_ptr<BoundLambdaRefExpression>(
             new BoundLambdaRefExpression(std::move(return_type), binding, lambda_idx, depth));
-        return result;
+        return std::move(result);
     }
 
     void BoundOperatorExpression::Serialize(Serializer &serializer) const {
@@ -263,7 +263,7 @@ namespace goose {
         auto result = goose::unique_ptr<BoundOperatorExpression>(
             new BoundOperatorExpression(deserializer.Get<ExpressionType>(), std::move(return_type)));
         deserializer.ReadPropertyWithDefault<vector<unique_ptr<Expression> > >(201, "children", result->children);
-        return result;
+        return std::move(result);
     }
 
     void BoundParameterExpression::Serialize(Serializer &serializer) const {
@@ -281,7 +281,7 @@ namespace goose {
         auto result = goose::unique_ptr<BoundParameterExpression>(new BoundParameterExpression(
             deserializer.Get<bound_parameter_map_t &>(), std::move(identifier), std::move(return_type),
             std::move(parameter_data)));
-        return result;
+        return std::move(result);
     }
 
     void BoundReferenceExpression::Serialize(Serializer &serializer) const {
@@ -295,7 +295,7 @@ namespace goose {
         auto index = deserializer.ReadPropertyWithDefault<idx_t>(201, "index");
         auto result = goose::unique_ptr<BoundReferenceExpression>(
             new BoundReferenceExpression(std::move(return_type), index));
-        return result;
+        return std::move(result);
     }
 
     void BoundUnnestExpression::Serialize(Serializer &serializer) const {
@@ -308,6 +308,6 @@ namespace goose {
         auto return_type = deserializer.ReadProperty<LogicalType>(200, "return_type");
         auto result = goose::unique_ptr<BoundUnnestExpression>(new BoundUnnestExpression(std::move(return_type)));
         deserializer.ReadPropertyWithDefault<unique_ptr<Expression> >(201, "child", result->child);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

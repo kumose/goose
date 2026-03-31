@@ -34,7 +34,7 @@ namespace goose {
         auto &secret_manager = SecretManager::Get(context);
         result->types = secret_manager.AllSecretTypes();
 
-        return result;
+        return std::move(result);
     }
 
     void GooseSecretTypesFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

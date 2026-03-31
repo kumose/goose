@@ -54,6 +54,6 @@ namespace goose {
         expr->identifier = param.identifier;
         idx_t new_param_count = MaxValue<idx_t>(ParamCount(), known_param_index);
         SetParamCount(new_param_count);
-        return expr;
+        return std::move(expr);
     }
 } // namespace goose

@@ -50,7 +50,7 @@ namespace goose {
         // scan all the schemas and collect them
         result->entries = Catalog::GetAllSchemas(context);
 
-        return result;
+        return std::move(result);
     }
 
     void GooseSchemasFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

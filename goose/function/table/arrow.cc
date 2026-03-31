@@ -103,7 +103,7 @@ namespace goose {
         if (return_types.empty()) {
             throw InvalidInputException("Provided table/dataframe must have at least one column");
         }
-        return res;
+        return std::move(res);
     }
 
     unique_ptr<ArrowArrayStreamWrapper> ProduceArrowScan(const ArrowScanFunctionData &function,
@@ -169,7 +169,7 @@ namespace goose {
                 }
             }
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<LocalTableFunctionState>
@@ -190,7 +190,7 @@ namespace goose {
         if (!ArrowScanParallelStateNext(context, input.bind_data.get(), *result, global_state)) {
             return nullptr;
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<LocalTableFunctionState> ArrowTableFunction::ArrowScanInitLocal(ExecutionContext &context,

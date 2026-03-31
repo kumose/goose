@@ -22,7 +22,7 @@ namespace goose {
         // built-in operator function
         auto result = make_uniq<FunctionExpression>(op, std::move(children));
         result->is_operator = true;
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> Transformer::TransformBinaryOperator(string op, unique_ptr<ParsedExpression> left,
@@ -42,7 +42,7 @@ namespace goose {
             if (invert_similar) {
                 return make_uniq<OperatorExpression>(ExpressionType::OPERATOR_NOT, std::move(result));
             } else {
-                return result;
+                return std::move(result);
             }
         } else {
             auto target_type = OperatorToExpressionType(op);
@@ -53,7 +53,7 @@ namespace goose {
             // not a special operator: convert to a function expression
             auto result = make_uniq<FunctionExpression>(std::move(op), std::move(children));
             result->is_operator = true;
-            return result;
+            return std::move(result);
         }
     }
 
@@ -72,7 +72,7 @@ namespace goose {
         if (root.rexpr->type == cantor::T_PGList) {
             auto result = make_uniq<OperatorExpression>(operator_type, std::move(left_expr));
             TransformExpressionList(*PGPointerCast<cantor::PGList>(root.rexpr), result->children);
-            return result;
+            return std::move(result);
         }
         auto expr = TransformExpression(*root.rexpr);
 
@@ -123,7 +123,7 @@ namespace goose {
                     subquery_expr->comparison_type = NegateComparisonExpression(subquery_expr->comparison_type);
                     return make_uniq<OperatorExpression>(ExpressionType::OPERATOR_NOT, std::move(subquery_expr));
                 }
-                return subquery_expr;
+                return std::move(subquery_expr);
             }
             case cantor::PG_AEXPR_IN: {
                 return TransformInExpression(name, root);
@@ -155,7 +155,7 @@ namespace goose {
                         make_uniq<BetweenExpression>(std::move(input), std::move(between_left),
                                                      std::move(between_right));
                 if (root.kind == cantor::PG_AEXPR_BETWEEN) {
-                    return compare_between;
+                    return std::move(compare_between);
                 } else {
                     return make_uniq<OperatorExpression>(ExpressionType::OPERATOR_NOT, std::move(compare_between));
                 }
@@ -193,7 +193,7 @@ namespace goose {
                 if (invert_similar) {
                     return make_uniq<OperatorExpression>(ExpressionType::OPERATOR_NOT, std::move(result));
                 } else {
-                    return result;
+                    return std::move(result);
                 }
             }
             case cantor::PG_AEXPR_NOT_DISTINCT: {

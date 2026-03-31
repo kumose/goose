@@ -32,7 +32,7 @@ namespace goose {
                                                                     TableFunctionInitInput &input) {
         auto result = make_uniq<GooseExternalFileCacheData>();
         result->entries = ExternalFileCache::Get(context).GetCachedFileInformation();
-        return result;
+        return std::move(result);
     }
 
     void GooseExternalFileCacheFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

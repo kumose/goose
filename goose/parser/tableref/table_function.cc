@@ -29,6 +29,6 @@ namespace goose {
         copy->with_ordinality = with_ordinality;
         CopyProperties(*copy);
 
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

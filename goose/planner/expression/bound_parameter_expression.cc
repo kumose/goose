@@ -79,6 +79,6 @@ namespace goose {
         result->parameter_data = parameter_data;
         result->return_type = return_type;
         result->CopyProperties(*this);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

@@ -8,6 +8,6 @@ namespace goose {
         auto result = make_uniq<DropStatement>();
         result->info->type = CatalogType::PREPARED_STATEMENT;
         result->info->name = list_pr.Child<IdentifierParseResult>(2).identifier;
-        return result;
+        return std::move(result);
     }
 } // namespace goose

@@ -296,7 +296,7 @@ namespace goose {
                 }
             }
 
-            return asof_join;
+            return std::move(asof_join);
         }
 
         // Case 2: No join conditions - use any join
@@ -316,7 +316,7 @@ namespace goose {
                     std::move(arbitrary_expressions[i]));
             }
 
-            return any_join;
+            return std::move(any_join);
         }
 
         // Case 3: Has join conditions and arbitrary expressions - decide based on join type
@@ -334,7 +334,7 @@ namespace goose {
                 }
                 filter->children.push_back(std::move(comp_join));
 
-                return filter;
+                return std::move(filter);
             } else {
                 auto any_join = make_uniq<LogicalAnyJoin>(type);
                 any_join->children.push_back(std::move(left_child));
@@ -352,7 +352,7 @@ namespace goose {
                         ExpressionType::CONJUNCTION_AND, std::move(any_join->condition), std::move(expr));
                 }
 
-                return any_join;
+                return std::move(any_join);
             }
         }
 
@@ -362,7 +362,7 @@ namespace goose {
         comp_join->children.push_back(std::move(left_child));
         comp_join->children.push_back(std::move(right_child));
 
-        return comp_join;
+        return std::move(comp_join);
     }
 
     static bool HasCorrelatedColumns(const Expression &root_expr) {
@@ -445,7 +445,7 @@ namespace goose {
                 PlanSubqueries(expression, root);
             }
             filter->AddChild(std::move(root));
-            return filter;
+            return std::move(filter);
         }
 
         // now create the join operator from the join condition

@@ -95,7 +95,7 @@ namespace goose {
         auto result = make_uniq<LogicalCreateIndex>(std::move(create_index_info), std::move(expressions), table_entry,
                                                     std::move(alter_table_info));
         result->children.push_back(std::move(plan));
-        return result;
+        return std::move(result);
     }
 
     BindResult IndexBinder::BindExpression(unique_ptr<ParsedExpression> &expr_ptr, idx_t depth, bool root_expression) {

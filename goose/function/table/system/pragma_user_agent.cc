@@ -2,48 +2,46 @@
 #include <goose/main/config.h>
 
 namespace goose {
+    struct PragmaUserAgentData : public GlobalTableFunctionState {
+        PragmaUserAgentData() : finished(false) {
+        }
 
-struct PragmaUserAgentData : public GlobalTableFunctionState {
-	PragmaUserAgentData() : finished(false) {
-	}
+        std::string user_agent;
+        bool finished;
+    };
 
-	std::string user_agent;
-	bool finished;
-};
+    static unique_ptr<FunctionData> PragmaUserAgentBind(ClientContext &context, TableFunctionBindInput &input,
+                                                        vector<LogicalType> &return_types, vector<string> &names) {
+        names.emplace_back("user_agent");
+        return_types.emplace_back(LogicalType::VARCHAR);
 
-static unique_ptr<FunctionData> PragmaUserAgentBind(ClientContext &context, TableFunctionBindInput &input,
-                                                    vector<LogicalType> &return_types, vector<string> &names) {
-	names.emplace_back("user_agent");
-	return_types.emplace_back(LogicalType::VARCHAR);
+        return nullptr;
+    }
 
-	return nullptr;
-}
+    unique_ptr<GlobalTableFunctionState> PragmaUserAgentInit(ClientContext &context, TableFunctionInitInput &input) {
+        auto result = make_uniq<PragmaUserAgentData>();
+        auto &config = DBConfig::GetConfig(context);
+        result->user_agent = config.UserAgent();
 
-unique_ptr<GlobalTableFunctionState> PragmaUserAgentInit(ClientContext &context, TableFunctionInitInput &input) {
-	auto result = make_uniq<PragmaUserAgentData>();
-	auto &config = DBConfig::GetConfig(context);
-	result->user_agent = config.UserAgent();
+        return std::move(result);
+    }
 
-	return result;
-}
+    void PragmaUserAgentFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {
+        auto &data = data_p.global_state->Cast<PragmaUserAgentData>();
 
-void PragmaUserAgentFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {
-	auto &data = data_p.global_state->Cast<PragmaUserAgentData>();
+        if (data.finished) {
+            // signal end of output
+            return;
+        }
 
-	if (data.finished) {
-		// signal end of output
-		return;
-	}
+        output.SetCardinality(1);
+        output.SetValue(0, 0, data.user_agent);
 
-	output.SetCardinality(1);
-	output.SetValue(0, 0, data.user_agent);
+        data.finished = true;
+    }
 
-	data.finished = true;
-}
-
-void PragmaUserAgent::RegisterFunction(BuiltinFunctions &set) {
-	set.AddFunction(
-	    TableFunction("pragma_user_agent", {}, PragmaUserAgentFunction, PragmaUserAgentBind, PragmaUserAgentInit));
-}
-
+    void PragmaUserAgent::RegisterFunction(BuiltinFunctions &set) {
+        set.AddFunction(
+            TableFunction("pragma_user_agent", {}, PragmaUserAgentFunction, PragmaUserAgentBind, PragmaUserAgentInit));
+    }
 } // namespace goose

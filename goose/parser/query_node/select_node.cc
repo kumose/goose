@@ -166,6 +166,6 @@ namespace goose {
         result->qualify = qualify ? qualify->Copy() : nullptr;
         result->sample = sample ? sample->Copy() : nullptr;
         this->CopyProperties(*result);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

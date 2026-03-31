@@ -38,7 +38,7 @@ namespace goose {
         auto result = make_uniq<BoundConstantExpression>(Value::UBIGINT(index));
         result->SetAlias(std::move(alias));
         result->SetQueryLocation(expr.GetQueryLocation());
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<Expression> OrderBinder::CreateExtraReference(unique_ptr<ParsedExpression> expr) {
@@ -117,7 +117,7 @@ namespace goose {
         auto result = make_uniq<BoundConstantExpression>(Value::STRUCT(std::move(values)));
         result->SetAlias(expr.GetAlias());
         result->SetQueryLocation(expr.GetQueryLocation());
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<Expression> OrderBinder::Bind(unique_ptr<ParsedExpression> expr) {

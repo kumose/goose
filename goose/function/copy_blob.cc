@@ -62,7 +62,7 @@ namespace goose {
                 }
             }
 
-            return result;
+            return std::move(result);
         }
 
         //----------------------------------------------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ namespace goose {
             auto result = make_uniq<WriteBlobGlobalState>();
             result->handle = std::move(handle);
 
-            return result;
+            return std::move(result);
         }
 
         //----------------------------------------------------------------------------------------------------------------------

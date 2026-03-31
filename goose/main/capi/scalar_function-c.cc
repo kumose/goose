@@ -62,7 +62,7 @@ namespace goose {
                     copy->delete_callback = delete_callback;
                     copy->copy_callback = copy_callback;
                 }
-                return copy;
+                return std::move(copy);
             }
 
             bool Equals(const FunctionData &other_p) const override {
@@ -189,7 +189,7 @@ namespace goose {
                 }
             }
 
-            return result;
+            return std::move(result);
         }
 
         unique_ptr<FunctionLocalState> CScalarFunctionInit(ExpressionState &state, const BoundFunctionExpression &expr,
@@ -208,7 +208,7 @@ namespace goose {
                     throw InvalidInputException(init_info.error);
                 }
             }
-            return result;
+            return std::move(result);
         }
 
         void CAPIScalarFunction(DataChunk &input, ExpressionState &state, Vector &result) {

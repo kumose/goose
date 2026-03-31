@@ -174,6 +174,6 @@ namespace goose {
             default:
                 throw NotImplementedException("Subquery of type %d not implemented\n", (int) root.subLinkType);
         }
-        return subquery_expr;
+        return std::move(subquery_expr);
     }
 } // namespace goose

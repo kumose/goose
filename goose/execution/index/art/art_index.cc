@@ -49,7 +49,7 @@ namespace goose {
                 bind_data->sorted = false;
             }
 
-            return bind_data;
+            return std::move(bind_data);
         }
 
         bool ARTBuildSort(IndexBuildSortInput &input) {
@@ -72,7 +72,7 @@ namespace goose {
             state->global_index = make_uniq<ART>(input.info.index_name, input.info.constraint_type, input.storage_ids,
                                                  TableIOManager::Get(storage), input.expressions, storage.db);
 
-            return state;
+            return std::move(state);
         }
 
         //----------------------------------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ namespace goose {
             state->keys.resize(STANDARD_VECTOR_SIZE);
             state->row_ids.resize(STANDARD_VECTOR_SIZE);
 
-            return state;
+            return std::move(state);
         }
 
         //----------------------------------------------------------------------------------------------------------------------

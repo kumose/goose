@@ -34,6 +34,6 @@ namespace goose {
         for (auto &capture: captures) {
             copy->captures.push_back(capture->Copy());
         }
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

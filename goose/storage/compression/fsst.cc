@@ -467,7 +467,7 @@ namespace goose {
                 xfsst_export(compression_state->fsst_encoder, &compression_state->fsst_serialized_symbol_table[0]);
         analyze_state.fsst_encoder = nullptr;
 
-        return compression_state;
+        return std::move(compression_state);
     }
 
     void FSSTStorage::Compress(CompressionState &state_p, Vector &scan_vector, idx_t count) {
@@ -630,7 +630,7 @@ namespace goose {
             state->all_values_inlined = StringStats::MaxStringLength(stats) <= string_t::INLINE_LENGTH;
         }
 
-        return state;
+        return std::move(state);
     }
 
     void DeltaDecodeIndices(uint32_t *buffer_in, uint32_t *buffer_out, idx_t decode_count, uint32_t last_known_value) {

@@ -25,7 +25,7 @@ namespace goose {
         if (query) {
             result->query = unique_ptr_cast<SQLStatement, SelectStatement>(query->Copy());
         }
-        return result;
+        return std::move(result);
     }
 
     string CreateTableInfo::ToString() const {

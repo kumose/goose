@@ -27,6 +27,6 @@ namespace goose {
     unique_ptr<ParsedExpression> ComparisonExpression::Copy() const {
         auto copy = make_uniq<ComparisonExpression>(type, left->Copy(), right->Copy());
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

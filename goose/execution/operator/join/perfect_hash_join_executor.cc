@@ -279,7 +279,7 @@ namespace goose {
 
     unique_ptr<OperatorState> PerfectHashJoinExecutor::GetOperatorState(ExecutionContext &context) {
         auto state = make_uniq<PerfectHashJoinState>(context.client, join);
-        return state;
+        return std::move(state);
     }
 
     OperatorResultType PerfectHashJoinExecutor::ProbePerfectHashTable(ExecutionContext &context, DataChunk &input,

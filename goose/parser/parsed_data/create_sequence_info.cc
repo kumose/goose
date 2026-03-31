@@ -17,7 +17,7 @@ namespace goose {
         result->max_value = max_value;
         result->start_value = start_value;
         result->cycle = cycle;
-        return result;
+        return std::move(result);
     }
 
     string CreateSequenceInfo::ToString() const {

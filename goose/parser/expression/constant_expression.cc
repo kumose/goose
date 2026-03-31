@@ -27,6 +27,6 @@ namespace goose {
     unique_ptr<ParsedExpression> ConstantExpression::Copy() const {
         auto copy = make_uniq<ConstantExpression>(value);
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

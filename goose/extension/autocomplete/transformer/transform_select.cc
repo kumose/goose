@@ -267,7 +267,7 @@ namespace goose {
         } else {
             throw InternalException("Invalid join qualifier found.");
         }
-        return result;
+        return std::move(result);
     }
 
     JoinType PEGTransformerFactory::TransformJoinType(PEGTransformer &transformer,
@@ -311,7 +311,7 @@ namespace goose {
         result->ref_type = join_prefix.ref_type;
         result->type = join_prefix.join_type;
         result->right = std::move(table_ref);
-        return result;
+        return std::move(result);
     }
 
     JoinPrefix PEGTransformerFactory::TransformJoinPrefix(PEGTransformer &transformer,
@@ -380,7 +380,7 @@ namespace goose {
             result->alias = table_alias.name;
             result->column_name_alias = table_alias.column_name_alias;
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<TableRef> PEGTransformerFactory::TransformTableFunctionAliasColon(PEGTransformer &transformer,
@@ -398,7 +398,7 @@ namespace goose {
                 make_uniq<FunctionExpression>(qualified_table_function.catalog, qualified_table_function.schema,
                                               qualified_table_function.name, std::move(table_function_arguments));
         result->alias = table_alias;
-        return result;
+        return std::move(result);
     }
 
     string PEGTransformerFactory::TransformTableAliasColon(PEGTransformer &transformer,
@@ -450,7 +450,7 @@ namespace goose {
         auto extract_parens = ExtractResultFromParens(list_pr.Child<ListParseResult>(0));
         auto select_statement = transformer.Transform<unique_ptr<SelectStatement> >(extract_parens);
         auto subquery_ref = make_uniq<SubqueryRef>(std::move(select_statement));
-        return subquery_ref;
+        return std::move(subquery_ref);
     }
 
     unique_ptr<TableRef> PEGTransformerFactory::TransformBaseTableRef(PEGTransformer &transformer,
@@ -471,7 +471,7 @@ namespace goose {
             result->column_name_alias = table_alias.column_name_alias;
         }
         transformer.TransformOptional<unique_ptr<AtClause> >(list_pr, 3, result->at_clause);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<AtClause> PEGTransformerFactory::TransformAtClause(PEGTransformer &transformer,
@@ -507,7 +507,7 @@ namespace goose {
             subquery_ref->alias = table_alias.name;
             subquery_ref->column_name_alias = table_alias.column_name_alias;
         }
-        return subquery_ref;
+        return std::move(subquery_ref);
     }
 
     unique_ptr<SelectStatement> PEGTransformerFactory::TransformValuesClause(PEGTransformer &transformer,

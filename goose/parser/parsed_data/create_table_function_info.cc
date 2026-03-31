@@ -23,7 +23,7 @@ namespace goose {
         set.functions = functions.functions;
         auto result = make_uniq<CreateTableFunctionInfo>(std::move(set));
         CopyFunctionProperties(*result);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<AlterInfo> CreateTableFunctionInfo::GetAlterInfo() const {

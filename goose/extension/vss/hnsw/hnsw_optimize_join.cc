@@ -124,7 +124,7 @@ namespace goose {
         // Initialize the index scan state
         result->index_state = hnsw_index.InitializeMultiScan(context.client);
 
-        return result;
+        return std::move(result);
     }
 
     OperatorResultType PhysicalHNSWIndexJoin::Execute(ExecutionContext &context, DataChunk &input, DataChunk &chunk,

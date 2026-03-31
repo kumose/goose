@@ -30,6 +30,6 @@ namespace goose {
             result->options.insert(make_pair(option.first, option.second->Copy()));
         }
 
-        return result;
+        return std::move(result);
     }
 } // namespace goose

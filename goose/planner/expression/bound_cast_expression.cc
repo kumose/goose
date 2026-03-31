@@ -43,7 +43,7 @@ namespace goose {
         }
         auto result = make_uniq<BoundCastExpression>(std::move(expr), target_type, std::move(bound_cast), try_cast);
         result->SetQueryLocation(result->child->GetQueryLocation());
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<Expression> AddCastToTypeInternal(unique_ptr<Expression> expr, const LogicalType &target_type,
@@ -222,7 +222,7 @@ namespace goose {
     unique_ptr<Expression> BoundCastExpression::Copy() const {
         auto copy = make_uniq<BoundCastExpression>(child->Copy(), return_type, bound_cast.Copy(), try_cast);
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 
     bool BoundCastExpression::CanThrow() const {

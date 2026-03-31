@@ -35,7 +35,7 @@ struct BindReplaceDemoFun {
 		return_types.emplace_back(LogicalType::VARCHAR);
 		names.emplace_back("col_" + result->current_name);
 
-		return result;
+		return std::move(result);
 	}
 
 	static goose::unique_ptr<TableRef> BindReplace(ClientContext &context, TableFunctionBindInput &input) {
@@ -67,7 +67,7 @@ struct BindReplaceDemoFun {
 			tf_ref_right->function = make_uniq<FunctionExpression>("bind_replace_demo", std::move(right_children));
 			join_node->right = std::move(tf_ref_right);
 
-			return join_node;
+			return std::move(join_node);
 
 		} else {
 			// Recursion base case: instead of the bind replace, we return nullptr to indicate this time we do want to
@@ -123,7 +123,7 @@ struct BindReplaceDemoFun2 {
 		auto tf_ref = make_uniq<TableFunctionRef>();
 		tf_ref->function = make_uniq<FunctionExpression>("range", std::move(children));
 
-		return tf_ref;
+		return std::move(tf_ref);
 	}
 
 	static void Register(Connection &con) {

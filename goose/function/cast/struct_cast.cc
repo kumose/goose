@@ -100,7 +100,7 @@ namespace goose {
             }
             result->local_states.push_back(std::move(child_state));
         }
-        return result;
+        return std::move(result);
     }
 
     static bool StructToStructCast(Vector &source, Vector &result, idx_t count, CastParameters &parameters) {
@@ -282,7 +282,7 @@ namespace goose {
             }
             result->value_states.push_back(std::move(child_state));
         }
-        return result;
+        return std::move(result);
     }
 
     static bool StructToMapCast(Vector &source, Vector &result, idx_t count, CastParameters &parameters) {

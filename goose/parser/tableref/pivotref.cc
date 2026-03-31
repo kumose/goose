@@ -245,6 +245,6 @@ namespace goose {
         copy->column_name_alias = column_name_alias;
         copy->include_nulls = include_nulls;
         copy->alias = alias;
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

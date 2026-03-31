@@ -26,6 +26,6 @@ namespace goose {
         }
         auto result = make_uniq<PositionalReferenceExpression>(NumericCast<idx_t>(node.position));
         SetQueryLocation(*result, node.location);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

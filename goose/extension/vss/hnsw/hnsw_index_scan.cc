@@ -84,7 +84,7 @@ namespace goose {
                 bind_data.index.Cast<HNSWIndex>().InitializeScan(bind_data.query.get(), bind_data.limit, context);
 
         if (!input.CanRemoveFilterColumns()) {
-            return result;
+            return std::move(result);
         }
 
         // We need this to project out what we scan from the underlying table.
@@ -102,7 +102,7 @@ namespace goose {
         }
         result->all_columns.Initialize(context, scanned_types);
 
-        return result;
+        return std::move(result);
     }
 
     //-------------------------------------------------------------------------

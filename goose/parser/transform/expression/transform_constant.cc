@@ -91,7 +91,7 @@ namespace goose {
     unique_ptr<ParsedExpression> Transformer::TransformConstant(cantor::PGAConst &c) {
         auto constant = TransformValue(c.val);
         SetQueryLocation(*constant, c.location);
-        return constant;
+        return std::move(constant);
     }
 
     bool Transformer::ConstructConstantFromExpression(const ParsedExpression &expr, Value &value) {

@@ -28,6 +28,6 @@ namespace goose {
         auto copy = make_uniq<SubqueryRef>(unique_ptr_cast<SQLStatement, SelectStatement>(subquery->Copy()), alias);
         copy->column_name_alias = column_name_alias;
         CopyProperties(*copy);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

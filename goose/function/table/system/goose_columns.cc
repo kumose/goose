@@ -89,7 +89,7 @@ namespace goose {
             schema.get().Scan(context, CatalogType::TABLE_ENTRY,
                               [&](CatalogEntry &entry) { result->entries.push_back(entry); });
         }
-        return result;
+        return std::move(result);
     }
 
     class ColumnHelper {

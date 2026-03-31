@@ -123,7 +123,7 @@ namespace goose {
             result->settings.push_back(std::move(value));
         }
         std::sort(result->settings.begin(), result->settings.end());
-        return result;
+        return std::move(result);
     }
 
     void GooseSettingsFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

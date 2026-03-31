@@ -36,7 +36,7 @@ namespace goose {
             result->query = query->Copy();
         }
         result->bind_function = bind_function;
-        return result;
+        return std::move(result);
     }
 
     string CreateTypeInfo::ToString() const {

@@ -38,7 +38,7 @@ namespace goose {
         auto result = make_uniq<TableMacroFunction>();
         result->query_node = query_node->Copy();
         this->CopyProperties(*result);
-        return result;
+        return std::move(result);
     }
 
     string TableMacroFunction::ToSQL() const {

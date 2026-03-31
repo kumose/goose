@@ -121,7 +121,7 @@ namespace goose {
                   [&](reference<CatalogEntry> a, reference<CatalogEntry> b) {
                       return (int32_t) a.get().type < (int32_t) b.get().type;
                   });
-        return result;
+        return std::move(result);
     }
 
     Value FunctionStabilityToValue(FunctionStability stability) {

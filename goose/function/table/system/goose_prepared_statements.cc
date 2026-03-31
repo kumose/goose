@@ -39,7 +39,7 @@ namespace goose {
         for (auto &it: prepared_statements) {
             result->entries.emplace_back(it.first, it.second);
         }
-        return result;
+        return std::move(result);
     }
 
     void GoosePreparedStatementsFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

@@ -76,7 +76,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<unique_ptr<TableFilter> >(200, "child_filter", result->child_filter);
         deserializer.ReadPropertyWithDefault<float>(201, "selectivity_threshold", result->selectivity_threshold);
         deserializer.ReadPropertyWithDefault<idx_t>(202, "n_vectors_to_check", result->n_vectors_to_check);
-        return result;
+        return std::move(result);
     }
 
     void SelectivityOptionalFilter::FiltersNullValues(const LogicalType &type, bool &filters_nulls,

@@ -28,6 +28,6 @@ namespace goose {
     unique_ptr<ParsedExpression> CollateExpression::Copy() const {
         auto copy = make_uniq<CollateExpression>(collation, child->Copy());
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

@@ -66,7 +66,7 @@ namespace goose {
         result->names = names;
         result->virtual_columns = virtual_columns;
         result->table_columns = table_columns;
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<MultiFileReader> MultiFileReader::CreateDefault(const string &function_name) {

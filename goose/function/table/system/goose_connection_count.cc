@@ -25,7 +25,7 @@ namespace goose {
         auto result = make_uniq<GooseConnectionCountData>();
         auto &conn_manager = context.db->GetConnectionManager();
         result->count = conn_manager.GetConnectionCount();
-        return result;
+        return std::move(result);
     }
 
     void GooseConnectionCountFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

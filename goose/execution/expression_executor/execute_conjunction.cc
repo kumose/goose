@@ -37,7 +37,7 @@ namespace goose {
         }
 
         result->Finalize();
-        return result;
+        return std::move(result);
     }
 
     void ExpressionExecutor::Execute(const BoundConjunctionExpression &expr, ExpressionState *state,

@@ -116,7 +116,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<vector<column_t> >(207, "column_ids", result->column_ids);
         deserializer.ReadPropertyWithDefault<case_insensitive_map_t<Value> >(208, "options", result->options);
         deserializer.ReadPropertyWithDefault<string>(209, "index_type_name", result->index_type);
-        return result;
+        return std::move(result);
     }
 
     void CreateMacroInfo::Serialize(Serializer &serializer) const {
@@ -135,7 +135,7 @@ namespace goose {
         auto result = goose::unique_ptr<CreateMacroInfo>(
             new CreateMacroInfo(deserializer.Get<CatalogType>(), std::move(function), std::move(extra_functions)));
         result->name = std::move(name);
-        return result;
+        return std::move(result);
     }
 
     void CreateSchemaInfo::Serialize(Serializer &serializer) const {
@@ -167,7 +167,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<int64_t>(204, "max_value", result->max_value);
         deserializer.ReadPropertyWithDefault<int64_t>(205, "start_value", result->start_value);
         deserializer.ReadPropertyWithDefault<bool>(206, "cycle", result->cycle);
-        return result;
+        return std::move(result);
     }
 
     void CreateTableInfo::Serialize(Serializer &serializer) const {
@@ -184,7 +184,7 @@ namespace goose {
         deserializer.ReadProperty<ColumnList>(201, "columns", result->columns);
         deserializer.ReadPropertyWithDefault<vector<unique_ptr<Constraint> > >(202, "constraints", result->constraints);
         deserializer.ReadPropertyWithDefault<unique_ptr<SelectStatement> >(203, "query", result->query);
-        return result;
+        return std::move(result);
     }
 
     void CreateTypeInfo::Serialize(Serializer &serializer) const {
@@ -197,7 +197,7 @@ namespace goose {
         auto result = goose::unique_ptr<CreateTypeInfo>(new CreateTypeInfo());
         deserializer.ReadPropertyWithDefault<string>(200, "name", result->name);
         deserializer.ReadProperty<LogicalType>(201, "logical_type", result->type);
-        return result;
+        return std::move(result);
     }
 
     void CreateViewInfo::Serialize(Serializer &serializer) const {
@@ -219,6 +219,6 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<vector<string> >(204, "names", result->names);
         deserializer.ReadPropertyWithExplicitDefault<vector<Value> >(205, "column_comments", result->column_comments,
                                                                      vector<Value>());
-        return result;
+        return std::move(result);
     }
 } // namespace goose

@@ -90,7 +90,7 @@ namespace goose {
                                      db,
                                      info->options, IndexStorageInfo(), estimated_cardinality);
 
-        return gstate;
+        return std::move(gstate);
     }
 
     //-------------------------------------------------------------
@@ -109,7 +109,7 @@ namespace goose {
         state->collection = make_uniq<
             ColumnDataCollection>(BufferManager::GetBufferManager(context.client), data_types);
         state->collection->InitializeAppend(state->append_state);
-        return state;
+        return std::move(state);
     }
 
     //-------------------------------------------------------------

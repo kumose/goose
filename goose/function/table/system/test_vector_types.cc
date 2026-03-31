@@ -302,7 +302,7 @@ namespace goose {
                 throw InternalException("Unrecognized named parameter for test_vector_types");
             }
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<GlobalTableFunctionState> TestVectorTypesInit(ClientContext &context, TableFunctionInitInput &input) {
@@ -331,7 +331,7 @@ namespace goose {
                 entry->Verify();
             }
         }
-        return result;
+        return std::move(result);
     }
 
     void TestVectorTypesFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

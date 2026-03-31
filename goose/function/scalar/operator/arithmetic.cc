@@ -144,7 +144,7 @@ namespace goose {
             unique_ptr<FunctionData> Copy() const override {
                 auto res = make_uniq<DecimalArithmeticBindData>();
                 res->check_overflow = check_overflow;
-                return res;
+                return std::move(res);
             }
 
             bool Equals(const FunctionData &other_p) const override {
@@ -290,7 +290,7 @@ namespace goose {
                         PropagateNumericStats<TryDecimalAdd, AddPropagateStatistics, AddOperator>);
                 }
             }
-            return bind_data;
+            return std::move(bind_data);
         }
 
         void SerializeDecimalArithmetic(Serializer &serializer, const optional_ptr<FunctionData> bind_data_p,
@@ -321,7 +321,7 @@ namespace goose {
 
             auto bind_data = make_uniq<DecimalArithmeticBindData>();
             bind_data->check_overflow = check_overflow;
-            return bind_data;
+            return std::move(bind_data);
         }
 
         unique_ptr<FunctionData> NopDecimalBind(ClientContext &context, ScalarFunction &bound_function,
@@ -611,7 +611,7 @@ namespace goose {
             unique_ptr<FunctionData> Copy() const override {
                 auto res = make_uniq<DecimalNegateBindData>();
                 res->bound_type = bound_type;
-                return res;
+                return std::move(res);
             }
 
             bool Equals(const FunctionData &other_p) const override {
@@ -972,7 +972,7 @@ namespace goose {
                 bound_function.SetStatisticsCallback(
                     PropagateNumericStats<TryDecimalMultiply, MultiplyPropagateStatistics, MultiplyOperator>);
             }
-            return bind_data;
+            return std::move(bind_data);
         }
     } // namespace
 
@@ -1203,7 +1203,7 @@ namespace goose {
         }
         auto &result_type = bound_function.GetReturnType();
         bound_function.SetFunctionCallback(GetBinaryFunctionIgnoreZero<OP>(result_type.InternalType()));
-        return bind_data;
+        return std::move(bind_data);
     }
 
     template<>

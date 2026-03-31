@@ -41,7 +41,7 @@ namespace goose {
         auto info_copy = GetInfo();
         auto &cast_info = info_copy->Cast<CreateTypeInfo>();
         auto result = make_uniq<TypeCatalogEntry>(catalog, schema, cast_info);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<CreateInfo> TypeCatalogEntry::GetInfo() const {
@@ -54,7 +54,7 @@ namespace goose {
         result->comment = comment;
         result->tags = tags;
         result->bind_function = bind_function;
-        return result;
+        return std::move(result);
     }
 
     string TypeCatalogEntry::ToSQL() const {

@@ -37,6 +37,6 @@ namespace goose {
             copy->case_checks.push_back(std::move(new_check));
         }
         copy->else_expr = else_expr->Copy();
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

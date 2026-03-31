@@ -61,7 +61,7 @@ namespace goose {
         result->comment = comment;
         result->tags = tags;
         result->column_comments = column_comments;
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<CatalogEntry> ViewCatalogEntry::AlterEntry(ClientContext &context, AlterInfo &info) {

@@ -64,7 +64,7 @@ namespace goose {
         auto result = make_uniq<SelectNode>();
         result->select_list.push_back(make_uniq<StarExpression>());
         result->from_table = GetTableRef();
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<TableRef> TableFunctionRelation::GetTableRef() {
@@ -95,7 +95,7 @@ namespace goose {
         auto table_function = make_uniq<TableFunctionRef>();
         auto function = make_uniq<FunctionExpression>(name, std::move(children));
         table_function->function = std::move(function);
-        return table_function;
+        return std::move(table_function);
     }
 
     string TableFunctionRelation::GetAlias() {

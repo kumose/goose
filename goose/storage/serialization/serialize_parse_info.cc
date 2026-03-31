@@ -645,7 +645,7 @@ void UpdateExtensionsInfo::Serialize(Serializer &serializer) const {
 unique_ptr<ParseInfo> UpdateExtensionsInfo::Deserialize(Deserializer &deserializer) {
 	auto result = goose::unique_ptr<UpdateExtensionsInfo>(new UpdateExtensionsInfo());
 	deserializer.ReadPropertyWithDefault<vector<string>>(200, "extensions_to_update", result->extensions_to_update);
-	return result;
+	return std::move(result);
 }
 
 void VacuumInfo::Serialize(Serializer &serializer) const {
@@ -662,7 +662,7 @@ unique_ptr<ParseInfo> VacuumInfo::Deserialize(Deserializer &deserializer) {
 	deserializer.ReadPropertyWithDefault<bool>(201, "has_table", result->has_table);
 	deserializer.ReadPropertyWithDefault<unique_ptr<TableRef>>(202, "ref", result->ref);
 	deserializer.ReadPropertyWithDefault<vector<string>>(203, "columns", result->columns);
-	return result;
+	return std::move(result);
 }
 
 } // namespace goose

@@ -32,6 +32,6 @@ namespace goose {
     unique_ptr<ParsedExpression> BetweenExpression::Copy() const {
         auto copy = make_uniq<BetweenExpression>(input->Copy(), lower->Copy(), upper->Copy());
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

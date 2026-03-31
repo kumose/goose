@@ -53,7 +53,7 @@ namespace goose {
         auto result = make_uniq<GooseIndexEntry>(catalog, schema, cast_info, info);
         result->initial_index_size = initial_index_size;
 
-        return result;
+        return std::move(result);
     }
 
     string GooseIndexEntry::GetSchemaName() const {

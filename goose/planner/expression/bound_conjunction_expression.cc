@@ -53,6 +53,6 @@ namespace goose {
             copy->children.push_back(expr->Copy());
         }
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

@@ -119,6 +119,6 @@ namespace goose {
         auto copy = make_uniq<LambdaExpression>(lhs->Copy(), expr->Copy());
         copy->syntax_type = syntax_type;
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

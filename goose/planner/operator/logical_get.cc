@@ -353,7 +353,7 @@ namespace goose {
         }
         result->virtual_columns = std::move(virtual_columns);
         result->bind_data = std::move(bind_data);
-        return result;
+        return std::move(result);
     }
 
     vector<idx_t> LogicalGet::GetTableIndex() const {

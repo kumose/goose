@@ -126,7 +126,7 @@ namespace goose {
         if (expr.function.HasInitStateCallback()) {
             result->local_state = expr.function.GetInitStateCallback()(*result, expr, expr.bind_info.get());
         }
-        return result;
+        return std::move(result);
     }
 
     static void VerifyNullHandling(const BoundFunctionExpression &expr, DataChunk &args, Vector &result) {

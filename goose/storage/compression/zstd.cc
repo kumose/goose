@@ -1026,7 +1026,7 @@ namespace goose {
 
     unique_ptr<SegmentScanState> ZSTDStorage::StringInitScan(const QueryContext &context, ColumnSegment &segment) {
         auto result = make_uniq<ZSTDScanState>(segment);
-        return result;
+        return std::move(result);
     }
 
     //===--------------------------------------------------------------------===//
@@ -1065,7 +1065,7 @@ namespace goose {
             auto &serialized_state = segment_state->Cast<SerializedStringSegmentState>();
             result->on_disk_blocks = std::move(serialized_state.blocks);
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ColumnSegmentState> ZSTDStorage::SerializeState(ColumnSegment &segment) {
@@ -1080,7 +1080,7 @@ namespace goose {
     unique_ptr<ColumnSegmentState> ZSTDStorage::DeserializeState(Deserializer &deserializer) {
         auto result = make_uniq<SerializedStringSegmentState>();
         deserializer.ReadProperty(1, "overflow_blocks", result->blocks);
-        return result;
+        return std::move(result);
     }
 
     void ZSTDStorage::VisitBlockIds(const ColumnSegment &segment, BlockIdVisitor &visitor) {

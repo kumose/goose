@@ -126,7 +126,7 @@ namespace goose {
 
             result->context = context;
 
-            return result;
+            return std::move(result);
         }
 
         template<class T>

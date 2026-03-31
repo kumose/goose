@@ -232,7 +232,7 @@ namespace goose {
         auto &buffer_manager = BufferManager::GetBufferManager(segment.db);
         result->handle = buffer_manager.Pin(segment.block);
         result->block_id = segment.block->BlockId();
-        return result;
+        return std::move(result);
     }
 
     //===--------------------------------------------------------------------===//

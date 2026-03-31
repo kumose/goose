@@ -55,7 +55,7 @@ namespace goose {
         // scan all the schemas for tables and collect them and collect them
         auto &db_manager = DatabaseManager::Get(context);
         result->entries = db_manager.GetDatabases(context);
-        return result;
+        return std::move(result);
     }
 
     void GooseDatabasesFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

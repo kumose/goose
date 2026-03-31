@@ -31,7 +31,7 @@ namespace goose {
         if (!node.typmods) {
             auto result = make_uniq<CastExpression>(LogicalType::INTERVAL, std::move(expr));
             SetQueryLocation(*result, node.location);
-            return result;
+            return std::move(result);
         }
 
         int32_t mask = NumericCast<int32_t>(
@@ -153,6 +153,6 @@ namespace goose {
         children.push_back(std::move(expr));
         auto result = make_uniq<FunctionExpression>(fname, std::move(children));
         SetQueryLocation(*result, node.location);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

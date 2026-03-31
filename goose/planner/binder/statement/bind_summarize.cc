@@ -35,7 +35,7 @@ namespace goose {
         unnest_children.push_back(std::move(list_function));
         auto unnest_function = make_uniq<FunctionExpression>("unnest", std::move(unnest_children));
         unnest_function->SetAlias(alias);
-        return unnest_function;
+        return std::move(unnest_function);
     }
 
     static unique_ptr<ParsedExpression> SummarizeCreateAggregate(const string &aggregate, string column_name) {
@@ -43,7 +43,7 @@ namespace goose {
         children.push_back(make_uniq<ColumnRefExpression>(std::move(column_name)));
         auto aggregate_function = make_uniq<FunctionExpression>(aggregate, std::move(children));
         auto cast_function = make_uniq<CastExpression>(LogicalType::VARCHAR, std::move(aggregate_function));
-        return cast_function;
+        return std::move(cast_function);
     }
 
     static unique_ptr<ParsedExpression> SummarizeCreateAggregate(const string &aggregate, string column_name,
@@ -53,13 +53,13 @@ namespace goose {
         children.push_back(make_uniq<ConstantExpression>(modifier));
         auto aggregate_function = make_uniq<FunctionExpression>(aggregate, std::move(children));
         auto cast_function = make_uniq<CastExpression>(LogicalType::VARCHAR, std::move(aggregate_function));
-        return cast_function;
+        return std::move(cast_function);
     }
 
     static unique_ptr<ParsedExpression> SummarizeCreateCountStar() {
         vector<unique_ptr<ParsedExpression> > children;
         auto aggregate_function = make_uniq<FunctionExpression>("count_star", std::move(children));
-        return aggregate_function;
+        return std::move(aggregate_function);
     }
 
     static unique_ptr<ParsedExpression> SummarizeCreateBinaryFunction(const string &op,
@@ -69,7 +69,7 @@ namespace goose {
         children.push_back(std::move(left));
         children.push_back(std::move(right));
         auto binary_function = make_uniq<FunctionExpression>(op, std::move(children));
-        return binary_function;
+        return std::move(binary_function);
     }
 
     static unique_ptr<ParsedExpression> SummarizeCreateNullPercentage(string column_name) {

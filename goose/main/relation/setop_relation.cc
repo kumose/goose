@@ -24,7 +24,7 @@ namespace goose {
         result->children.push_back(right->GetQueryNode());
         result->setop_type = setop_type;
         result->setop_all = setop_all;
-        return result;
+        return std::move(result);
     }
 
     string SetOpRelation::GetAlias() {

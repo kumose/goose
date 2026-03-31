@@ -55,7 +55,7 @@ namespace goose {
         auto result = goose::unique_ptr<DistinctModifier>(new DistinctModifier());
         deserializer.ReadPropertyWithDefault<vector<unique_ptr<ParsedExpression> > >(
             200, "distinct_on_targets", result->distinct_on_targets);
-        return result;
+        return std::move(result);
     }
 
     void LimitModifier::Serialize(Serializer &serializer) const {
@@ -68,7 +68,7 @@ namespace goose {
         auto result = goose::unique_ptr<LimitModifier>(new LimitModifier());
         deserializer.ReadPropertyWithDefault<unique_ptr<ParsedExpression> >(200, "limit", result->limit);
         deserializer.ReadPropertyWithDefault<unique_ptr<ParsedExpression> >(201, "offset", result->offset);
-        return result;
+        return std::move(result);
     }
 
     void LimitPercentModifier::Serialize(Serializer &serializer) const {
@@ -81,7 +81,7 @@ namespace goose {
         auto result = goose::unique_ptr<LimitPercentModifier>(new LimitPercentModifier());
         deserializer.ReadPropertyWithDefault<unique_ptr<ParsedExpression> >(200, "limit", result->limit);
         deserializer.ReadPropertyWithDefault<unique_ptr<ParsedExpression> >(201, "offset", result->offset);
-        return result;
+        return std::move(result);
     }
 
     void OrderModifier::Serialize(Serializer &serializer) const {
@@ -92,6 +92,6 @@ namespace goose {
     unique_ptr<ResultModifier> OrderModifier::Deserialize(Deserializer &deserializer) {
         auto result = goose::unique_ptr<OrderModifier>(new OrderModifier());
         deserializer.ReadPropertyWithDefault<vector<OrderByNode> >(200, "orders", result->orders);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

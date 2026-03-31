@@ -90,12 +90,12 @@ namespace goose {
         names.emplace_back("secret_string");
         return_types.emplace_back(LogicalType::VARCHAR);
 
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<GlobalTableFunctionState> GooseSecretsInit(ClientContext &context, TableFunctionInitInput &input) {
         auto result = make_uniq<GooseSecretsData>();
-        return result;
+        return std::move(result);
     }
 
     void GooseSecretsFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

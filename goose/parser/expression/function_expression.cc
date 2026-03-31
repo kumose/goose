@@ -88,7 +88,7 @@ namespace goose {
                                               std::move(filter_copy),
                                               std::move(order_copy), distinct, is_operator, export_state);
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 
     void FunctionExpression::Verify() const {

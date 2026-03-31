@@ -32,7 +32,7 @@ namespace goose {
                 list_size++;
                 StackCheck(list_size);
             }
-            return result;
+            return std::move(result);
         }
 
         auto n = PGPointerCast<cantor::PGNode>(root->head->data.ptr_value);

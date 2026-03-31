@@ -145,7 +145,7 @@ namespace goose {
                 result->else_expr = BoundCastExpression::AddCastToType(
                     input.context, make_uniq<BoundConstantExpression>(Value()), function_data.return_type);
             }
-            return result;
+            return std::move(result);
         }
     } // namespace
 

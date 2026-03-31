@@ -189,7 +189,7 @@ namespace goose {
                     throw BinderException(bind_info.error);
                 }
             }
-            return result;
+            return std::move(result);
         }
     } // namespace
 } // namespace goose
@@ -333,7 +333,7 @@ namespace goose {
                 }
             }
 
-            return result;
+            return std::move(result);
         }
     } // namespace
 } // namespace goose
@@ -689,7 +689,7 @@ namespace goose {
                 throw BinderException(bind_info.error);
             }
 
-            return result;
+            return std::move(result);
         }
     } // namespace
 } // namespace goose

@@ -27,7 +27,7 @@ namespace goose {
     unique_ptr<GlobalTableFunctionState> GooseMemoryInit(ClientContext &context, TableFunctionInitInput &input) {
         auto result = make_uniq<GooseMemoryData>();
         result->entries = BufferManager::GetBufferManager(context).GetMemoryUsageInfo();
-        return result;
+        return std::move(result);
     }
 
     int64_t ClampReportedMemory(idx_t memory_usage) {

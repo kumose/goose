@@ -1082,7 +1082,7 @@ namespace goose {
             sink.InitializeProbeSpill();
         }
 
-        return state;
+        return std::move(state);
     }
 
     OperatorResultType PhysicalHashJoin::ExecuteInternal(ExecutionContext &context, DataChunk &input, DataChunk &chunk,

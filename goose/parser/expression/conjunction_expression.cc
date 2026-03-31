@@ -50,6 +50,6 @@ namespace goose {
 
         auto copy = make_uniq<ConjunctionExpression>(type, std::move(copy_children));
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

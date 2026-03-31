@@ -16,7 +16,7 @@ namespace goose {
         auto copy = make_uniq<ParameterExpression>();
         copy->identifier = identifier;
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 
     bool ParameterExpression::Equal(const ParameterExpression &a, const ParameterExpression &b) {

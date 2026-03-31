@@ -79,7 +79,7 @@ namespace goose {
         auto result = make_uniq<TableMacroFunction>();
         auto select_statement = transformer.Transform<unique_ptr<SelectStatement> >(list_pr.Child<ListParseResult>(1));
         result->query_node = std::move(select_statement->node);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<MacroFunction>
@@ -88,7 +88,7 @@ namespace goose {
         auto &list_pr = parse_result->Cast<ListParseResult>();
         auto result = make_uniq<ScalarMacroFunction>();
         result->expression = transformer.Transform<unique_ptr<ParsedExpression> >(list_pr.Child<ListParseResult>(0));
-        return result;
+        return std::move(result);
     }
 
     vector<MacroParameter> PEGTransformerFactory::TransformMacroParameters(PEGTransformer &transformer,

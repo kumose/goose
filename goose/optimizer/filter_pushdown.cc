@@ -270,7 +270,7 @@ namespace goose {
         }
         filter->expressions = std::move(expressions);
         filter->children.push_back(std::move(op));
-        return filter;
+        return std::move(filter);
     }
 
     unique_ptr<LogicalOperator> FilterPushdown::PushFinalFilters(unique_ptr<LogicalOperator> op) {

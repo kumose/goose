@@ -15,7 +15,7 @@ namespace goose {
         show_ref->show_type = stmt.is_summary ? ShowType::SUMMARY : ShowType::DESCRIBE;
         show_ref->query = TransformSelectNode(*stmt.stmt);
         select_node->from_table = std::move(show_ref);
-        return select_node;
+        return std::move(select_node);
     }
 
     unique_ptr<SelectStatement> Transformer::TransformShowSelectStmt(cantor::PGVariableShowSelectStmt &stmt) {

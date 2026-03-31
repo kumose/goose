@@ -77,7 +77,7 @@ namespace goose {
 
     unique_ptr<LocalSinkState> PhysicalCTE::GetLocalSinkState(ExecutionContext &context) const {
         auto state = make_uniq<CTELocalState>(context.client, *this);
-        return state;
+        return std::move(state);
     }
 
     SinkResultType PhysicalCTE::Sink(ExecutionContext &context, DataChunk &chunk, OperatorSinkInput &input) const {

@@ -172,7 +172,7 @@ namespace goose {
         result->hive_file_pattern = hive_file_pattern;
         result->file_size_bytes = file_size_bytes;
 
-        return result;
+        return std::move(result);
     }
 
     vector<ColumnBinding> LogicalCopyToFile::GetColumnBindings() {

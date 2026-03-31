@@ -662,7 +662,7 @@ namespace goose {
             result->Initialize(context, *this);
         }
         result->batch_size = function.desired_batch_size ? function.desired_batch_size(context, *bind_data) : 0;
-        return result;
+        return std::move(result);
     }
 
     //===--------------------------------------------------------------------===//

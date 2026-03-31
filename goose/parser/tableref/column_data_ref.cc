@@ -70,6 +70,6 @@ namespace goose {
         auto copied_collection = CopyCollection(collection);
         auto result = make_uniq<ColumnDataRef>(std::move(copied_collection), expected_names);
         CopyProperties(*result);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

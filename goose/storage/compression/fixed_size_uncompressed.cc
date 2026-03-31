@@ -146,7 +146,7 @@ unique_ptr<SegmentScanState> FixedSizeInitScan(const QueryContext &context, Colu
 	auto result = make_uniq<FixedSizeScanState>();
 	auto &buffer_manager = BufferManager::GetBufferManager(segment.db);
 	result->handle = buffer_manager.Pin(context, segment.block);
-	return result;
+	return std::move(result);
 }
 
 //===--------------------------------------------------------------------===//

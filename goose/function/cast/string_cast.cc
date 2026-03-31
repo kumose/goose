@@ -292,7 +292,7 @@ namespace goose {
             CastLocalStateParameters child_params(parameters, cast_data.value_cast.cast_data);
             result->value_state = cast_data.value_cast.init_local_state(child_params);
         }
-        return result;
+        return std::move(result);
     }
 
     bool VectorStringToMap::StringToNestedTypeCastLoop(const string_t *source_data, ValidityMask &source_mask,

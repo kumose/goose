@@ -1009,7 +1009,7 @@ namespace goose {
 
         BindSchema<OP_TYPE>(return_types, names);
 
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<GlobalTableFunctionState> ParquetMetaDataOperator::InitGlobal(ClientContext &context,

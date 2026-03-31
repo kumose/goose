@@ -62,7 +62,7 @@ namespace goose {
                     ? Value("Unlimited")
                     : Value(StringUtil::BytesToHumanReadableString(max_memory));
 
-        return result;
+        return std::move(result);
     }
 
     void PragmaDatabaseSizeFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

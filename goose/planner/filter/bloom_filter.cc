@@ -207,7 +207,7 @@ namespace goose {
 
     unique_ptr<Expression> BFTableFilter::ToExpression(const Expression &column) const {
         auto bound_constant = make_uniq<BoundConstantExpression>(Value(true));
-        return bound_constant;
+        return std::move(bound_constant);
     }
 
     void BFTableFilter::Serialize(Serializer &serializer) const {
@@ -224,6 +224,6 @@ namespace goose {
 
         BloomFilter filter;
         auto result = make_uniq<BFTableFilter>(filter, filters_null_values, key_column_name, key_type);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

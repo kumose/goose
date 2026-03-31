@@ -122,7 +122,7 @@ namespace goose {
         // 12. CSV read function with all the options used
         return_types.emplace_back(LogicalType::VARCHAR);
         names.emplace_back("Prompt");
-        return result;
+        return std::move(result);
     }
 
     string FormatOptions(char opt) {

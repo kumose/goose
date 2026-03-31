@@ -196,7 +196,7 @@ namespace goose {
                                                                std::move(root.children), nullptr);
             contains->children[1] = std::move(parameter);
 
-            return contains;
+            return std::move(contains);
         } else if (pattern.Regexp()->op() == xre2::kRegexpConcat) {
             like_string = LikeMatchFromRegex(pattern);
         } else {
@@ -218,6 +218,6 @@ namespace goose {
                                                    nullptr);
         auto parameter = make_uniq<BoundConstantExpression>(Value(std::move(like_string.like_string)));
         like_expression->children[1] = std::move(parameter);
-        return like_expression;
+        return std::move(like_expression);
     }
 } // namespace goose

@@ -151,7 +151,7 @@ namespace goose {
             unpack_children.push_back(std::move(result));
             return make_uniq<OperatorExpression>(ExpressionType::OPERATOR_UNPACK, std::move(unpack_children));
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> StarExpression::Copy() const {
@@ -164,7 +164,7 @@ namespace goose {
         copy->columns = columns;
         copy->expr = expr ? expr->Copy() : nullptr;
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 
     StarExpression::StarExpression(const case_insensitive_set_t &exclude_list_p, qualified_column_set_t qualified_set)

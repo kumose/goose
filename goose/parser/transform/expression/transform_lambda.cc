@@ -13,7 +13,7 @@ namespace goose {
         D_ASSERT(rhs);
         auto result = make_uniq<LambdaExpression>(std::move(parameters), std::move(rhs));
         SetQueryLocation(*result, node.location);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> Transformer::TransformSingleArrow(cantor::PGSingleArrowFunction &node) {
@@ -26,6 +26,6 @@ namespace goose {
         D_ASSERT(rhs);
         auto result = make_uniq<LambdaExpression>(std::move(lhs), std::move(rhs));
         SetQueryLocation(*result, node.location);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

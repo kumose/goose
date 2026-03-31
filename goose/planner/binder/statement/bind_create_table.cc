@@ -177,7 +177,7 @@ namespace goose {
 
         // Bind the constraint and reset the original expression.
         bound_check.expression = check_binder.Bind(check_copy);
-        return bound_constraint;
+        return std::move(bound_constraint);
     }
 
     unique_ptr<BoundConstraint> Binder::BindUniqueConstraint(const Constraint &constraint, const string &table,

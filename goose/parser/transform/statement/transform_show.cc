@@ -70,7 +70,7 @@ namespace goose {
             showref->show_type = stmt.is_summary ? ShowType::SUMMARY : ShowType::DESCRIBE;
         }
         select_node->from_table = std::move(showref);
-        return select_node;
+        return std::move(select_node);
     }
 
     unique_ptr<SelectStatement> Transformer::TransformShowStmt(cantor::PGVariableShowStmt &stmt) {

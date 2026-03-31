@@ -28,7 +28,7 @@ namespace goose {
         PlanSubqueries(condition, root);
         auto filter = make_uniq<LogicalFilter>(std::move(condition));
         filter->AddChild(std::move(root));
-        return filter;
+        return std::move(filter);
     }
 
     unique_ptr<LogicalOperator> Binder::CreatePlan(BoundSelectNode &statement) {

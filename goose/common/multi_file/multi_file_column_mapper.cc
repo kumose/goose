@@ -935,7 +935,7 @@ static unique_ptr<TableFilter> TryCastTableFilter(const TableFilter &global_filt
 			}
 			res->child_filters.push_back(std::move(child_filter));
 		}
-		return res;
+		return std::move(res);
 	}
 	case TableFilterType::CONJUNCTION_AND: {
 		auto &and_filter = global_filter.Cast<ConjunctionAndFilter>();
@@ -947,7 +947,7 @@ static unique_ptr<TableFilter> TryCastTableFilter(const TableFilter &global_filt
 			}
 			res->child_filters.push_back(std::move(child_filter));
 		}
-		return res;
+		return std::move(res);
 	}
 	case TableFilterType::STRUCT_EXTRACT: {
 		auto &struct_filter = global_filter.Cast<StructFilter>();

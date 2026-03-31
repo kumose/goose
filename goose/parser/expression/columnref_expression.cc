@@ -119,6 +119,6 @@ namespace goose {
     unique_ptr<ParsedExpression> ColumnRefExpression::Copy() const {
         auto copy = make_uniq<ColumnRefExpression>(column_names);
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

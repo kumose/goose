@@ -256,7 +256,7 @@ namespace goose {
         auto result = make_uniq<ColumnRefExpression>(std::move(names));
         auto binding = GetBinding(alias, column_name, error);
         if (!binding) {
-            return result;
+            return std::move(result);
         }
         auto column_index = binding->GetBindingIndex(column_name);
         if (bind_type == ColumnBindType::EXPAND_GENERATED_COLUMNS && ColumnIsGenerated(*binding, column_index)) {
@@ -268,7 +268,7 @@ namespace goose {
             // as it appears in the binding itself
             result->SetAlias(column_names[column_index]);
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> BindContext::CreateColumnReference(const string &schema_name, const string &table_name,
