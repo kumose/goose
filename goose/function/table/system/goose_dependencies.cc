@@ -64,7 +64,7 @@ namespace goose {
                 });
         }
 
-        return result;
+        return std::move(result);
     }
 
     void GooseDependenciesFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

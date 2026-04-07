@@ -129,7 +129,7 @@ namespace goose {
         return_types.emplace_back(LogicalType::BOOLEAN);
         names.emplace_back("Success");
 
-        return bind_data;
+        return std::move(bind_data);
     }
 
     static void DisableProfiling(ClientContext &context, TableFunctionInput &data, DataChunk &output) {

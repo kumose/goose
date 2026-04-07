@@ -89,7 +89,7 @@ namespace goose {
         if (root.usingClause && root.usingClause->length > 0) {
             // usingClause is a list of strings.
             result->using_columns = TransformUsingClause(*root.usingClause);
-            return result;
+            return std::move(result);
         }
 
         // Check if this is a cross product.
@@ -112,8 +112,8 @@ namespace goose {
 
             // Apply the alias to the subquery.
             subquery->alias = TransformAlias(root.alias, subquery->column_name_alias);
-            return subquery;
+            return std::move(subquery);
         }
-        return result;
+        return std::move(result);
     }
 } // namespace goose

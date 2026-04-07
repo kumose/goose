@@ -79,7 +79,7 @@ namespace goose {
         auto &storage = table.GetStorage();
         state->global_index = make_uniq<ART>(info->index_name, info->constraint_type, storage_ids,
                                              TableIOManager::Get(storage), unbound_expressions, storage.db);
-        return state;
+        return std::move(state);
     }
 
     unique_ptr<LocalSinkState> PhysicalCreateARTIndex::GetLocalSinkState(ExecutionContext &context) const {
@@ -97,7 +97,7 @@ namespace goose {
         for (idx_t i = 0; i < state->key_chunk.ColumnCount(); i++) {
             state->key_column_ids.push_back(i);
         }
-        return state;
+        return std::move(state);
     }
 
     SinkResultType PhysicalCreateARTIndex::SinkUnsorted(OperatorSinkInput &input) const {

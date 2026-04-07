@@ -200,7 +200,7 @@ namespace goose {
                         auto filter = make_uniq<LogicalFilter>();
                         filter->expressions = std::move(op.arbitrary_expressions);
                         filter->AddChild(std::move(plan));
-                        return filter;
+                        return std::move(filter);
                     }
                     return plan;
                 }
@@ -442,7 +442,7 @@ namespace goose {
                 join->children.push_back(std::move(plan));
                 join->children.push_back(std::move(delim_scan));
 
-                return join;
+                return std::move(join);
             } else {
                 auto cross_product = LogicalCrossProduct::Create(Decorrelate(std::move(plan)), std::move(delim_scan));
                 return cross_product;
@@ -617,7 +617,7 @@ namespace goose {
                     base_binding.table_index = left_index;
                     this->delim_offset = base_binding.column_index = 0;
                     this->data_offset = 0;
-                    return join;
+                    return std::move(join);
                 } else {
                     // update the delim_index
                     base_binding.table_index = delim_table_index;
@@ -675,7 +675,7 @@ namespace goose {
                 }
                 join->children.push_back(std::move(plan->children[0]));
                 join->children.push_back(std::move(plan->children[1]));
-                return join;
+                return std::move(join);
             }
             case LogicalOperatorType::LOGICAL_DEPENDENT_JOIN: {
                 D_ASSERT(plan->children.size() == 2);
@@ -938,7 +938,7 @@ namespace goose {
                 for (idx_t i = 0; i < child_column_count; i++) {
                     filter->projection_map.push_back(i);
                 }
-                return filter;
+                return std::move(filter);
             }
             case LogicalOperatorType::LOGICAL_WINDOW: {
                 auto &window = plan->Cast<LogicalWindow>();

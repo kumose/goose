@@ -133,7 +133,7 @@ namespace goose {
             table = insert_table.get_mutable();
         }
         auto result = make_uniq<InsertGlobalState>(context, GetTypes(), table->Cast<GooseTableEntry>());
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<LocalSinkState> PhysicalInsert::GetLocalSinkState(ExecutionContext &context) const {

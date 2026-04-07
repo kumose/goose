@@ -56,6 +56,6 @@ namespace goose {
         copy->show_type = show_type;
         CopyProperties(*copy);
 
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

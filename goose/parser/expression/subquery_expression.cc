@@ -42,6 +42,6 @@ namespace goose {
         copy->subquery_type = subquery_type;
         copy->child = child ? child->Copy() : nullptr;
         copy->comparison_type = comparison_type;
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

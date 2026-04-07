@@ -192,7 +192,7 @@ namespace goose {
             }
             CompressionInfo info(col_data.GetBlockManager());
             auto state = make_uniq<RoaringAnalyzeState>(info);
-            return state;
+            return std::move(state);
         }
 
         template<PhysicalType TYPE>
@@ -229,7 +229,7 @@ namespace goose {
 
         unique_ptr<SegmentScanState> RoaringInitScan(const QueryContext &context, ColumnSegment &segment) {
             auto result = make_uniq<RoaringScanState>(segment);
-            return result;
+            return std::move(result);
         }
 
         //===--------------------------------------------------------------------===//

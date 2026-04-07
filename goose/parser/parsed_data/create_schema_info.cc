@@ -7,7 +7,7 @@ namespace goose {
     unique_ptr<CreateInfo> CreateSchemaInfo::Copy() const {
         auto result = make_uniq<CreateSchemaInfo>();
         CopyProperties(*result);
-        return result;
+        return std::move(result);
     }
 
     string CreateSchemaInfo::ToString() const {

@@ -2410,7 +2410,7 @@ TEST_CASE("Test AdbcConnectionGetObjects", "[adbc]") {
 	}
 	// 6. Test constraints
 	//
-	// Available constraints: https://duckdb.org/docs/stable/sql/constraints.html
+	// Available constraints: https://pub.kumose.cc/goose/docs/sql/constraints.html
 	{
 		ADBCTestDatabase db("test_constraints");
 		// Create table 'foreign_table'

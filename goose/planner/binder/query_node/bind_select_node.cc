@@ -111,7 +111,7 @@ namespace goose {
         if (limit_mod.offset) {
             result->offset_val = BindLimitValue(order_binder, std::move(limit_mod.offset), false, true);
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<BoundResultModifier>
@@ -123,7 +123,7 @@ namespace goose {
         if (limit_mod.offset) {
             result->offset_val = BindLimitValue(order_binder, std::move(limit_mod.offset), false, true);
         }
-        return result;
+        return std::move(result);
     }
 
     void Binder::PrepareModifiers(OrderBinder &order_binder, QueryNode &statement, BoundQueryNode &result) {
@@ -266,7 +266,7 @@ namespace goose {
         if (result->GetAlias().empty() && index < names.size()) {
             result->SetAlias(names[index]);
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<Expression> FinalizeBindOrderExpression(unique_ptr<Expression> expr, idx_t table_index,

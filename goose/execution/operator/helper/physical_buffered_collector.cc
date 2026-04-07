@@ -49,12 +49,12 @@ namespace goose {
         auto state = make_uniq<BufferedCollectorGlobalState>();
         state->context = context.shared_from_this();
         state->buffered_data = make_shared_ptr<SimpleBufferedData>(context);
-        return state;
+        return std::move(state);
     }
 
     unique_ptr<LocalSinkState> PhysicalBufferedCollector::GetLocalSinkState(ExecutionContext &context) const {
         auto state = make_uniq<BufferedCollectorLocalState>();
-        return state;
+        return std::move(state);
     }
 
     unique_ptr<QueryResult> PhysicalBufferedCollector::GetResult(GlobalSinkState &state) const {
@@ -64,7 +64,7 @@ namespace goose {
         auto cc = gstate.context.lock();
         auto result = make_uniq<StreamQueryResult>(statement_type, properties, types, names, cc->GetClientProperties(),
                                                    gstate.buffered_data);
-        return result;
+        return std::move(result);
     }
 
     bool PhysicalBufferedCollector::ParallelSink() const {

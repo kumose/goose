@@ -61,7 +61,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<vector<string> >(203, "aliases", result->aliases);
         deserializer.ReadPropertyWithExplicitDefault<CTEMaterialize>(204, "materialized", result->materialized,
                                                                      CTEMaterialize::CTE_MATERIALIZE_DEFAULT);
-        return result;
+        return std::move(result);
     }
 
     void RecursiveCTENode::Serialize(Serializer &serializer) const {
@@ -83,7 +83,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<vector<string> >(204, "aliases", result->aliases);
         deserializer.ReadPropertyWithDefault<vector<unique_ptr<ParsedExpression> > >(
             205, "key_targets", result->key_targets);
-        return result;
+        return std::move(result);
     }
 
     void SelectNode::Serialize(Serializer &serializer) const {
@@ -113,7 +113,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<unique_ptr<ParsedExpression> >(206, "having", result->having);
         deserializer.ReadPropertyWithDefault<unique_ptr<SampleOptions> >(207, "sample", result->sample);
         deserializer.ReadPropertyWithDefault<unique_ptr<ParsedExpression> >(208, "qualify", result->qualify);
-        return result;
+        return std::move(result);
     }
 
     void SetOperationNode::Serialize(Serializer &serializer) const {
@@ -135,6 +135,6 @@ namespace goose {
         auto children = deserializer.ReadPropertyWithDefault<vector<unique_ptr<QueryNode> > >(204, "children");
         auto result = goose::unique_ptr<SetOperationNode>(
             new SetOperationNode(setop_type, std::move(left), std::move(right), std::move(children), setop_all));
-        return result;
+        return std::move(result);
     }
 } // namespace goose

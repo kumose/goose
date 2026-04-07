@@ -55,7 +55,7 @@ namespace goose {
         } else {
             result->SetAlias(key_path[0]);
         }
-        return result;
+        return std::move(result);
     }
 
     static unique_ptr<Expression> CreateBoundStructExtractIndex(ClientContext &context, unique_ptr<Expression> expr,
@@ -69,7 +69,7 @@ namespace goose {
         auto result = make_uniq<BoundFunctionExpression>(return_type, std::move(extract_function), std::move(arguments),
                                                          std::move(bind_info));
         result->SetAlias("element" + to_string(key));
-        return result;
+        return std::move(result);
     }
 
     void SelectBinder::ThrowIfUnnestInLambda(const ColumnBinding &column_binding) {

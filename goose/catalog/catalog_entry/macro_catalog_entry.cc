@@ -42,7 +42,7 @@ namespace goose {
         auto info_copy = GetInfo();
         auto &cast_info = info_copy->Cast<CreateMacroInfo>();
         auto result = make_uniq<ScalarMacroCatalogEntry>(catalog, schema, cast_info);
-        return result;
+        return std::move(result);
     }
 
     TableMacroCatalogEntry::TableMacroCatalogEntry(Catalog &catalog, SchemaCatalogEntry &schema, CreateMacroInfo &info)
@@ -53,7 +53,7 @@ namespace goose {
         auto info_copy = GetInfo();
         auto &cast_info = info_copy->Cast<CreateMacroInfo>();
         auto result = make_uniq<TableMacroCatalogEntry>(catalog, schema, cast_info);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<CreateInfo> MacroCatalogEntry::GetInfo() const {
@@ -67,7 +67,7 @@ namespace goose {
         info->dependencies = dependencies;
         info->comment = comment;
         info->tags = tags;
-        return info;
+        return std::move(info);
     }
 
     string MacroCatalogEntry::ToSQL() const {

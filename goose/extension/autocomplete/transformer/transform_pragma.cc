@@ -39,12 +39,12 @@ namespace goose {
         // for compatibility, any pragmas that match the SQLite ones are parsed as calls
         case_insensitive_set_t sqlite_compat_pragmas{"table_info"};
         if (sqlite_compat_pragmas.find(info.name) != sqlite_compat_pragmas.end()) {
-            return result;
+            return std::move(result);
         }
         auto set_statement = make_uniq<SetVariableStatement>(info.name, std::move(info.parameters[0]),
                                                              SetScope::AUTOMATIC);
 
-        return set_statement;
+        return std::move(set_statement);
     }
 
     unique_ptr<SQLStatement> PEGTransformerFactory::TransformPragmaFunction(PEGTransformer &transformer,
@@ -73,7 +73,7 @@ namespace goose {
                 }
             }
         }
-        return result;
+        return std::move(result);
     }
 
     vector<unique_ptr<ParsedExpression> >

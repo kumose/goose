@@ -159,7 +159,7 @@ namespace goose {
 
     unique_ptr<FunctionData> RegexpReplaceBindData::Copy() const {
         auto copy = make_uniq<RegexpReplaceBindData>(options, constant_string, constant_pattern, global_replace);
-        return copy;
+        return std::move(copy);
     }
 
     bool RegexpReplaceBindData::Equals(const FunctionData &other_p) const {
@@ -176,7 +176,7 @@ namespace goose {
             ParseRegexOptions(context, *arguments[3], data->options, &data->global_replace);
         }
         data->options.set_log_errors(false);
-        return data;
+        return std::move(data);
     }
 
     static void RegexReplaceFunction(DataChunk &args, ExpressionState &state, Vector &result) {

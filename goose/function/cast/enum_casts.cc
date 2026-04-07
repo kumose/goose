@@ -109,7 +109,7 @@ namespace goose {
             CastLocalStateParameters from_varchar_params(parameters, cast_data.to_varchar_cast.cast_data);
             result->from_varchar_local = cast_data.to_varchar_cast.init_local_state(from_varchar_params);
         }
-        return result;
+        return std::move(result);
     }
 
     static bool EnumToAnyCast(Vector &source, Vector &result, idx_t count, CastParameters &parameters) {

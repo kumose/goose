@@ -1,0 +1,37 @@
+add_library_unity(
+  goose_peg_transformer
+  OBJECT
+  peg_transformer.cc
+  peg_transformer_factory.cc
+  transform_alter.cc
+  transform_attach.cc
+  transform_call.cc
+  transform_checkpoint.cc
+  transform_comment.cc
+  transform_common.cc
+  transform_copy.cc
+  transform_create_index.cc
+  transform_create_macro.cc
+  transform_create_schema.cc
+  transform_create_sequence.cc
+  transform_create_secret.cc
+  transform_create_table.cc
+  transform_create_view.cc
+  transform_create_type.cc
+  transform_deallocate.cc
+  transform_delete.cc
+  transform_detach.cc
+  transform_drop.cc
+  transform_export.cc
+  transform_expression.cc
+  transform_import.cc
+  transform_insert.cc
+  transform_load.cc
+  transform_pragma.cc
+  transform_select.cc
+  transform_set.cc
+  transform_transaction.cc
+  transform_use.cc)
+set(AUTOCOMPLETE_EXTENSION_FILES
+    ${AUTOCOMPLETE_EXTENSION_FILES} $<TARGET_OBJECTS:goose_peg_transformer>
+    PARENT_SCOPE)

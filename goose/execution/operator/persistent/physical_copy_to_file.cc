@@ -393,12 +393,12 @@ namespace goose {
 
             auto state = make_uniq<CopyToFunctionLocalState>(context.client, nullptr);
             state->InitializeAppendState(context.client, *this, g);
-            return state;
+            return std::move(state);
         }
         auto res =
                 make_uniq<CopyToFunctionLocalState>(context.client,
                                                     function.copy_to_initialize_local(context, *bind_data));
-        return res;
+        return std::move(res);
     }
 
     void CheckDirectory(FileSystem &fs, const string &file_path, CopyOverwriteMode overwrite_mode) {
@@ -471,7 +471,7 @@ namespace goose {
                 state->partition_state = make_shared_ptr<GlobalHivePartitionState>();
             }
 
-            return state;
+            return std::move(state);
         }
 
         auto state = make_uniq<CopyToFunctionGlobalState>(context);
@@ -479,7 +479,7 @@ namespace goose {
             // if we are writing the file also if it is empty - initialize now
             state->Initialize(context, *this);
         }
-        return state;
+        return std::move(state);
     }
 
     //===--------------------------------------------------------------------===//

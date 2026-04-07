@@ -53,6 +53,6 @@ namespace goose {
         new_case->else_expr = else_expr->Copy();
 
         new_case->CopyProperties(*this);
-        return new_case;
+        return std::move(new_case);
     }
 } // namespace goose

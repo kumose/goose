@@ -22,7 +22,7 @@ namespace goose {
                                                                       TableFunctionInitInput &input) {
         auto result = make_uniq<GooseApproxDatabaseCountData>();
         result->count = DatabaseManager::Get(context).ApproxDatabaseCount();
-        return result;
+        return std::move(result);
     }
 
     void GooseApproxDatabaseCountFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

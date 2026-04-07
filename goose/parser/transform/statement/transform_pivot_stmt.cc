@@ -100,7 +100,7 @@ unique_ptr<SQLStatement> Transformer::GenerateCreateEnumStmt(unique_ptr<CreatePi
 	info->type = LogicalType::INVALID;
 
 	result->info = std::move(info);
-	return result;
+	return std::move(result);
 }
 
 // unique_ptr<SQLStatement> GenerateDropEnumStmt(string enum_name) {
@@ -132,7 +132,7 @@ unique_ptr<SQLStatement> Transformer::CreatePivotStatement(unique_ptr<SQLStateme
 	//	for(auto &pivot : pivot_entries) {
 	//		result->statements.push_back(GenerateDropEnumStmt(std::move(pivot->enum_name)));
 	//	}
-	return result;
+	return std::move(result);
 }
 
 unique_ptr<QueryNode> Transformer::TransformPivotStatement(cantor::PGSelectStmt &select) {
@@ -167,7 +167,7 @@ unique_ptr<QueryNode> Transformer::TransformPivotStatement(cantor::PGSelectStmt 
 		}
 		// transform order by/limit modifiers
 		TransformModifiers(select, *select_node);
-		return select_node;
+		return std::move(select_node);
 	}
 
 	// generate CREATE TYPE statements for each of the columns that do not have an IN list
@@ -217,7 +217,7 @@ unique_ptr<QueryNode> Transformer::TransformPivotStatement(cantor::PGSelectStmt 
 	// transform order by/limit modifiers
 	TransformModifiers(select, *select_node);
 
-	return select_node;
+	return std::move(select_node);
 }
 
 } // namespace goose

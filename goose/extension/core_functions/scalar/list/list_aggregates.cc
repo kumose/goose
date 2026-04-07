@@ -80,7 +80,7 @@ namespace goose {
                 if (!result) {
                     return ListAggregatesBindFailure(bound_function);
                 }
-                return result;
+                return std::move(result);
             }
         };
 

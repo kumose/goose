@@ -22,7 +22,7 @@ namespace goose {
                 auto blob_data = Blob::ToBlob(string(c->val.val.str), parameters);
                 auto result = make_uniq<ConstantExpression>(Value::BLOB_RAW(blob_data));
                 SetQueryLocation(*result, root.location);
-                return result;
+                return std::move(result);
             }
         }
         // transform the expression node
@@ -32,6 +32,6 @@ namespace goose {
         // now create a cast operation
         auto result = make_uniq<CastExpression>(target_type, std::move(expression), try_cast);
         SetQueryLocation(*result, root.location);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

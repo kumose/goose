@@ -68,14 +68,14 @@ namespace goose {
     unique_ptr<GlobalSinkState> PhysicalMaterializedCollector::GetGlobalSinkState(ClientContext &context) const {
         auto state = make_uniq<MaterializedCollectorGlobalState>();
         state->context = context.shared_from_this();
-        return state;
+        return std::move(state);
     }
 
     unique_ptr<LocalSinkState> PhysicalMaterializedCollector::GetLocalSinkState(ExecutionContext &context) const {
         auto state = make_uniq<MaterializedCollectorLocalState>();
         state->collection = CreateCollection(context.client);
         state->collection->InitializeAppend(state->append_state);
-        return state;
+        return std::move(state);
     }
 
     unique_ptr<QueryResult> PhysicalMaterializedCollector::GetResult(GlobalSinkState &state) const {
@@ -86,7 +86,7 @@ namespace goose {
         auto result = make_uniq<MaterializedQueryResult>(statement_type, properties, names,
                                                          std::move(gstate.collection),
                                                          gstate.context->GetClientProperties());
-        return result;
+        return std::move(result);
     }
 
     bool PhysicalMaterializedCollector::ParallelSink() const {

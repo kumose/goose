@@ -452,7 +452,7 @@ namespace goose {
         auto minimum_memory_per_thread = table->GetColumns().PhysicalColumnCount() * MINIMUM_MEMORY_PER_COLUMN;
         auto result = make_uniq<BatchInsertGlobalState>(context, table->Cast<GooseTableEntry>(),
                                                         minimum_memory_per_thread);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<LocalSinkState> PhysicalBatchInsert::GetLocalSinkState(ExecutionContext &context) const {

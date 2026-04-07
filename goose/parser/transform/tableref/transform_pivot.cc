@@ -145,6 +145,6 @@ namespace goose {
         result->include_nulls = root.include_nulls;
         result->alias = TransformAlias(root.alias, result->column_name_alias);
         SetQueryLocation(*result, root.location);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

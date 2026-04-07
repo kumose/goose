@@ -104,7 +104,7 @@ namespace goose {
         auto &table_entry = Catalog::GetEntry<TableCatalogEntry>(context, qname.catalog, qname.schema, qname.name);
         auto result = make_uniq<PragmaStorageFunctionData>(table_entry);
         result->column_segments_info = table_entry.GetColumnSegmentInfo(context);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<GlobalTableFunctionState> PragmaStorageInfoInit(ClientContext &context, TableFunctionInitInput &input) {

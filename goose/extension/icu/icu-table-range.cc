@@ -162,7 +162,7 @@ namespace goose {
             } else {
                 names.emplace_back("range");
             }
-            return result;
+            return std::move(result);
         }
 
         static unique_ptr<LocalTableFunctionState> RangeDateTimeLocalInit(ExecutionContext &context,

@@ -18,7 +18,7 @@ namespace goose {
     unique_ptr<ColumnWriterState> PrimitiveColumnWriter::InitializeWriteState(goose_parquet::RowGroup &row_group) {
         auto result = make_uniq<PrimitiveColumnWriterState>(writer, row_group, row_group.columns.size());
         RegisterToRowGroup(row_group);
-        return result;
+        return std::move(result);
     }
 
     void PrimitiveColumnWriter::RegisterToRowGroup(goose_parquet::RowGroup &row_group) {

@@ -35,6 +35,6 @@ namespace goose {
     unique_ptr<Expression> BoundUnnestExpression::Copy() const {
         auto copy = make_uniq<BoundUnnestExpression>(return_type);
         copy->child = child->Copy();
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

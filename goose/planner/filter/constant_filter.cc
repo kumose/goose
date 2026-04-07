@@ -86,7 +86,7 @@ namespace goose {
     unique_ptr<Expression> ConstantFilter::ToExpression(const Expression &column) const {
         auto bound_constant = make_uniq<BoundConstantExpression>(constant);
         auto result = make_uniq<BoundComparisonExpression>(comparison_type, column.Copy(), std::move(bound_constant));
-        return result;
+        return std::move(result);
     }
 
     bool ConstantFilter::Equals(const TableFilter &other_p) const {

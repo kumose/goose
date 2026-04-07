@@ -24,7 +24,7 @@ namespace goose {
             result->sample = TransformSampleOptions(root.sample);
         }
         SetQueryLocation(*result, root.location);
-        return result;
+        return std::move(result);
     }
 
     QualifiedName Transformer::TransformQualifiedName(cantor::PGRangeVar &root) {

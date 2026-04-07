@@ -28,6 +28,6 @@ namespace goose {
     unique_ptr<Expression> BoundConstantExpression::Copy() const {
         auto copy = make_uniq<BoundConstantExpression>(value);
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

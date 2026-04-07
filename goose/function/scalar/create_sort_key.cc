@@ -37,7 +37,7 @@ namespace goose {
             unique_ptr<FunctionData> Copy() const override {
                 auto result = make_uniq<SortKeyBindData>();
                 result->modifiers = modifiers;
-                return result;
+                return std::move(result);
             }
         };
 
@@ -83,7 +83,7 @@ namespace goose {
                     bound_function.SetReturnType(LogicalType::BIGINT);
                 }
             }
-            return result;
+            return std::move(result);
         }
 
         //===--------------------------------------------------------------------===//
@@ -893,7 +893,7 @@ namespace goose {
             }
             bound_function.SetReturnType(LogicalType::STRUCT(std::move(children)));
 
-            return result;
+            return std::move(result);
         }
 
         struct DecodeSortKeyVectorData {

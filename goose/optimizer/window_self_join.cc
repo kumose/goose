@@ -274,7 +274,7 @@ namespace goose {
                 // We do NOT need to replace other bindings because CrossProduct preserves left child bindings,
                 // and Window (presumably) passed through input bindings without re-binding.
 
-                return cross;
+                return std::move(cross);
             }
         } else if (!op->children.empty()) {
             for (auto &child: op->children) {

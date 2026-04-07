@@ -271,7 +271,7 @@ namespace goose {
         coalesce_children.push_back(std::move(cast));
         coalesce_children.push_back(make_uniq<ConstantExpression>(Value("NULL")));
         auto coalesce = make_uniq<OperatorExpression>(ExpressionType::OPERATOR_COALESCE, std::move(coalesce_children));
-        return coalesce;
+        return std::move(coalesce);
     }
 
     static unique_ptr<SelectNode> PivotListAggregate(PivotBindState &bind_state, PivotRef &ref,

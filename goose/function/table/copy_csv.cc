@@ -223,7 +223,7 @@ namespace goose {
         auto expressions = CreateCastExpressions(*bind_data, context, names, sql_types);
         bind_data->cast_expressions = std::move(expressions);
 
-        return bind_data;
+        return std::move(bind_data);
     }
 
     static void CSVListCopyOptions(ClientContext &context, CopyOptionsInput &input) {
@@ -334,7 +334,7 @@ namespace goose {
         types.resize(csv_data.options.name_list.size(), LogicalType::VARCHAR);
 
         local_data->cast_chunk.Initialize(Allocator::Get(context.client), types);
-        return local_data;
+        return std::move(local_data);
     }
 
     static unique_ptr<GlobalFunctionData> WriteCSVInitializeGlobal(ClientContext &context, FunctionData &bind_data,
@@ -347,7 +347,7 @@ namespace goose {
 
         global_data->writer.Initialize();
 
-        return global_data;
+        return std::move(global_data);
     }
 
     static void WriteCSVChunkInternal(CSVWriter &writer, CSVWriterState &writer_local_state, DataChunk &cast_chunk,
@@ -445,7 +445,7 @@ namespace goose {
         for (auto &chunk: collection->Chunks()) {
             WriteCSVChunkInternal(global_state.writer, *batch->writer_local_state, cast_chunk, chunk, executor);
         }
-        return batch;
+        return std::move(batch);
     }
 
     //===--------------------------------------------------------------------===//

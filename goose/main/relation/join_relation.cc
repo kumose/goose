@@ -32,7 +32,7 @@ namespace goose {
         auto result = make_uniq<SelectNode>();
         result->select_list.push_back(make_uniq<StarExpression>());
         result->from_table = GetTableRef();
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<TableRef> JoinRelation::GetTableRef() {
@@ -48,7 +48,7 @@ namespace goose {
         for (auto &col: duplicate_eliminated_columns) {
             join_ref->duplicate_eliminated_columns.emplace_back(col->Copy());
         }
-        return join_ref;
+        return std::move(join_ref);
     }
 
     const vector<ColumnDefinition> &JoinRelation::Columns() {

@@ -70,7 +70,7 @@ namespace goose {
                     is_regular_in ? ExpressionType::COMPARE_EQUAL : ExpressionType::COMPARE_NOTEQUAL,
                     expr.children[0]->Copy(), std::move(expr.children[i])));
             }
-            return conjunction;
+            return std::move(conjunction);
         }
         // IN clause with many constant children
         // generate a mark join that replaces this IN expression

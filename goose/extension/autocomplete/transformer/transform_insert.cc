@@ -34,7 +34,7 @@ namespace goose {
         }
         transformer.TransformOptional<vector<unique_ptr<ParsedExpression> > >(list_pr, 9, result->returning_list);
 
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<BaseTableRef> PEGTransformerFactory::TransformInsertTarget(PEGTransformer &transformer,

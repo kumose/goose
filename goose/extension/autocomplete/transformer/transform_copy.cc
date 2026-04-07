@@ -29,7 +29,7 @@ namespace goose {
         }
         info->select_statement = std::move(select_statement->node);
         result->info = std::move(info);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<SQLStatement> PEGTransformerFactory::TransformCopyFromDatabase(PEGTransformer &transformer,
@@ -48,7 +48,7 @@ namespace goose {
         result->info->name = "copy_database";
         result->info->parameters.emplace_back(make_uniq<ConstantExpression>(Value(from_database)));
         result->info->parameters.emplace_back(make_uniq<ConstantExpression>(Value(to_database)));
-        return result;
+        return std::move(result);
     }
 
     CopyDatabaseType PEGTransformerFactory::TransformCopyDatabaseFlag(PEGTransformer &transformer,
@@ -109,7 +109,7 @@ namespace goose {
         }
 
         result->info = std::move(info);
-        return result;
+        return std::move(result);
     }
 
     bool PEGTransformerFactory::TransformFromOrTo(PEGTransformer &transformer, optional_ptr<ParseResult> parse_result) {

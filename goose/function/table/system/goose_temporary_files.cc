@@ -42,7 +42,7 @@ namespace goose {
         auto result = make_uniq<GooseTemporaryFilesData>();
 
         result->entries = BufferManager::GetBufferManager(context).GetTemporaryFiles();
-        return result;
+        return std::move(result);
     }
 
     void GooseTemporaryFilesFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

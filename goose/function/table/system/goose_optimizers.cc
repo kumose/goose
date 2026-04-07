@@ -25,7 +25,7 @@ namespace goose {
     unique_ptr<GlobalTableFunctionState> GooseOptimizersInit(ClientContext &context, TableFunctionInitInput &input) {
         auto result = make_uniq<GooseOptimizersData>();
         result->optimizers = ListAllOptimizers();
-        return result;
+        return std::move(result);
     }
 
     void GooseOptimizersFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

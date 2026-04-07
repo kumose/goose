@@ -113,7 +113,7 @@ namespace goose {
             }
         };
 
-        return result;
+        return std::move(result);
     }
 
     struct ExtraConstraintInfo {

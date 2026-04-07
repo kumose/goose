@@ -19,14 +19,14 @@ namespace goose {
         auto result = make_uniq<SelectNode>();
         result->select_list.push_back(make_uniq<StarExpression>());
         result->from_table = GetTableRef();
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<TableRef> CrossProductRelation::GetTableRef() {
         auto cross_product_ref = make_uniq<JoinRef>(ref_type);
         cross_product_ref->left = left->GetTableRef();
         cross_product_ref->right = right->GetTableRef();
-        return cross_product_ref;
+        return std::move(cross_product_ref);
     }
 
     const vector<ColumnDefinition> &CrossProductRelation::Columns() {

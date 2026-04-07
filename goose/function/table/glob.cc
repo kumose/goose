@@ -18,7 +18,7 @@ static unique_ptr<FunctionData> GlobFunctionBind(ClientContext &context, TableFu
 	result->file_list = multi_file_reader->CreateFileList(context, input.inputs[0], FileGlobOptions::ALLOW_EMPTY);
 	return_types.emplace_back(LogicalType::VARCHAR);
 	names.emplace_back("file");
-	return result;
+	return std::move(result);
 }
 
 struct GlobFunctionState : public GlobalTableFunctionState {
@@ -34,7 +34,7 @@ static unique_ptr<GlobalTableFunctionState> GlobFunctionInit(ClientContext &cont
 
 	bind_data.file_list->InitializeScan(res->file_list_scan);
 
-	return res;
+	return std::move(res);
 }
 
 static void GlobFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

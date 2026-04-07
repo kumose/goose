@@ -135,7 +135,7 @@ namespace goose {
         if (join_type == JoinType::RIGHT_ANTI || join_type == JoinType::RIGHT_SEMI) {
             throw NotImplementedException("physical blockwise RIGHT_SEMI/RIGHT_ANTI join not yet implemented");
         }
-        return result;
+        return std::move(result);
     }
 
     OperatorResultType PhysicalBlockwiseNLJoin::ExecuteInternal(ExecutionContext &context, DataChunk &input,

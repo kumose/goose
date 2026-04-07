@@ -38,7 +38,7 @@ namespace goose {
         }
 
         auto result = make_uniq<UniqueConstraint>(index, columns.empty() ? string() : columns[0], is_primary_key);
-        return result;
+        return std::move(result);
     }
 
     bool UniqueConstraint::IsPrimaryKey() const {

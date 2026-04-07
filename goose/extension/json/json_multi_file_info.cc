@@ -31,7 +31,7 @@ namespace goose {
             options.format = JSONFormat::AUTO_DETECT;
             options.auto_detect = false;
         }
-        return reader_options;
+        return std::move(reader_options);
     }
 
     bool JSONMultiFileInfo::ParseOption(ClientContext &context, const string &key, const Value &value,
@@ -269,7 +269,7 @@ namespace goose {
         auto &reader_options = options->Cast<JSONFileReaderOptions>();
         auto json_data = make_uniq<JSONScanData>();
         json_data->options = std::move(reader_options.options);
-        return json_data;
+        return std::move(json_data);
     }
 
     void JSONMultiFileInfo::BindReader(ClientContext &context, vector<LogicalType> &return_types, vector<string> &names,
@@ -415,7 +415,7 @@ namespace goose {
             // then we don't need to throw an error if we encounter an unseen column
             gstate.transform_options.error_unknown_key = false;
         }
-        return json_state;
+        return std::move(json_state);
     }
 
     unique_ptr<LocalTableFunctionState> JSONMultiFileInfo::InitializeLocalState(ExecutionContext &context,
@@ -426,7 +426,7 @@ namespace goose {
         // Copy the transform options / date format map because we need to do thread-local stuff
         result->state.transform_options = gstate.state.transform_options;
 
-        return result;
+        return std::move(result);
     }
 
     double JSONReader::GetProgressInFile(ClientContext &context) {

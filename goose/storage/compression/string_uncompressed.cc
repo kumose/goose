@@ -99,7 +99,7 @@ namespace goose {
         auto result = make_uniq<StringScanState>();
         auto &buffer_manager = BufferManager::GetBufferManager(segment.db);
         result->handle = buffer_manager.Pin(segment.block);
-        return result;
+        return std::move(result);
     }
 
     //===--------------------------------------------------------------------===//
@@ -227,7 +227,7 @@ namespace goose {
             auto &serialized_state = segment_state->Cast<SerializedStringSegmentState>();
             result->on_disk_blocks = std::move(serialized_state.blocks);
         }
-        return result;
+        return std::move(result);
     }
 
     idx_t UncompressedStringStorage::FinalizeAppend(ColumnSegment &segment, SegmentStatistics &) {
@@ -272,7 +272,7 @@ namespace goose {
     unique_ptr<ColumnSegmentState> UncompressedStringStorage::DeserializeState(Deserializer &deserializer) {
         auto result = make_uniq<SerializedStringSegmentState>();
         deserializer.ReadProperty(1, "overflow_blocks", result->blocks);
-        return result;
+        return std::move(result);
     }
 
     void UncompressedStringStorage::VisitBlockIds(const ColumnSegment &segment, BlockIdVisitor &visitor) {

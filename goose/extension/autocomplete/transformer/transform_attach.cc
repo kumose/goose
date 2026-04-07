@@ -49,7 +49,7 @@ namespace goose {
             }
         }
         result->info = std::move(info);
-        return result;
+        return std::move(result);
     }
 
     string PEGTransformerFactory::TransformAttachAlias(PEGTransformer &transformer,

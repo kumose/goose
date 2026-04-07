@@ -103,14 +103,14 @@ namespace goose {
 
     unique_ptr<LocalSinkState> PhysicalBufferedBatchCollector::GetLocalSinkState(ExecutionContext &context) const {
         auto state = make_uniq<BufferedBatchCollectorLocalState>();
-        return state;
+        return std::move(state);
     }
 
     unique_ptr<GlobalSinkState> PhysicalBufferedBatchCollector::GetGlobalSinkState(ClientContext &context) const {
         auto state = make_uniq<BufferedBatchCollectorGlobalState>();
         state->context = context.shared_from_this();
         state->buffered_data = make_shared_ptr<BatchedBufferedData>(context);
-        return state;
+        return std::move(state);
     }
 
     unique_ptr<QueryResult> PhysicalBufferedBatchCollector::GetResult(GlobalSinkState &state) const {
@@ -118,6 +118,6 @@ namespace goose {
         auto cc = gstate.context.lock();
         auto result = make_uniq<StreamQueryResult>(statement_type, properties, types, names, cc->GetClientProperties(),
                                                    gstate.buffered_data);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

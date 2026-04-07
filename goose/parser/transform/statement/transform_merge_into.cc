@@ -104,6 +104,6 @@ namespace goose {
         if (stmt.returningList) {
             TransformExpressionList(*stmt.returningList, result->returning_list);
         }
-        return result;
+        return std::move(result);
     }
 } // namespace goose

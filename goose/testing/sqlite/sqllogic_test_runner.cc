@@ -793,12 +793,12 @@ namespace goose {
                 // skipif/onlyif
                 bool skip_if = token.type == SQLLogicTokenType::SQLLOGIC_SKIP_IF;
                 if (token.parameters.size() < 1) {
-                    parser.Fail("skipif/onlyif requires a single parameter (e.g. skipif duckdb)");
+                    parser.Fail("skipif/onlyif requires a single parameter (e.g. skipif goose)");
                 }
                 auto system_name = StringUtil::Lower(token.parameters[0]);
                 // we support two kinds of conditions here
                 // (for original sqllogictests) system comparisons, e.g.:
-                // (1) skipif duckdb
+                // (1) skipif goose
                 // (2) onlyif <other_system>
                 // conditions on loop variables, e.g.:
                 // (1) skipif i=2
@@ -817,7 +817,7 @@ namespace goose {
                     }
                     if (our_system == skip_if) {
                         // we skip this command in two situations
-                        // (1) skipif duckdb
+                        // (1) skipif goose
                         // (2) onlyif <other_system>
                         skip_statement = true;
                         break;

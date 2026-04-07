@@ -223,7 +223,7 @@ unique_ptr<ParsedExpression> FunctionExpression::Deserialize(Deserializer &deser
 	deserializer.ReadPropertyWithDefault<bool>(206, "is_operator", result->is_operator);
 	deserializer.ReadPropertyWithDefault<bool>(207, "export_state", result->export_state);
 	deserializer.ReadPropertyWithDefault<string>(208, "catalog", result->catalog);
-	return result;
+	return std::move(result);
 }
 
 void LambdaExpression::Serialize(Serializer &serializer) const {
@@ -240,7 +240,7 @@ unique_ptr<ParsedExpression> LambdaExpression::Deserialize(Deserializer &deseria
 	deserializer.ReadPropertyWithDefault<unique_ptr<ParsedExpression>>(200, "lhs", result->lhs);
 	deserializer.ReadPropertyWithDefault<unique_ptr<ParsedExpression>>(201, "expr", result->expr);
 	deserializer.ReadPropertyWithExplicitDefault<LambdaSyntaxType>(202, "syntax_type", result->syntax_type, LambdaSyntaxType::SINGLE_ARROW_STORAGE);
-	return result;
+	return std::move(result);
 }
 
 void LambdaRefExpression::Serialize(Serializer &serializer) const {

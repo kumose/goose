@@ -9,7 +9,7 @@ namespace goose {
     unique_ptr<ColumnWriterState> ListColumnWriter::InitializeWriteState(goose_parquet::RowGroup &row_group) {
         auto result = make_uniq<ListColumnWriterState>(row_group, row_group.columns.size());
         result->child_state = GetChildWriter().InitializeWriteState(row_group);
-        return result;
+        return std::move(result);
     }
 
     bool ListColumnWriter::HasAnalyze() {

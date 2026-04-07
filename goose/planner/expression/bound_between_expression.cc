@@ -56,6 +56,6 @@ namespace goose {
         auto copy = make_uniq<BoundBetweenExpression>(input->Copy(), lower->Copy(), upper->Copy(), lower_inclusive,
                                                       upper_inclusive);
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

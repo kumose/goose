@@ -539,7 +539,7 @@ namespace goose {
             for (idx_t i = 0; i < sub_columns.size(); i++) {
                 checkpoint_state->child_states.push_back(sub_columns[i]->Checkpoint(row_group, checkpoint_info));
             }
-            return checkpoint_state;
+            return std::move(checkpoint_state);
         }
 
         //! STRUCT(unshredded VARIANT, shredded <...>)
@@ -553,7 +553,7 @@ namespace goose {
         checkpoint_state->child_states.push_back(unshredded->Checkpoint(row_group, checkpoint_info));
         checkpoint_state->child_states.push_back(shredded->Checkpoint(row_group, checkpoint_info));
 
-        return checkpoint_state;
+        return std::move(checkpoint_state);
     }
 
     bool VariantColumnData::IsPersistent() {

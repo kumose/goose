@@ -107,7 +107,7 @@ namespace goose {
         }
         result->columns = star.columns;
         SetQueryLocation(*result, star.location);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<ParsedExpression> Transformer::TransformColumnRef(cantor::PGColumnRef &root) {
@@ -124,7 +124,7 @@ namespace goose {
                 }
                 auto colref = make_uniq<ColumnRefExpression>(std::move(column_names));
                 SetQueryLocation(*colref, root.location);
-                return colref;
+                return std::move(colref);
             }
             case cantor::T_PGAStar: {
                 return TransformStarExpression(PGCast<cantor::PGAStar>(*head_node));

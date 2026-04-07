@@ -102,7 +102,7 @@ namespace goose {
             auto result = make_uniq<GooseReadBindData>();
             result->options = make_uniq<GooseFileReaderOptions>(*options);
             result->initial_file_cardinality = initial_file_cardinality;
-            return result;
+            return std::move(result);
         }
     };
 
@@ -468,7 +468,7 @@ namespace goose {
                                                                          unique_ptr<BaseFileReaderOptions> options_p) {
         auto result = make_uniq<GooseReadBindData>();
         result->options = unique_ptr_cast<BaseFileReaderOptions, GooseFileReaderOptions>(std::move(options_p));
-        return result;
+        return std::move(result);
     }
 
     void GooseMultiFileInfo::BindReader(ClientContext &context, vector<LogicalType> &return_types,
@@ -605,6 +605,6 @@ namespace goose {
             auto &fs = FileSystem::GetFileSystem(context);
             table_function->alias = fs.ExtractBaseName(table_name);
         }
-        return table_function;
+        return std::move(table_function);
     }
 } // namespace goose

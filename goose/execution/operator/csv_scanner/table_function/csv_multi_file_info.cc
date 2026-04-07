@@ -53,7 +53,7 @@ namespace goose {
             csv_data->options.multi_file_reader = true;
         }
         csv_data->options.Verify(multi_file_data.file_options);
-        return csv_data;
+        return std::move(csv_data);
     }
 
     //! Function to do schema discovery over one CSV file or a list/glob of CSV files

@@ -60,7 +60,7 @@ namespace goose {
             }
             result->input_chunk.Initialize(context.client, input_types);
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<GlobalOperatorState> PhysicalTableInOutFunction::GetGlobalOperatorState(ClientContext &context) const {
@@ -69,7 +69,7 @@ namespace goose {
             TableFunctionInitInput input(bind_data.get(), column_ids, vector<idx_t>(), nullptr);
             result->global_state = function.init_global(context, input);
         }
-        return result;
+        return std::move(result);
     }
 
     void PhysicalTableInOutFunction::SetOrdinality(DataChunk &chunk, const optional_idx &ordinality_column_idx,
@@ -97,7 +97,7 @@ namespace goose {
                 SetOrdinality(chunk, this->ordinality_idx, state.current_ordinality_idx, ordinality);
                 state.current_ordinality_idx += ordinality;
             }
-            return result;
+            return std::move(result);
         }
         // when project_input is set we execute the input function row-by-row
         if (state.new_row) {
@@ -134,7 +134,7 @@ namespace goose {
             state.current_ordinality_idx += ordinality;
         }
         if (result == OperatorResultType::FINISHED) {
-            return result;
+            return std::move(result);
         }
         if (result == OperatorResultType::NEED_MORE_INPUT) {
             // we finished processing this row: move to the next row

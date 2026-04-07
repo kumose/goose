@@ -11,7 +11,7 @@
 #include <goose/execution/operator/csv_scanner/string_value_scanner.h>
 #include <goose/common/case_insensitive_map.h>
 #include <goose/testing/test_config.h>
-#include "pid.h"
+#include <goose/testing/pid.h>
 #include <goose/function/table/read_csv.h>
 #include <goose/storage/storage_info.h>
 #include <cmath>

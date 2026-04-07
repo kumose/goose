@@ -75,7 +75,7 @@ namespace goose {
             // FIXME: we should probably verify that the 'column_id_map' and 'columns' are the same on the bound table after
             // deserialization?
         }
-        return result;
+        return std::move(result);
     }
 
     idx_t LogicalVacuum::EstimateCardinality(ClientContext &context) {

@@ -357,7 +357,7 @@ namespace goose {
 
         bind_data->sql_types = sql_types;
         bind_data->column_names = names;
-        return bind_data;
+        return std::move(bind_data);
     }
 
     static unique_ptr<GlobalFunctionData> ParquetWriteInitializeGlobal(ClientContext &context, FunctionData &bind_data,
@@ -374,7 +374,7 @@ namespace goose {
             parquet_bind.bloom_filter_false_positive_ratio, parquet_bind.compression_level,
             parquet_bind.debug_use_openssl,
             parquet_bind.parquet_version, parquet_bind.geoparquet_version);
-        return global_state;
+        return std::move(global_state);
     }
 
     static void ParquetWriteGetWrittenStatistics(ClientContext &context, FunctionData &bind_data,
@@ -673,7 +673,7 @@ namespace goose {
                                                              default_value.geoparquet_version);
         data->shredding_types = deserializer.ReadProperty<ShreddingType>(117, "shredding_types");
 
-        return data;
+        return std::move(data);
     }
 
     // LCOV_EXCL_STOP
@@ -714,7 +714,7 @@ namespace goose {
         auto result = make_uniq<ParquetWriteBatchData>();
         unique_ptr<ParquetWriteTransformData> transform_data;
         global_state.writer->PrepareRowGroup(*collection, result->prepared_row_group, transform_data);
-        return result;
+        return std::move(result);
     }
 
     //===--------------------------------------------------------------------===//
@@ -776,7 +776,7 @@ namespace goose {
             table_function->alias = fs.ExtractBaseName(table_name);
         }
 
-        return table_function;
+        return std::move(table_function);
     }
 
     //===--------------------------------------------------------------------===//

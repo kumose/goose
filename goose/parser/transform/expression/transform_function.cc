@@ -335,7 +335,7 @@ namespace goose {
             TransformWindowFrame(*window_spec, *expr);
             in_window_definition = false;
             SetQueryLocation(*expr, root.location);
-            return expr;
+            return std::move(expr);
         }
 
         if (root.agg_ignore_nulls != cantor::PG_DEFAULT_NULLS) {
@@ -393,25 +393,25 @@ namespace goose {
             check.then_expr = std::move(children[1]);
             expr->case_checks.push_back(std::move(check));
             expr->else_expr = std::move(children[2]);
-            return expr;
+            return std::move(expr);
         } else if (lowercase_name == "unpack") {
             if (children.size() != 1) {
                 throw ParserException("Wrong number of arguments to the UNPACK operator");
             }
             auto expr = make_uniq<OperatorExpression>(ExpressionType::OPERATOR_UNPACK);
             expr->children = std::move(children);
-            return expr;
+            return std::move(expr);
         } else if (lowercase_name == "try") {
             if (children.size() != 1) {
                 throw ParserException("Wrong number of arguments provided to TRY expression");
             }
             auto try_expression = make_uniq<OperatorExpression>(ExpressionType::OPERATOR_TRY);
             try_expression->children = std::move(children);
-            return try_expression;
+            return std::move(try_expression);
         } else if (lowercase_name == "construct_array") {
             auto construct_array = make_uniq<OperatorExpression>(ExpressionType::ARRAY_CONSTRUCTOR);
             construct_array->children = std::move(children);
-            return construct_array;
+            return std::move(construct_array);
         } else if (lowercase_name == "__internal_position_operator") {
             if (children.size() != 2) {
                 throw ParserException("Wrong number of arguments to __internal_position_operator.");
@@ -428,7 +428,7 @@ namespace goose {
             auto coalesce_op = make_uniq<OperatorExpression>(ExpressionType::OPERATOR_COALESCE);
             coalesce_op->children.push_back(std::move(children[0]));
             coalesce_op->children.push_back(std::move(children[1]));
-            return coalesce_op;
+            return std::move(coalesce_op);
         } else if (lowercase_name == "list" && order_bys->orders.size() == 1) {
             // list(expr ORDER BY expr <sense> <nulls>) => list_sort(list(expr), <sense>, <nulls>)
             if (children.size() != 1) {
@@ -465,7 +465,7 @@ namespace goose {
                                                       root.agg_distinct, false, root.export_state);
         SetQueryLocation(*function, root.location);
 
-        return function;
+        return std::move(function);
     }
 
     unique_ptr<ParsedExpression> Transformer::TransformSQLValueFunction(cantor::PGSQLValueFunction &node) {

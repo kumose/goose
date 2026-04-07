@@ -15,7 +15,7 @@ namespace goose {
             CastLocalStateParameters parameters(context_ptr, expr.bound_cast.cast_data);
             result->local_state = expr.bound_cast.init_local_state(parameters);
         }
-        return result;
+        return std::move(result);
     }
 
     void ExpressionExecutor::Execute(const BoundCastExpression &expr, ExpressionState *state,

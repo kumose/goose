@@ -80,7 +80,7 @@ unique_ptr<GlobalTableFunctionState> GooseSequencesInit(ClientContext &context, 
 		schema.get().Scan(context, CatalogType::SEQUENCE_ENTRY,
 		                  [&](CatalogEntry &entry) { result->entries.push_back(entry.Cast<SequenceCatalogEntry>()); });
 	};
-	return result;
+	return std::move(result);
 }
 
 void GooseSequencesFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

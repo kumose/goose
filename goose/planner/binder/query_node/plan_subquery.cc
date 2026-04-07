@@ -452,6 +452,6 @@ namespace goose {
         delim_join->arbitrary_expressions = std::move(arbitrary_expressions);
         delim_join->conditions = std::move(conditions);
         delim_join->AddChild(std::move(right));
-        return delim_join;
+        return std::move(delim_join);
     }
 } // namespace goose

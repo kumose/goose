@@ -10,7 +10,7 @@ namespace goose {
     unique_ptr<Expression> JoinCondition::CreateExpression(JoinCondition cond) {
         auto bound_comparison =
                 make_uniq<BoundComparisonExpression>(cond.comparison, std::move(cond.left), std::move(cond.right));
-        return bound_comparison;
+        return std::move(bound_comparison);
     }
 
     unique_ptr<Expression> JoinCondition::CreateExpression(vector<JoinCondition> conditions) {

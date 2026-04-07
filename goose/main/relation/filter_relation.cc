@@ -36,7 +36,7 @@ namespace goose {
             result->select_list.push_back(make_uniq<StarExpression>());
             result->from_table = child->GetTableRef();
             result->where_clause = condition->Copy();
-            return result;
+            return std::move(result);
         }
     }
 

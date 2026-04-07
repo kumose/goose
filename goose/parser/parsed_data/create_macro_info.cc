@@ -35,7 +35,7 @@ namespace goose {
         }
         result->name = name;
         CopyFunctionProperties(*result);
-        return result;
+        return std::move(result);
     }
 
     vector<unique_ptr<MacroFunction> > CreateMacroInfo::GetAllButFirstFunction() const {

@@ -135,7 +135,7 @@ namespace goose {
         auto &buffer_manager = BufferManager::GetBufferManager(segment.db);
         auto state = make_uniq<CompressedStringScanState>(buffer_manager.Pin(segment.block));
         state->Initialize(segment, true);
-        return state;
+        return std::move(state);
     }
 
     //===--------------------------------------------------------------------===//

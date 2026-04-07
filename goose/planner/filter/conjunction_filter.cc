@@ -52,7 +52,7 @@ namespace goose {
         for (auto &filter: child_filters) {
             result->child_filters.push_back(filter->Copy());
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<Expression> ConjunctionOrFilter::ToExpression(const Expression &column) const {
@@ -60,7 +60,7 @@ namespace goose {
         for (auto &filter: child_filters) {
             conjunction->children.push_back(filter->ToExpression(column));
         }
-        return conjunction;
+        return std::move(conjunction);
     }
 
     ConjunctionAndFilter::ConjunctionAndFilter() : ConjunctionFilter(TableFilterType::CONJUNCTION_AND) {
@@ -113,7 +113,7 @@ namespace goose {
         for (auto &filter: child_filters) {
             result->child_filters.push_back(filter->Copy());
         }
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<Expression> ConjunctionAndFilter::ToExpression(const Expression &column) const {
@@ -121,6 +121,6 @@ namespace goose {
         for (auto &filter: child_filters) {
             conjunction->children.push_back(filter->ToExpression(column));
         }
-        return conjunction;
+        return std::move(conjunction);
     }
 } // namespace goose

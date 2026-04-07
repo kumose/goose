@@ -15,7 +15,7 @@ namespace goose {
         transformer.TransformOptional<vector<unique_ptr<TableRef> > >(list_pr, 4, result->using_clauses);
         transformer.TransformOptional<unique_ptr<ParsedExpression> >(list_pr, 5, result->condition);
         transformer.TransformOptional<vector<unique_ptr<ParsedExpression> > >(list_pr, 6, result->returning_list);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<BaseTableRef> PEGTransformerFactory::TransformTargetOptAlias(PEGTransformer &transformer,
@@ -42,6 +42,6 @@ namespace goose {
         auto &list_pr = parse_result->Cast<ListParseResult>();
         auto result = make_uniq<DeleteStatement>();
         result->table = transformer.Transform<unique_ptr<BaseTableRef> >(list_pr.Child<ListParseResult>(2));
-        return result;
+        return std::move(result);
     }
 } // namespace goose

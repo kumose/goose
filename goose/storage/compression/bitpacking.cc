@@ -374,7 +374,7 @@ namespace goose {
         auto state = make_uniq<BitpackingAnalyzeState<T> >(info);
         state->state.mode = config.options.force_bitpacking_mode;
 
-        return state;
+        return std::move(state);
     }
 
     template<class T>
@@ -836,7 +836,7 @@ namespace goose {
     template<class T>
     unique_ptr<SegmentScanState> BitpackingInitScan(const QueryContext &context, ColumnSegment &segment) {
         auto result = make_uniq<BitpackingScanState<T> >(context, segment);
-        return result;
+        return std::move(result);
     }
 
     //===--------------------------------------------------------------------===//

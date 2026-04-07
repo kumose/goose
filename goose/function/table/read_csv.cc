@@ -202,7 +202,7 @@ namespace goose {
             table_function->alias = fs.ExtractBaseName(table_name);
         }
 
-        return table_function;
+        return std::move(table_function);
     }
 
     void BuiltinFunctions::RegisterReadFunctions() {

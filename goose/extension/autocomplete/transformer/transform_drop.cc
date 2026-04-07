@@ -6,7 +6,7 @@ namespace goose {
         auto &list_pr = parse_result->Cast<ListParseResult>();
         auto drop_entry = transformer.Transform<unique_ptr<DropStatement> >(list_pr.Child<ListParseResult>(1));
         transformer.TransformOptional<bool>(list_pr, 2, drop_entry->info->cascade);
-        return drop_entry;
+        return std::move(drop_entry);
     }
 
     unique_ptr<DropStatement> PEGTransformerFactory::TransformDropEntries(PEGTransformer &transformer,

@@ -108,7 +108,7 @@ namespace goose {
             unique_ptr<BaseFileReaderOptions> options) {
             auto result = make_uniq<ReadFileBindData>();
             result->options = std::move(options);
-            return result;
+            return std::move(result);
         };
 
         template<class OP>
@@ -151,7 +151,7 @@ namespace goose {
             }
 
             result->column_ids = std::move(column_ids);
-            return result;
+            return std::move(result);
         };
 
         template<class OP>

@@ -32,6 +32,6 @@ namespace goose {
     unique_ptr<ParsedExpression> CastExpression::Copy() const {
         auto copy = make_uniq<CastExpression>(cast_type, child->Copy(), try_cast);
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 } // namespace goose

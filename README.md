@@ -13,8 +13,29 @@ goose
 
 [中文版](./README_CN.md)
 
+Goose is a high-performance analytical database system and an extensible SQL IR 
+system.
 
-goose is kumo's `SQL` `IR` middle interpreter.
+It is designed to be fast, reliable, portable, and easy to use. Goose provides 
+a rich SQL dialect with support far beyond basic SQL. Goose supports arbitrary 
+and nested correlated subqueries, window functions, collations, complex types 
+(arrays, structs, maps), and [several extensions designed to make SQL easier to use](https://pub.kumose.cc/goose/docs/sql/dialect/friendly_sql).
+
+Goose is available as a [standalone CLI application](https://pub.kumose.cc/goose/docs/stable/clients/cli/overview) 
+and has clients for [Python](https://pub.kumose.cc/goose/docs/clients/python/overview), etc., with deep integrations 
+with packages such as [pandas](https://pub.kumose.cc/goose/docs/guides/python/sql_on_pandas).
+
+For more information on using Goose, please refer to the [Goose documentation](https://pub.kumose.cc/goose).
+
+More importantly, Goose is designed as an **expression-oriented execution system** 
+for the AI era. It uses SQL as a unified intermediate representation to describe 
+workflows, constraints, and data structures, enabling developers to express complex
+logic and compose reusable “skills” in a declarative way.
+
+**Live Demos**:
+* [goose-demo](https://github.com/kumose/goose-demo) — demonstrates how to build extensions and real-world applications.
+* [gnef](https://github.com/kumose/gnef) — an industry-oriented example focused on NLP processing workflows.
+
 
 ## 🛠️ Build
 

@@ -46,6 +46,6 @@ namespace goose {
                 result->info->columns.emplace_back(value->val.str);
             }
         }
-        return result;
+        return std::move(result);
     }
 } // namespace goose

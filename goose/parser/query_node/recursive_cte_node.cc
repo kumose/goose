@@ -53,6 +53,6 @@ namespace goose {
         }
 
         this->CopyProperties(*result);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

@@ -66,7 +66,7 @@ namespace goose {
         result->names = names;
         result->virtual_columns = virtual_columns;
         result->table_columns = table_columns;
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<MultiFileReader> MultiFileReader::CreateDefault(const string &function_name) {
@@ -437,7 +437,7 @@ namespace goose {
                 "\nThis can happen when reading multiple %s files. The schema information is taken from "
                 "the first %s file by default. Possible solutions:\n"
                 "* Enable the union_by_name=True option to combine the schema of all %s files "
-                "(https://duckdb.org/docs/stable/data/multiple_files/combining_schemas)\n"
+                "(https://pub.kumose.cc/goose/docs/data/multiple_files/combining_schemas)\n"
                 "* Use a COPY statement to automatically derive types from an existing table.",
                 reader.GetFileName(), local_col.name, source_type, target_type, reader_type, reader_type, reader_type);
         }

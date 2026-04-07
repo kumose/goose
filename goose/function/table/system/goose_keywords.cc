@@ -27,7 +27,7 @@ namespace goose {
     unique_ptr<GlobalTableFunctionState> GooseKeywordsInit(ClientContext &context, TableFunctionInitInput &input) {
         auto result = make_uniq<GooseKeywordsData>();
         result->entries = Parser::KeywordList();
-        return result;
+        return std::move(result);
     }
 
     void GooseKeywordsFunction(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

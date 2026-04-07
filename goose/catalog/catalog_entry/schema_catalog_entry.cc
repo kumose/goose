@@ -80,7 +80,7 @@ namespace goose {
         result->schema = name;
         result->comment = comment;
         result->tags = tags;
-        return result;
+        return std::move(result);
     }
 
     string SchemaCatalogEntry::ToSQL() const {

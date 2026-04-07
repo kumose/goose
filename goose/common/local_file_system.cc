@@ -473,7 +473,7 @@ namespace goose {
                     if (rc == -1) {
                         extended_error += ". Also, failed closing file";
                     }
-                    extended_error += ". See also https://duckdb.org/docs/stable/connect/concurrency";
+                    extended_error += ". See also https://pub.kumose.cc/goose/docs/connect/concurrency";
                     throw IOException({{"errno", std::to_string(retained_errno)}},
                                       "Could not set lock on file \"%s\": %s",
                                       path, extended_error);
@@ -486,7 +486,7 @@ namespace goose {
             file_handle->TryAddLogger(*opener);
             GOOSE_LOG_FILE_SYSTEM_OPEN((*file_handle));
         }
-        return file_handle;
+        return std::move(file_handle);
     }
 
     void LocalFileSystem::SetFilePointer(FileHandle &handle, idx_t location) {

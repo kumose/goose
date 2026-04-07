@@ -31,7 +31,7 @@ endif ()
 set(PROJECT_DESCRIPTION "Goose is an analytical in-process SQL IR database management system.")
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 6)
-set(PROJECT_VERSION_PATCH 10)
+set(PROJECT_VERSION_PATCH 20)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
 set(${PROJECT_NAME}_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
@@ -65,14 +65,14 @@ set(PLATFORM_CC ${PROJECT_SOURCE_DIR}/cmake/test_platform.cc)
 set(NULL_TXT  ${PROJECT_SOURCE_DIR}/cmake/null.txt)
 set(META_CMAKE  ${PROJECT_SOURCE_DIR}/cmake/append_metadata.cmake)
 
-include(goose_config)
+include(goose_options)
 include(goose_deps)
 include(goose_cxx_config)
 include(goose_test)
 include(extension_build_tools)
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} UPPERCASE_BUILD_TYPE)
-configure_file(${PROJECT_SOURCE_DIR}/goose/version.h.in ${PROJECT_SOURCE_DIR}/goose/version.h @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/goose/include/goose/version.h.in ${PROJECT_SOURCE_DIR}/goose/include/goose/version.h @ONLY)
 
 add_subdirectory(goose)
 
@@ -92,17 +92,7 @@ if (KMCMAKE_BUILD_EXAMPLES)
 endif ()
 if(NOT PYTHON_EXTENSION)
     # install header, avoid empty directory
-    file(GLOB_RECURSE HEADERS
-            RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-            "${PROJECT_NAME}/*.h"
-            "${PROJECT_NAME}/*.hpp"
-            "${PROJECT_NAME}/*.inc")
-
-    foreach(_file ${HEADERS})
-        get_filename_component(_dir ${_file} DIRECTORY)
-        install(FILES ${_file}
-                DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${_dir})
-    endforeach()
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/goose/include/goose DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     # Layout. This works for all platforms:
     #   * <prefix>//cmake/<PROJECT-NAME>
     #   * <prefix>/*/

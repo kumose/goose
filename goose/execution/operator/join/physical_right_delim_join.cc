@@ -44,14 +44,14 @@ namespace goose {
         if (delim_scans.size() > 1) {
             PhysicalHashAggregate::SetMultiScan(*distinct.sink_state);
         }
-        return state;
+        return std::move(state);
     }
 
     unique_ptr<LocalSinkState> PhysicalRightDelimJoin::GetLocalSinkState(ExecutionContext &context) const {
         auto state = make_uniq<RightDelimJoinLocalState>();
         state->join_state = join.GetLocalSinkState(context);
         state->distinct_state = distinct.GetLocalSinkState(context);
-        return state;
+        return std::move(state);
     }
 
     SinkResultType PhysicalRightDelimJoin::Sink(ExecutionContext &context, DataChunk &chunk,

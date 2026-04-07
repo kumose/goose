@@ -65,7 +65,7 @@ namespace goose {
             result->children.push_back(child->Copy());
         }
         this->CopyProperties(*result);
-        return result;
+        return std::move(result);
     }
 
     SetOperationNode::SetOperationNode(SetOperationType setop_type, unique_ptr<QueryNode> left,

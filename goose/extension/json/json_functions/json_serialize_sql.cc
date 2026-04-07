@@ -307,7 +307,7 @@ namespace goose {
                 return_types.emplace_back(col.Type());
                 names.emplace_back(col.Name());
             }
-            return result;
+            return std::move(result);
         }
 
         static void Function(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {

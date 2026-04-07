@@ -54,7 +54,7 @@ namespace goose {
 
     unique_ptr<TableRef> QueryRelation::GetTableRef() {
         auto subquery_ref = make_uniq<SubqueryRef>(GetSelectStatement(), GetAlias());
-        return subquery_ref;
+        return std::move(subquery_ref);
     }
 
     BoundStatement QueryRelation::Bind(Binder &binder) {

@@ -101,7 +101,7 @@ namespace goose {
 
         auto result = make_uniq<GooseSchemaEntry>(catalog, cast_info);
 
-        return result;
+        return std::move(result);
     }
 
     optional_ptr<CatalogEntry> GooseSchemaEntry::AddEntryInternal(CatalogTransaction transaction,

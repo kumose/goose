@@ -33,6 +33,6 @@ namespace goose {
             function->children.push_back(make_uniq<ConstantExpression>(Value(stmt.name)));
         }
         result->function = std::move(function);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

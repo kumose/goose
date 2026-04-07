@@ -115,7 +115,7 @@ namespace goose {
         result->internal = internal;
         result->comment = comment;
         result->tags = tags;
-        return result;
+        return std::move(result);
     }
 
     string TableCatalogEntry::ColumnsToSQL(const ColumnList &columns,

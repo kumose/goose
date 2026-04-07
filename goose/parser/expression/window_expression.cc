@@ -169,6 +169,6 @@ namespace goose {
         new_window->ignore_nulls = ignore_nulls;
         new_window->distinct = distinct;
 
-        return new_window;
+        return std::move(new_window);
     }
 } // namespace goose

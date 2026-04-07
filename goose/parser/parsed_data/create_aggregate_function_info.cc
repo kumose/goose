@@ -20,6 +20,6 @@ namespace goose {
     unique_ptr<CreateInfo> CreateAggregateFunctionInfo::Copy() const {
         auto result = make_uniq<CreateAggregateFunctionInfo>(functions);
         CopyFunctionProperties(*result);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

@@ -34,7 +34,7 @@ namespace goose {
             throw NotImplementedException("Cannot comment on this type");
         }
         result->info = std::move(info);
-        return result;
+        return std::move(result);
     }
 
     CatalogType PEGTransformerFactory::TransformCommentOnType(PEGTransformer &transformer,

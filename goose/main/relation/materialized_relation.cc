@@ -30,7 +30,7 @@ namespace goose {
         auto result = make_uniq<SelectNode>();
         result->select_list.push_back(make_uniq<StarExpression>());
         result->from_table = GetTableRef();
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<TableRef> MaterializedRelation::GetTableRef() {
@@ -39,7 +39,7 @@ namespace goose {
             table_ref->expected_names.push_back(col.Name());
         }
         table_ref->alias = GetAlias();
-        return table_ref;
+        return std::move(table_ref);
     }
 
     string MaterializedRelation::GetAlias() {

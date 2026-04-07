@@ -63,7 +63,7 @@ string ErrorData::ConstructFinalMessage() const {
 	if (type == ExceptionType::INTERNAL || type == ExceptionType::FATAL) {
 		error += "\nThis error signals an assertion failure within Goose. This usually occurs due to "
 		         "unexpected conditions or errors in the program's logic.\nFor more information, see "
-		         "https://duckdb.org/docs/stable/dev/internal_errors";
+		         "https://pub.kumose.cc/goose/docs/teg/overview";
 
 		// Ensure that we print the stack trace for internal and fatal exceptions.
 		auto entry = extra_info.find("stack_trace_pointers");

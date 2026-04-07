@@ -17,6 +17,6 @@ namespace goose {
     unique_ptr<CreateInfo> CreatePragmaFunctionInfo::Copy() const {
         auto result = make_uniq<CreatePragmaFunctionInfo>(functions.name, functions);
         CopyFunctionProperties(*result);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

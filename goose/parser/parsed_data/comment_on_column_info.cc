@@ -20,7 +20,7 @@ namespace goose {
     unique_ptr<AlterInfo> SetColumnCommentInfo::Copy() const {
         auto result = make_uniq<SetColumnCommentInfo>(catalog, schema, name, column_name, comment_value, if_not_found);
         result->type = type;
-        return result;
+        return std::move(result);
     }
 
     string SetColumnCommentInfo::ToString() const {

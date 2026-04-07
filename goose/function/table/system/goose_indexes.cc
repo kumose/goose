@@ -88,7 +88,7 @@ namespace goose {
             schema.get().Scan(context, CatalogType::INDEX_ENTRY,
                               [&](CatalogEntry &entry) { result->entries.push_back(entry); });
         };
-        return result;
+        return std::move(result);
     }
 
     Value GetIndexExpressions(IndexCatalogEntry &index) {

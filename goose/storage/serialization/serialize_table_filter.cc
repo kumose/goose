@@ -69,7 +69,7 @@ namespace goose {
         auto result = goose::unique_ptr<ConjunctionAndFilter>(new ConjunctionAndFilter());
         deserializer.ReadPropertyWithDefault<vector<unique_ptr<TableFilter> > >(
             200, "child_filters", result->child_filters);
-        return result;
+        return std::move(result);
     }
 
     void ConjunctionOrFilter::Serialize(Serializer &serializer) const {
@@ -81,7 +81,7 @@ namespace goose {
         auto result = goose::unique_ptr<ConjunctionOrFilter>(new ConjunctionOrFilter());
         deserializer.ReadPropertyWithDefault<vector<unique_ptr<TableFilter> > >(
             200, "child_filters", result->child_filters);
-        return result;
+        return std::move(result);
     }
 
     void ConstantFilter::Serialize(Serializer &serializer) const {
@@ -94,7 +94,7 @@ namespace goose {
         auto comparison_type = deserializer.ReadProperty<ExpressionType>(200, "comparison_type");
         auto constant = deserializer.ReadProperty<Value>(201, "constant");
         auto result = goose::unique_ptr<ConstantFilter>(new ConstantFilter(comparison_type, constant));
-        return result;
+        return std::move(result);
     }
 
     void DynamicFilter::Serialize(Serializer &serializer) const {
@@ -103,7 +103,7 @@ namespace goose {
 
     unique_ptr<TableFilter> DynamicFilter::Deserialize(Deserializer &deserializer) {
         auto result = goose::unique_ptr<DynamicFilter>(new DynamicFilter());
-        return result;
+        return std::move(result);
     }
 
     void ExpressionFilter::Serialize(Serializer &serializer) const {
@@ -114,7 +114,7 @@ namespace goose {
     unique_ptr<TableFilter> ExpressionFilter::Deserialize(Deserializer &deserializer) {
         auto expr = deserializer.ReadPropertyWithDefault<unique_ptr<Expression> >(200, "expr");
         auto result = goose::unique_ptr<ExpressionFilter>(new ExpressionFilter(std::move(expr)));
-        return result;
+        return std::move(result);
     }
 
     void InFilter::Serialize(Serializer &serializer) const {
@@ -125,7 +125,7 @@ namespace goose {
     unique_ptr<TableFilter> InFilter::Deserialize(Deserializer &deserializer) {
         auto values = deserializer.ReadPropertyWithDefault<vector<Value> >(200, "values");
         auto result = goose::unique_ptr<InFilter>(new InFilter(std::move(values)));
-        return result;
+        return std::move(result);
     }
 
     void IsNotNullFilter::Serialize(Serializer &serializer) const {
@@ -134,7 +134,7 @@ namespace goose {
 
     unique_ptr<TableFilter> IsNotNullFilter::Deserialize(Deserializer &deserializer) {
         auto result = goose::unique_ptr<IsNotNullFilter>(new IsNotNullFilter());
-        return result;
+        return std::move(result);
     }
 
     void IsNullFilter::Serialize(Serializer &serializer) const {
@@ -143,7 +143,7 @@ namespace goose {
 
     unique_ptr<TableFilter> IsNullFilter::Deserialize(Deserializer &deserializer) {
         auto result = goose::unique_ptr<IsNullFilter>(new IsNullFilter());
-        return result;
+        return std::move(result);
     }
 
     void OptionalFilter::Serialize(Serializer &serializer) const {
@@ -154,7 +154,7 @@ namespace goose {
     unique_ptr<TableFilter> OptionalFilter::Deserialize(Deserializer &deserializer) {
         auto result = goose::unique_ptr<OptionalFilter>(new OptionalFilter());
         deserializer.ReadPropertyWithDefault<unique_ptr<TableFilter> >(200, "child_filter", result->child_filter);
-        return result;
+        return std::move(result);
     }
 
     void StructFilter::Serialize(Serializer &serializer) const {
@@ -170,6 +170,6 @@ namespace goose {
         auto child_filter = deserializer.ReadPropertyWithDefault<unique_ptr<TableFilter> >(202, "child_filter");
         auto result = goose::unique_ptr<StructFilter>(
             new StructFilter(child_idx, std::move(child_name), std::move(child_filter)));
-        return result;
+        return std::move(result);
     }
 } // namespace goose

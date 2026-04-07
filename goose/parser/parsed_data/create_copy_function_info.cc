@@ -10,6 +10,6 @@ namespace goose {
     unique_ptr<CreateInfo> CreateCopyFunctionInfo::Copy() const {
         auto result = make_uniq<CreateCopyFunctionInfo>(function);
         CopyProperties(*result);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

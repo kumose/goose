@@ -51,7 +51,7 @@ namespace goose {
         auto result = make_uniq<SequenceCatalogEntry>(catalog, schema, cast_info);
         result->data = GetData();
 
-        return result;
+        return std::move(result);
     }
 
     SequenceData SequenceCatalogEntry::GetData() const {
@@ -123,7 +123,7 @@ namespace goose {
         result->dependencies = dependencies;
         result->comment = comment;
         result->tags = tags;
-        return result;
+        return std::move(result);
     }
 
     string SequenceCatalogEntry::ToSQL() const {

@@ -112,7 +112,7 @@ namespace goose {
                 std::move(original_val_for_comparison));
             new_expr->children.push_back(std::move(gt_eq_expr));
             new_expr->children.push_back(std::move(lt_eq_expr));
-            return new_expr;
+            return std::move(new_expr);
         }
         return nullptr;
     }

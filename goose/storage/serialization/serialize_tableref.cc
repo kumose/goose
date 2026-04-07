@@ -88,7 +88,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<vector<string> >(202, "column_name_alias", result->column_name_alias);
         deserializer.ReadPropertyWithDefault<string>(203, "catalog_name", result->catalog_name);
         deserializer.ReadPropertyWithDefault<unique_ptr<AtClause> >(204, "at_clause", result->at_clause);
-        return result;
+        return std::move(result);
     }
 
     void ColumnDataRef::Serialize(Serializer &serializer) const {
@@ -103,7 +103,7 @@ namespace goose {
             202, "collection");
         auto result = goose::unique_ptr<ColumnDataRef>(
             new ColumnDataRef(std::move(collection), std::move(expected_names)));
-        return result;
+        return std::move(result);
     }
 
     void EmptyTableRef::Serialize(Serializer &serializer) const {
@@ -112,7 +112,7 @@ namespace goose {
 
     unique_ptr<TableRef> EmptyTableRef::Deserialize(Deserializer &deserializer) {
         auto result = goose::unique_ptr<EmptyTableRef>(new EmptyTableRef());
-        return result;
+        return std::move(result);
     }
 
     void ExpressionListRef::Serialize(Serializer &serializer) const {
@@ -128,7 +128,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<vector<LogicalType> >(201, "expected_types", result->expected_types);
         deserializer.ReadPropertyWithDefault<vector<vector<unique_ptr<ParsedExpression> > > >(
             202, "values", result->values);
-        return result;
+        return std::move(result);
     }
 
     void JoinRef::Serialize(Serializer &serializer) const {
@@ -159,7 +159,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<vector<unique_ptr<ParsedExpression> > >(
             207, "duplicate_eliminated_columns", result->duplicate_eliminated_columns);
         deserializer.ReadPropertyWithExplicitDefault<bool>(208, "is_implicit", result->is_implicit, true);
-        return result;
+        return std::move(result);
     }
 
     void PivotRef::Serialize(Serializer &serializer) const {
@@ -183,7 +183,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<vector<string> >(204, "groups", result->groups);
         deserializer.ReadPropertyWithDefault<vector<string> >(205, "column_name_alias", result->column_name_alias);
         deserializer.ReadPropertyWithDefault<bool>(206, "include_nulls", result->include_nulls);
-        return result;
+        return std::move(result);
     }
 
     void ShowRef::Serialize(Serializer &serializer) const {
@@ -202,7 +202,7 @@ namespace goose {
         deserializer.ReadProperty<ShowType>(202, "show_type", result->show_type);
         deserializer.ReadPropertyWithDefault<string>(203, "catalog_name", result->catalog_name);
         deserializer.ReadPropertyWithDefault<string>(204, "schema_name", result->schema_name);
-        return result;
+        return std::move(result);
     }
 
     void SubqueryRef::Serialize(Serializer &serializer) const {
@@ -215,7 +215,7 @@ namespace goose {
         auto result = goose::unique_ptr<SubqueryRef>(new SubqueryRef());
         deserializer.ReadPropertyWithDefault<unique_ptr<SelectStatement> >(200, "subquery", result->subquery);
         deserializer.ReadPropertyWithDefault<vector<string> >(201, "column_name_alias", result->column_name_alias);
-        return result;
+        return std::move(result);
     }
 
     void TableFunctionRef::Serialize(Serializer &serializer) const {
@@ -232,6 +232,6 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<vector<string> >(201, "column_name_alias", result->column_name_alias);
         deserializer.ReadPropertyWithExplicitDefault<OrdinalityType>(202, "with_ordinality", result->with_ordinality,
                                                                      OrdinalityType::WITHOUT_ORDINALITY);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

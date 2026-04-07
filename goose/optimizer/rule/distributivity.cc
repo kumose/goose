@@ -109,7 +109,7 @@ namespace goose {
                 if (new_root->children.size() <= 1) {
                     return std::move(new_root->children[0]);
                 } else {
-                    return new_root;
+                    return std::move(new_root);
                 }
             }
         }
@@ -129,6 +129,6 @@ namespace goose {
         if (new_root->children.size() == 1) {
             return std::move(new_root->children[0]);
         }
-        return new_root;
+        return std::move(new_root);
     }
 } // namespace goose

@@ -23,6 +23,6 @@ namespace goose {
     unique_ptr<TableRef> DelimGetRef::Deserialize(Deserializer &deserializer) {
         vector<LogicalType> types = deserializer.ReadProperty<vector<LogicalType> >(105, "chunk_types");
         auto result = goose::unique_ptr<DelimGetRef>(new DelimGetRef(types));
-        return result;
+        return std::move(result);
     }
 } // namespace goose

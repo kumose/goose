@@ -29,7 +29,7 @@ namespace goose {
             result->initial_file_row_groups = initial_file_row_groups;
             result->explicit_cardinality = explicit_cardinality;
             result->options = make_uniq<ParquetFileReaderOptions>(options->options);
-            return result;
+            return std::move(result);
         }
     };
 
@@ -457,7 +457,7 @@ namespace goose {
             result->explicit_cardinality = parquet_options.explicit_cardinality;
             result->initial_file_cardinality = result->explicit_cardinality / (file_count ? file_count : 1);
         }
-        return result;
+        return std::move(result);
     }
 
     void ParquetMultiFileInfo::GetBindInfo(const TableFunctionData &bind_data_p, BindInfo &info) {

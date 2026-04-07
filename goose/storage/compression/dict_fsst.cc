@@ -131,7 +131,7 @@ namespace goose {
             if (stats.GetStatsType() == StatisticsType::STRING_STATS && StringStats::HasMaxStringLength(stats)) {
                 state->all_values_inlined = StringStats::MaxStringLength(stats) <= string_t::INLINE_LENGTH;
             }
-            return state;
+            return std::move(state);
         }
 
         //===--------------------------------------------------------------------===//

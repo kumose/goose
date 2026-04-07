@@ -169,7 +169,7 @@ MainHeader MainHeader::Read(ReadStream &source) {
 		    "The database file was created with %s.\n\n"
 		    "Newer Goose version might introduce backward incompatible changes (possibly guarded by compatibility "
 		    "settings).\n"
-		    "See the storage page for migration strategy and more information: https://duckdb.org/internals/storage",
+		    "See the storage page for migration strategy and more information: https://pub.kumose.cc/goose/docs/teg/storage",
 		    header.version_number, VERSION_NUMBER_LOWER, VERSION_NUMBER_UPPER, version_text);
 	}
 

@@ -91,7 +91,7 @@ namespace goose {
             static unique_ptr<FunctionData> Deserialize(Deserializer &deserializer, AggregateFunction &function) {
                 auto result = make_uniq<ApproximateQuantileBindData>();
                 deserializer.ReadProperty(100, "quantiles", result->quantiles);
-                return result;
+                return std::move(result);
             }
 
             vector<float> quantiles;

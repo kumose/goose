@@ -140,7 +140,7 @@ namespace goose {
             }
             l_state->scan_state.Initialize(l_state->column_ids, context.client, input.filters.get());
             local_storage.InitializeScan(storage, l_state->scan_state.local_state, input.filters);
-            return l_state;
+            return std::move(l_state);
         }
 
         void TableScanFunc(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) override {
@@ -297,7 +297,7 @@ namespace goose {
             }
 
             l_state->scan_state.options.force_fetch_row = ClientConfig::GetConfig(context.client).force_fetch_row;
-            return l_state;
+            return std::move(l_state);
         }
 
         void TableScanFunc(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) override {
@@ -397,7 +397,7 @@ namespace goose {
 
         storage.InitializeParallelScan(context, g_state->state, input.column_indexes);
         if (!input.CanRemoveFilterColumns()) {
-            return g_state;
+            return std::move(g_state);
         }
 
         g_state->projection_ids = input.projection_ids;
@@ -412,7 +412,7 @@ namespace goose {
                 g_state->scanned_types.push_back(columns.GetColumn(col_idx.ToLogical()).Type());
             }
         }
-        return g_state;
+        return std::move(g_state);
     }
 
     unique_ptr<GlobalTableFunctionState> GooseIndexScanInitGlobal(ClientContext &context, TableFunctionInitInput &input,
@@ -455,7 +455,7 @@ namespace goose {
         auto &no_const_bind_data = bind_data.CastNoConst<TableScanBindData>();
         no_const_bind_data.is_index_scan = true;
 
-        return g_state;
+        return std::move(g_state);
     }
 
     bool ExtractComparisonsAndInFilters(TableFilter &filter, vector<reference<ConstantFilter> > &comparisons,
@@ -826,7 +826,7 @@ namespace goose {
         deserializer.ReadProperty(103, "is_index_scan", result->is_index_scan);
         deserializer.ReadProperty(104, "is_create_index", result->is_create_index);
         deserializer.ReadDeletedProperty<unsafe_vector<row_t> >(105, "result_ids");
-        return result;
+        return std::move(result);
     }
 
     static bool TableSupportsPushdownExtract(const FunctionData &bind_data_ref, const LogicalIndex &column_idx) {

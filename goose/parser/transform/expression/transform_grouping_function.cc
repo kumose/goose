@@ -9,6 +9,6 @@ namespace goose {
             op->children.push_back(TransformExpression(n));
         }
         SetQueryLocation(*op, grouping.location);
-        return op;
+        return std::move(op);
     }
 } // namespace goose

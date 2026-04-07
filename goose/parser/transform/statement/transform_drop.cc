@@ -87,7 +87,7 @@ namespace goose {
         }
         info.cascade = stmt.behavior == cantor::PGDropBehavior::PG_DROP_CASCADE;
         info.if_not_found = TransformOnEntryNotFound(stmt.missing_ok);
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<DropStatement> Transformer::TransformDropSecret(cantor::PGDropSecretStmt &stmt) {

@@ -56,7 +56,7 @@ namespace goose {
         result->comment = comment;
         result->tags = tags;
 
-        return result;
+        return std::move(result);
     }
 
     string IndexCatalogEntry::ToSQL() const {

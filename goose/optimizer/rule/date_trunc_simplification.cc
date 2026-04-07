@@ -109,7 +109,7 @@ namespace goose {
                     auto op = make_uniq<
                         BoundOperatorExpression>(ExpressionType::OPERATOR_IS_NULL, LogicalType::BOOLEAN);
                     op->children.push_back(column_part.Copy());
-                    return op;
+                    return std::move(op);
                 } else {
                     if (!is_truncated) {
                         return make_uniq<BoundConstantExpression>(Value::BOOLEAN(false));
@@ -180,7 +180,7 @@ namespace goose {
                             make_uniq<BoundOperatorExpression>(ExpressionType::OPERATOR_IS_NOT_NULL,
                                                                LogicalType::BOOLEAN);
                     op->children.push_back(column_part.Copy());
-                    return op;
+                    return std::move(op);
                 } else {
                     if (!is_truncated) {
                         return make_uniq<BoundConstantExpression>(Value::BOOLEAN(true));

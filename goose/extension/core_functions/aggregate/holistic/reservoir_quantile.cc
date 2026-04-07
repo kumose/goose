@@ -81,7 +81,7 @@ namespace goose {
                 auto result = make_uniq<ReservoirQuantileBindData>();
                 deserializer.ReadProperty(100, "quantiles", result->quantiles);
                 deserializer.ReadProperty(101, "sample_size", result->sample_size);
-                return result;
+                return std::move(result);
             }
 
             vector<double> quantiles;

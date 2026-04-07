@@ -93,7 +93,7 @@ namespace goose {
         auto copy = make_uniq<BoundFunctionExpression>(return_type, function, std::move(new_children),
                                                        std::move(new_bind_info), is_operator);
         copy->CopyProperties(*this);
-        return copy;
+        return std::move(copy);
     }
 
     void BoundFunctionExpression::Verify() const {
@@ -137,6 +137,6 @@ namespace goose {
             auto &context = deserializer.Get<ClientContext &>();
             return BoundCastExpression::AddCastToType(context, std::move(result), return_type);
         }
-        return result;
+        return std::move(result);
     }
 } // namespace goose

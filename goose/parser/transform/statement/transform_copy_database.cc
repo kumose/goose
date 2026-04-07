@@ -21,7 +21,7 @@ namespace goose {
             result->info->name = "copy_database";
             result->info->parameters.emplace_back(make_uniq<ConstantExpression>(Value(stmt.from_database)));
             result->info->parameters.emplace_back(make_uniq<ConstantExpression>(Value(stmt.to_database)));
-            return result;
+            return std::move(result);
         }
     }
 } // namespace goose

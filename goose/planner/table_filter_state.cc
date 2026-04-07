@@ -50,7 +50,7 @@ namespace goose {
                 for (auto &child_filter: conj_filter.child_filters) {
                     result->child_states.push_back(Initialize(context, *child_filter));
                 }
-                return result;
+                return std::move(result);
             }
             case TableFilterType::CONJUNCTION_AND: {
                 auto &conj_filter = filter.Cast<ConjunctionAndFilter>();
@@ -58,7 +58,7 @@ namespace goose {
                 for (auto &child_filter: conj_filter.child_filters) {
                     result->child_states.push_back(Initialize(context, *child_filter));
                 }
-                return result;
+                return std::move(result);
             }
             case TableFilterType::EXPRESSION_FILTER: {
                 auto &expr_filter = filter.Cast<ExpressionFilter>();

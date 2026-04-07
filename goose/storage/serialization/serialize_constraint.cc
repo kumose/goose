@@ -42,7 +42,7 @@ namespace goose {
     unique_ptr<Constraint> CheckConstraint::Deserialize(Deserializer &deserializer) {
         auto expression = deserializer.ReadPropertyWithDefault<unique_ptr<ParsedExpression> >(200, "expression");
         auto result = goose::unique_ptr<CheckConstraint>(new CheckConstraint(std::move(expression)));
-        return result;
+        return std::move(result);
     }
 
     void ForeignKeyConstraint::Serialize(Serializer &serializer) const {
@@ -65,7 +65,7 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<string>(204, "table", result->info.table);
         deserializer.ReadPropertyWithDefault<vector<PhysicalIndex> >(205, "pk_keys", result->info.pk_keys);
         deserializer.ReadPropertyWithDefault<vector<PhysicalIndex> >(206, "fk_keys", result->info.fk_keys);
-        return result;
+        return std::move(result);
     }
 
     void NotNullConstraint::Serialize(Serializer &serializer) const {
@@ -76,7 +76,7 @@ namespace goose {
     unique_ptr<Constraint> NotNullConstraint::Deserialize(Deserializer &deserializer) {
         auto index = deserializer.ReadProperty<LogicalIndex>(200, "index");
         auto result = goose::unique_ptr<NotNullConstraint>(new NotNullConstraint(index));
-        return result;
+        return std::move(result);
     }
 
     void UniqueConstraint::Serialize(Serializer &serializer) const {
@@ -91,6 +91,6 @@ namespace goose {
         deserializer.ReadPropertyWithDefault<bool>(200, "is_primary_key", result->is_primary_key);
         deserializer.ReadProperty<LogicalIndex>(201, "index", result->index);
         deserializer.ReadPropertyWithDefault<vector<string> >(202, "columns", result->columns);
-        return result;
+        return std::move(result);
     }
 } // namespace goose

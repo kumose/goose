@@ -26,7 +26,7 @@ namespace goose {
         for (auto &child_writer: child_writers) {
             result->child_states.push_back(child_writer->InitializeWriteState(row_group));
         }
-        return result;
+        return std::move(result);
     }
 
     bool StructColumnWriter::HasAnalyze() {

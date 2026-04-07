@@ -86,7 +86,7 @@ namespace goose {
                 for (auto &entry: using_binding->bindings) {
                     coalesce->children.push_back(make_uniq<ColumnRefExpression>(column_name, entry));
                 }
-                return coalesce;
+                return std::move(coalesce);
             }
         }
 
@@ -246,7 +246,7 @@ namespace goose {
         children.push_back(std::move(base));
         children.push_back(make_uniq_base<ParsedExpression, ConstantExpression>(Value(field_name)));
         auto extract_fun = make_uniq<OperatorExpression>(ExpressionType::STRUCT_EXTRACT, std::move(children));
-        return extract_fun;
+        return std::move(extract_fun);
     }
 
     unique_ptr<ParsedExpression> ExpressionBinder::CreateStructPack(ColumnRefExpression &col_ref) {

@@ -58,7 +58,7 @@ namespace goose {
         result->types = types;
         result->column_comments = column_comments;
         result->query = unique_ptr_cast<SQLStatement, SelectStatement>(query->Copy());
-        return result;
+        return std::move(result);
     }
 
     unique_ptr<SelectStatement> CreateViewInfo::ParseSelect(const string &sql) {

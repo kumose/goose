@@ -27,7 +27,7 @@ namespace goose {
         if (database_result.HasResult()) {
             result->database = transformer.Transform<string>(database_result.optional_result);
         }
-        return result;
+        return std::move(result);
     }
 
     string PEGTransformerFactory::TransformExportSource(PEGTransformer &transformer,

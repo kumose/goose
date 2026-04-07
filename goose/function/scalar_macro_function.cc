@@ -41,7 +41,7 @@ unique_ptr<MacroFunction> ScalarMacroFunction::Copy() const {
 	result->expression = expression->Copy();
 	CopyProperties(*result);
 
-	return result;
+	return std::move(result);
 }
 
 void RemoveQualificationRecursive(unique_ptr<ParsedExpression> &root_expr) {
