@@ -30,10 +30,10 @@ namespace goose {
         }
     };
 
-    struct ICUCalendarSub : public ICUDateFunc {
+    struct ICUCalendarSubOperation : public ICUDateFunc {
         template<class TA, class TB, class TR>
         static inline TR Operation(TA left, TB right, TZCalendar &calendar_p) {
-            throw InternalException("Unimplemented type for ICUCalendarSub");
+            throw InternalException("Unimplemented type for ICUCalendarSubOperation");
         }
     };
 
@@ -141,13 +141,13 @@ namespace goose {
     }
 
     template<>
-    timestamp_t ICUCalendarSub::Operation(timestamp_t timestamp, interval_t interval, TZCalendar &calendar) {
+    timestamp_t ICUCalendarSubOperation::Operation(timestamp_t timestamp, interval_t interval, TZCalendar &calendar) {
         const interval_t negated{-interval.months, -interval.days, -interval.micros};
         return ICUCalendarAdd::template Operation<timestamp_t, interval_t, timestamp_t>(timestamp, negated, calendar);
     }
 
     template<>
-    interval_t ICUCalendarSub::Operation(timestamp_t end_date, timestamp_t start_date, TZCalendar &calendar_p) {
+    interval_t ICUCalendarSubOperation::Operation(timestamp_t end_date, timestamp_t start_date, TZCalendar &calendar_p) {
         if (!Timestamp::IsFinite(end_date) || !Timestamp::IsFinite(start_date)) {
             throw InvalidInputException("Cannot subtract infinite timestamps");
         }
@@ -296,11 +296,11 @@ namespace goose {
         static void AddDateSubOperators(const string &name, ExtensionLoader &loader) {
             //	temporal - interval
             ScalarFunctionSet set(name);
-            set.AddFunction(GetDateAddFunction<timestamp_t, interval_t, ICUCalendarSub>(LogicalType::TIMESTAMP_TZ,
+            set.AddFunction(GetDateAddFunction<timestamp_t, interval_t, ICUCalendarSubOperation>(LogicalType::TIMESTAMP_TZ,
                 LogicalType::INTERVAL));
 
             //	temporal - temporal
-            set.AddFunction(GetBinaryAgeFunction<timestamp_t, timestamp_t, ICUCalendarSub>(LogicalType::TIMESTAMP_TZ,
+            set.AddFunction(GetBinaryAgeFunction<timestamp_t, timestamp_t, ICUCalendarSubOperation>(LogicalType::TIMESTAMP_TZ,
                 LogicalType::TIMESTAMP_TZ));
             loader.RegisterFunction(set);
         }
@@ -320,11 +320,11 @@ namespace goose {
     }
 
     timestamp_t ICUDateFunc::Sub(TZCalendar &calendar, timestamp_t timestamp, interval_t interval) {
-        return ICUCalendarSub::Operation<timestamp_t, interval_t, timestamp_t>(timestamp, interval, calendar);
+        return ICUCalendarSubOperation::Operation<timestamp_t, interval_t, timestamp_t>(timestamp, interval, calendar);
     }
 
     interval_t ICUDateFunc::Sub(TZCalendar &calendar, timestamp_t end_date, timestamp_t start_date) {
-        return ICUCalendarSub::Operation<timestamp_t, timestamp_t, interval_t>(end_date, start_date, calendar);
+        return ICUCalendarSubOperation::Operation<timestamp_t, timestamp_t, interval_t>(end_date, start_date, calendar);
     }
 
     void RegisterICUDateAddFunctions(ExtensionLoader &loader) {

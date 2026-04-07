@@ -510,7 +510,7 @@ static uint64_t ValueXH64FixedWidth(const Value &constant) {
 	return goose::XXH64(&val, sizeof(val), 0);
 }
 
-// TODO we can only this if the parquet representation of the type exactly matches the duckdb rep!
+// TODO we can only this if the parquet representation of the type exactly matches the goose rep!
 // TODO TEST THIS!
 // TODO perhaps we can re-use some writer infra here
 static uint64_t ValueXXH64(const Value &constant) {

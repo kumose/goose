@@ -39,6 +39,10 @@ file(GLOB_RECURSE transaction_SRC "transaction/*.cc")
 file(GLOB_RECURSE utility_SRC "utility/*.cc")
 file(GLOB_RECURSE verification_SRC "verification/*.cc")
 
+include_directories(include)
+
+file(GLOB_RECURSE HEADERS "include/*.h" "include/*.hpp" "include/*.inc")
+
 set(LIB_SRC
         ${CATALOG_SRC}
         ${COMMON_SRC}
@@ -95,9 +99,12 @@ kmcmake_cc_library(
         ${KMCMAKE_CXX_OPTIONS}
         INCLUDES
         ${EXT_INCLUDES}
+        SHARE
+            ${ENABLE_SHARE_LIB}
         PLINKS
         ${KMCMAKE_DEPS_LINK}
         PUBLIC
+        UNITY
 )
 
 file(GLOB_RECURSE shell_SRC "shell/*.cc")
@@ -146,6 +153,8 @@ kmcmake_cc_library(
         ${testing_SRC}
         CXXOPTS
         ${KMCMAKE_CXX_OPTIONS}
+        SHARE
+        ${ENABLE_SHARE_LIB}
         PLINKS
         ${KMCMAKE_DEPS_LINK}
         PUBLIC
@@ -159,7 +168,7 @@ add_subdirectory(extension/httpfs)
 
 kmcmake_cc_binary(
         NAMESPACE ${PROJECT_NAME}
-        NAME ksql
+        NAME goose
         SOURCES
         shell/shell.cc
         CXXOPTS
@@ -179,6 +188,4 @@ kmcmake_cc_binary(
 
 ##############################################
 # header installing
-#############################################
-file(GLOB_RECURSE ALL_HEADER "*.h" "*.inc" ".hpp")
-install(FILES ${ALL_HEADER} DESTINATION  ${CMAKE_INSTALL_INCLUDEDIR}/goose)
+##############################################

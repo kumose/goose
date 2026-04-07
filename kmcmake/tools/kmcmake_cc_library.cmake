@@ -56,9 +56,11 @@ function(kmcmake_cc_library)
     set(options
             PUBLIC
             EXCLUDE_SYSTEM
+            UNITY
     )
     set(args NAME
             NAMESPACE
+            SHARE
     )
 
     set(list_args
@@ -94,6 +96,11 @@ function(kmcmake_cc_library)
     if ("${KMCMAKE_CC_LIB_NAMESPACE}" STREQUAL "")
         set(KMCMAKE_CC_LIB_NAMESPACE ${PROJECT_NAME})
         kmcmake_print(" Library, NAMESPACE argument not provided. Using target alias:  ${KMCMAKE_CC_LIB_NAME}::${KMCMAKE_CC_LIB_NAME}")
+    endif ()
+
+    set(__ENABLE_SHARE OFF)
+    if ("${KMCMAKE_CC_LIB_SHARE}" STREQUAL "ON")
+        set(__ENABLE_SHARE ON)
     endif ()
 
     kmcmake_raw("-----------------------------------")
@@ -136,6 +143,20 @@ function(kmcmake_cc_library)
         if (KMCMAKE_CC_LIB_DEPS)
             add_dependencies(${KMCMAKE_CC_LIB_NAME}_OBJECT ${KMCMAKE_CC_LIB_DEPS})
         endif ()
+        if (KMCMAKE_CC_LIB_UNITY)
+            set_target_properties(${KMCMAKE_CC_LIB_NAME}_OBJECT PROPERTIES
+                    UNITY_BUILD ON
+                    UNITY_BUILD_BATCH_SIZE 20
+            )
+        endif ()
+        if (KMCMAKE_CC_LIB_HEADERS)
+            target_precompile_headers(${KMCMAKE_CC_LIB_NAME}_OBJECT PUBLIC
+                    <vector>
+                    <string>
+                    ${KMCMAKE_CC_LIB_HEADERS}
+            )
+        endif ()
+
         set_property(TARGET ${KMCMAKE_CC_LIB_NAME}_OBJECT PROPERTY POSITION_INDEPENDENT_CODE 1)
         target_compile_options(${KMCMAKE_CC_LIB_NAME}_OBJECT PRIVATE $<$<COMPILE_LANGUAGE:C>:${KMCMAKE_CC_LIB_COPTS}>)
         target_compile_options(${KMCMAKE_CC_LIB_NAME}_OBJECT PRIVATE $<$<COMPILE_LANGUAGE:CXX>:${KMCMAKE_CC_LIB_CXXOPTS}>)
@@ -176,40 +197,51 @@ function(kmcmake_cc_library)
             OUTPUT_NAME ${KMCMAKE_CC_LIB_NAME})
     add_library(${KMCMAKE_CC_LIB_NAMESPACE}::${KMCMAKE_CC_LIB_NAME}_static ALIAS ${KMCMAKE_CC_LIB_NAME}_static)
     target_include_directories(${KMCMAKE_CC_LIB_NAME}_static INTERFACE
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-)
-
-    add_library(${KMCMAKE_CC_LIB_NAME}_shared SHARED ${KMCMAKE_CC_LIB_OBJECTS_FLATTEN})
-    if (${KMCMAKE_CC_LIB_NAME}_OBJECT)
-        add_dependencies(${KMCMAKE_CC_LIB_NAME}_shared ${KMCMAKE_CC_LIB_NAME}_OBJECT)
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    )
+    if (__ENABLE_SHARE)
+        add_library(${KMCMAKE_CC_LIB_NAME}_shared SHARED ${KMCMAKE_CC_LIB_OBJECTS_FLATTEN})
+        if (${KMCMAKE_CC_LIB_NAME}_OBJECT)
+            add_dependencies(${KMCMAKE_CC_LIB_NAME}_shared ${KMCMAKE_CC_LIB_NAME}_OBJECT)
+        endif ()
+        if (KMCMAKE_CC_LIB_DEPS)
+            add_dependencies(${KMCMAKE_CC_LIB_NAME}_shared ${KMCMAKE_CC_LIB_DEPS})
+        endif ()
+        target_link_libraries(${KMCMAKE_CC_LIB_NAME}_shared PRIVATE ${KMCMAKE_CC_LIB_PLINKS})
+        target_link_libraries(${KMCMAKE_CC_LIB_NAME}_shared PUBLIC ${KMCMAKE_CC_LIB_LINKS})
+        foreach (link ${KMCMAKE_CC_LIB_WLINKS})
+            target_link_libraries(${KMCMAKE_CC_LIB_NAME}_shared PRIVATE $<LINK_LIBRARY:WHOLE_ARCHIVE,${link}>)
+        endforeach ()
+        set_target_properties(${KMCMAKE_CC_LIB_NAME}_shared PROPERTIES
+                OUTPUT_NAME ${KMCMAKE_CC_LIB_NAME}
+                VERSION ${${PROJECT_NAME}_VERSION}
+                SOVERSION ${${PROJECT_NAME}_VERSION_MAJOR})
+        add_library(${KMCMAKE_CC_LIB_NAMESPACE}::${KMCMAKE_CC_LIB_NAME} ALIAS ${KMCMAKE_CC_LIB_NAME}_shared)
+        target_include_directories(${KMCMAKE_CC_LIB_NAME}_shared INTERFACE
+                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+                $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+        )
     endif ()
-    if (KMCMAKE_CC_LIB_DEPS)
-        add_dependencies(${KMCMAKE_CC_LIB_NAME}_shared ${KMCMAKE_CC_LIB_DEPS})
-    endif ()
-    target_link_libraries(${KMCMAKE_CC_LIB_NAME}_shared PRIVATE ${KMCMAKE_CC_LIB_PLINKS})
-    target_link_libraries(${KMCMAKE_CC_LIB_NAME}_shared PUBLIC ${KMCMAKE_CC_LIB_LINKS})
-    foreach (link ${KMCMAKE_CC_LIB_WLINKS})
-        target_link_libraries(${KMCMAKE_CC_LIB_NAME}_shared PRIVATE $<LINK_LIBRARY:WHOLE_ARCHIVE,${link}>)
-    endforeach ()
-    set_target_properties(${KMCMAKE_CC_LIB_NAME}_shared PROPERTIES
-            OUTPUT_NAME ${KMCMAKE_CC_LIB_NAME}
-            VERSION ${${PROJECT_NAME}_VERSION}
-            SOVERSION ${${PROJECT_NAME}_VERSION_MAJOR})
-    add_library(${KMCMAKE_CC_LIB_NAMESPACE}::${KMCMAKE_CC_LIB_NAME} ALIAS ${KMCMAKE_CC_LIB_NAME}_shared)
-    target_include_directories(${KMCMAKE_CC_LIB_NAME}_shared INTERFACE
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-)
 
     if (KMCMAKE_CC_LIB_PUBLIC)
-        install(TARGETS ${KMCMAKE_CC_LIB_NAME}_shared ${KMCMAKE_CC_LIB_NAME}_static
-                EXPORT ${PROJECT_NAME}Targets
-                RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-        )
+        if (__ENABLE_SHARE)
+            install(TARGETS ${KMCMAKE_CC_LIB_NAME}_shared ${KMCMAKE_CC_LIB_NAME}_static
+                    EXPORT ${PROJECT_NAME}Targets
+                    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+                    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            )
+        else ()
+            install(TARGETS ${KMCMAKE_CC_LIB_NAME}_static
+                    EXPORT ${PROJECT_NAME}Targets
+                    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+                    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            )
+        endif ()
     endif ()
 
     foreach (arg IN LISTS KMCMAKE_CC_LIB_UNPARSED_ARGUMENTS)

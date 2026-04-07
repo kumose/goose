@@ -1872,9 +1872,9 @@ namespace goose {
         auto tmpdir = GetTemporaryDirectory();
         string temporary_file_name;
 #ifndef WIN32
-        temporary_file_name = tmpdir + "/duckdb.edit." + std::to_string(getpid()) + ".sql";
+        temporary_file_name = tmpdir + "/goose.edit." + std::to_string(getpid()) + ".sql";
 #else
-        temporary_file_name = tmpdir + "duckdb.edit." + std::to_string(getpid()) + ".sql";
+        temporary_file_name = tmpdir + "goose.edit." + std::to_string(getpid()) + ".sql";
 #endif
 
         FILE *f = fopen(temporary_file_name.c_str(), "w+");

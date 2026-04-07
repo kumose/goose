@@ -504,7 +504,7 @@ int16_t ParquetCrypto::GetFinalPageOrdinal(const ColumnChunk &chunk, uint8_t mod
 
 void ParquetCrypto::GenerateAdditionalAuthenticatedData(Allocator &allocator, CryptoMetaData &aad_crypto_metadata) {
 	if (aad_crypto_metadata.IsEmpty()) {
-		// no aad, old duckdb-parquet crypto implementation
+		// no aad, old goose-parquet crypto implementation
 		aad_crypto_metadata.ClearAdditionalAuthenticatedData();
 		return;
 	}
@@ -560,7 +560,7 @@ void CryptoMetaData::Initialize(const std::string &unique_file_identifier_p, int
                                 int16_t column_ordinal_p, int8_t module_p, int16_t page_ordinal_p) {
 	if (unique_file_identifier_p.empty()) {
 		// aad not used for encryption
-		// this happens with old duckdb-parquet encryption
+		// this happens with old goose-parquet encryption
 		return;
 	}
 	unique_file_identifier = unique_file_identifier_p;

@@ -370,7 +370,7 @@ OutOfMemoryException::OutOfMemoryException(const string &msg)
 }
 
 string OutOfMemoryException::ExtendOutOfMemoryError(const string &msg) {
-	string link = "https://duckdb.org/docs/stable/guides/performance/how_to_tune_workloads";
+	string link = "https://pub.kumose.cc/goose/docs/guides/performance/how_to_tune_workloads";
 	if (StringUtil::Contains(msg, link)) {
 		// already extended
 		return msg;

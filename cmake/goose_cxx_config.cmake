@@ -448,5 +448,6 @@ set(KMCMAKE_CXX_OPTIONS ${KMCMAKE_DEFAULT_COPTS} ${KMCMAKE_ARCH_OPTION} ${KMCMAK
 # define you options here
 # eg.
 # list(APPEND KMCMAKE_CXX_OPTIONS "-fopenmp")
+list(APPEND KMCMAKE_CXX_OPTIONS "-Wno-pessimizing-move" "-Wno-unknown-pragmas")
 list(REMOVE_DUPLICATES KMCMAKE_CXX_OPTIONS)
 kmcmake_print_list_label("CXX_OPTIONS:" KMCMAKE_CXX_OPTIONS)

@@ -35,6 +35,7 @@ kmcmake_cc_test(
 )
 ]]
 
+include_directories(${PROJECT_SOURCE_DIR}/goose/include)
 set(UNITTEST_ROOT_DIRECTORY
         ""
         CACHE
