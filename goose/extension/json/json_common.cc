@@ -232,7 +232,7 @@ JSONPathType JSONCommon::ValidatePath(const char *ptr, const idx_t &len, const b
 			break;
 		}
 		case '[': { // Array index
-			idx_t array_index;
+			idx_t array_index = 0;
 			bool from_back;
 			if (!ReadArrayIndex(ptr, end, array_index, from_back)) {
 				ThrowPathError(ptr, end, binder);

@@ -1,10 +1,25 @@
-cmake_minimum_required(VERSION 2.8.12...3.29)
-project(example-c++)
+#
+# Copyright 2023 The titan-search Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-set(CMAKE_CXX_STANDARD 11)
-
-include_directories(${PROJECT_SOURCE_DIR}/src/include)
-link_directories(${PROJECT_SOURCE_DIR}/build/release/src)
-
-add_executable(example main.cc)
-target_link_libraries(example goose)
+kmcmake_cc_binary(
+        NAME foo_ex
+        SOURCES main.cc
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        LINKS
+        ${PROJECT_NAME}::foo
+        ${KMCMAKE_DEPS_LINK}
+)

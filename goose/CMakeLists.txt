@@ -165,6 +165,8 @@ kmcmake_cc_library(
 add_subdirectory(extension/autocomplete)
 add_subdirectory(extension/vss)
 add_subdirectory(extension/httpfs)
+add_subdirectory(extension/tpch)
+add_subdirectory(extension/tpcds)
 
 kmcmake_cc_binary(
         NAMESPACE ${PROJECT_NAME}

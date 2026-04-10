@@ -376,7 +376,7 @@ static LogicalType SetShreddedType(const LogicalType &typed_value) {
 
 bool VariantShreddingStats::GetShreddedTypeInternal(const VariantColumnStatsData &column, LogicalType &out_type) const {
 	idx_t max_count = 0;
-	uint8_t type_index;
+	uint8_t type_index = 0;
 	if (column.type_counts[0] == column.total_count) {
 		//! All NULL, emit INT32
 		out_type = SetShreddedType(LogicalTypeId::INTEGER);
@@ -587,6 +587,7 @@ void GooseVariantShredding::WriteVariantValues(UnifiedVariantVectorData &variant
 	auto &child_types = StructType::GetChildTypes(result_type);
 	auto &child_vectors = StructVector::GetEntries(result);
 	D_ASSERT(child_types.size() == child_vectors.size());
+	TURBO_UNUSED(child_types);
 
 	auto &untyped_value_index = *child_vectors[0];
 	auto &typed_value = *child_vectors[1];

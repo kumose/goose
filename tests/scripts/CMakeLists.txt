@@ -23,5 +23,7 @@ kmcmake_cc_test(
         goose::goose_testing_static
         goose::goose_static
         goose::goose_vss
+        goose::goose_tpch
+        goose::goose_tpcds
         ${KMCMAKE_DEPS_LINK}
 )
