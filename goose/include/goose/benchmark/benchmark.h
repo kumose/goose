@@ -112,4 +112,6 @@ namespace goose {
             return config.timeout_duration;
         }
     };
+
+
 } // namespace goose

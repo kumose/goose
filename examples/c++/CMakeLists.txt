@@ -20,6 +20,6 @@ kmcmake_cc_binary(
         CXXOPTS
         ${KMCMAKE_CXX_OPTIONS}
         LINKS
-        ${PROJECT_NAME}::foo
+        ${PROJECT_NAME}::goose_static
         ${KMCMAKE_DEPS_LINK}
 )

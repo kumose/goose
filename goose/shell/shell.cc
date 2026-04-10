@@ -39,11 +39,6 @@ namespace goose {
                 return ExtensionLoadResult::LOADED_EXTENSION;
             });
         TURBO_UNUSED(rs);
-        rs = enable_extension_autoload("tpch", [](Goose &db) {
-                db.LoadStaticExtension<VssExtension>();
-                return ExtensionLoadResult::LOADED_EXTENSION;
-            });
-        TURBO_UNUSED(rs);
     }
 } // namespace goose
 

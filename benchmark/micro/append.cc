@@ -1,5 +1,5 @@
 #include <goose/benchmark/benchmark_runner.h>
-#include "goose_benchmark_macro.hpp"
+#include <goose/benchmark/goose_benchmark_macro.h>
 #include <goose/main/appender.h>
 
 using namespace goose;
@@ -65,7 +65,7 @@ struct GoosePreparedState : public GooseBenchmarkState {
 #define APPEND_BENCHMARK_PREPARED(CREATE_STATEMENT)                                                                    \
 	goose::unique_ptr<GooseBenchmarkState> CreateBenchmarkState() override {                                         \
 		auto result = make_uniq<GoosePreparedState>(GetDatabasePath());                                               \
-		return result;                                                                                      \
+		return std::move(result);                                                                                      \
 	}                                                                                                                  \
 	void Load(GooseBenchmarkState *state_p) override {                                                                \
 		auto state = (GoosePreparedState *)state_p;                                                                   \

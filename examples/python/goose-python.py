@@ -1,5 +1,9 @@
 import goose
 
+##########################################################
+# run this demo need install goose
+# pip install goose-ir
+##########################################################
 # basic SQL API
 
 # connect to an in-memory temporary database

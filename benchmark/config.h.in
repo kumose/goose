@@ -20,6 +20,6 @@
 namespace testing {
 
     inline std::string benchmark_root() {
-        return "@PROJECT_SOURCE_DIR@/benchmark";
+        return "@GOOSE_ROOT_DIRECTORY@";
     }
 }  // namespace testing
