@@ -230,6 +230,7 @@ namespace goose {
 
     void VariantStats::Deserialize(Deserializer &deserializer, BaseStatistics &base) {
         auto &type = base.GetType();
+        TURBO_UNUSED(type);
         D_ASSERT(type.InternalType() == PhysicalType::STRUCT);
         D_ASSERT(type.id() == LogicalTypeId::VARIANT);
         auto &data = GetDataUnsafe(base);
@@ -498,8 +499,8 @@ namespace goose {
     void VariantStats::Copy(BaseStatistics &stats, const BaseStatistics &other) {
         auto &other_data = VariantStats::GetDataUnsafe(other);
         auto &data = VariantStats::GetDataUnsafe(stats);
-        (void) data;
-
+        TURBO_UNUSED(other_data);
+        TURBO_UNUSED(data);
         //! This is ensured by the CopyBase method of BaseStatistics
         D_ASSERT(data.shredding_state == other_data.shredding_state);
         stats.child_stats[0].Copy(other.child_stats[0]);

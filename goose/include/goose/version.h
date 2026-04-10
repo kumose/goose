@@ -42,7 +42,7 @@
 #define GOOSE_CMAKE_CXX_COMPILER_FLAGS ""
 
 // user defined cxx compiler flags
-#define GOOSE_CXX_COMPILER_FLAGS "-Wall;-Wextra;-Wno-cast-qual;-Wconversion-null;-Wformat-security;-Woverlength-strings;-Wpointer-arith;-Wno-undef;-Wunused-local-typedefs;-Wunused-result;-Wvarargs;-Wno-attributes;-Wno-implicit-fallthrough;-Wno-unused-parameter;-Wno-unused-function;-Wwrite-strings;-Wclass-memaccess;-Wno-sign-compare;-DNOMINMAX;-msse;-msse2;-msse3;-mssse3;-msse4.1;-msse4;-msse4.2;-mpopcnt;-mlzcnt;-mavx;-mavx2;-mfma;-maes;-Wno-pessimizing-move;-Wno-unknown-pragmas"
+#define GOOSE_CXX_COMPILER_FLAGS "-Wall;-Wextra;-Wno-cast-qual;-Wconversion-null;-Wformat-security;-Woverlength-strings;-Wpointer-arith;-Wno-undef;-Wunused-local-typedefs;-Wunused-result;-Wvarargs;-Wno-attributes;-Wno-implicit-fallthrough;-Wno-unused-parameter;-Wno-unused-function;-Wwrite-strings;-Wclass-memaccess;-Wno-sign-compare;-DNOMINMAX;-msse;-msse2;-msse3;-mssse3;-msse4.1;-msse4;-msse4.2;-mpopcnt;-mlzcnt;-mavx;-mavx2;-mfma;-maes;-Wno-pessimizing-move;-Wno-unknown-pragmas;-Wno-redundant-move"
 
 // cxx standard
 #define GOOSE_CXX_STANDARD "17"
@@ -79,13 +79,13 @@
 /// Git Version Information
 ////////////////////////////////////////////////////////////////////////////////
 // Full Git commit hash (e.g., "a1b2c3d4e5f67890abcdef1234567890abcdef12")
-#define GOOSE_GIT_COMMIT_HASH "a235664df6e43ca309782023c1a9ef65c759573c"
+#define GOOSE_GIT_COMMIT_HASH "853ff5688afd9b90d8af890b47e16fc6262a45f3"
 // Short Git commit hash (e.g., "a1b2c3d")
-#define GOOSE_GIT_COMMIT_SHORT_HASH "a235664d"
+#define GOOSE_GIT_COMMIT_SHORT_HASH "853ff568"
 // Git dirty flag (0 = clean working tree, 1 = uncommitted changes)
 #define GOOSE_GIT_IS_DIRTY 1
 // Combined Git version string (e.g., "0.6.0-a1b2c3d" or "0.6.0-a1b2c3d-dirty")
-#define GOOSE_GIT_VERSION_STRING "v0.6.21-a235664d-dirty"
+#define GOOSE_GIT_VERSION_STRING "v0.6.21-853ff568-dirty"
 
 #define GOOSE_CUSTOM_PLATFORM_ENABLE 0
 

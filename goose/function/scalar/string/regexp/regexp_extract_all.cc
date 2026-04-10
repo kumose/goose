@@ -292,6 +292,7 @@ void RegexpExtractAllStruct::Execute(DataChunk &args, ExpressionState &state, Ve
 	auto &func_expr = state.expr.Cast<BoundFunctionExpression>();
 	const auto &info = func_expr.bind_info->Cast<RegexpExtractAllStructBindData>();
 	// Struct multi-match variant only supports constant pattern (enforced in Bind)
+	TURBO_UNUSED(info);
 	D_ASSERT(info.constant_pattern);
 
 	// Expect arguments: string, pattern, list_of_group_names [, options]
