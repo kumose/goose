@@ -18,12 +18,12 @@
 // project name version
 #define GOOSE_VERSION_MAJOR 0
 #define GOOSE_VERSION_MINOR 6
-#define GOOSE_VERSION_PATCH 10
+#define GOOSE_VERSION_PATCH 20
 #define GOOSE_VERSION ((PROJECT_VERSION_MAJOR * 1000) + PROJECT_VERSION_MINOR) * 1000 + PROJECT_VERSION_PATCH
 
-#define GOOSE_VERSION_STRING "0.6.10"
+#define GOOSE_VERSION_STRING "0.6.20"
 /// like v0.12.3
-#define GOOSE_VERSION_STRING_V "v0.6.10"
+#define GOOSE_VERSION_STRING_V "v0.6.20"
 
 // build system
 #define GOOSE_BUILD_SYSTEM "ubuntu 20.04.6 lts"
@@ -79,13 +79,13 @@
 /// Git Version Information
 ////////////////////////////////////////////////////////////////////////////////
 // Full Git commit hash (e.g., "a1b2c3d4e5f67890abcdef1234567890abcdef12")
-#define GOOSE_GIT_COMMIT_HASH "35f92ad653d27917d456c3d087448179dc8d5dd9"
+#define GOOSE_GIT_COMMIT_HASH "432e2f03eaf50fac2220bce528ac1e643257fab2"
 // Short Git commit hash (e.g., "a1b2c3d")
-#define GOOSE_GIT_COMMIT_SHORT_HASH "35f92ad6"
+#define GOOSE_GIT_COMMIT_SHORT_HASH "432e2f03"
 // Git dirty flag (0 = clean working tree, 1 = uncommitted changes)
 #define GOOSE_GIT_IS_DIRTY 1
 // Combined Git version string (e.g., "0.6.0-a1b2c3d" or "0.6.0-a1b2c3d-dirty")
-#define GOOSE_GIT_VERSION_STRING "v0.6.12-35f92ad6-dirty"
+#define GOOSE_GIT_VERSION_STRING "v0.6.20-432e2f03-dirty"
 
 #define GOOSE_CUSTOM_PLATFORM_ENABLE 0
 
