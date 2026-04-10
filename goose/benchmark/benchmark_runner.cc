@@ -31,7 +31,22 @@
 #include <sstream>
 #include <thread>
 
+namespace goose {
+
+    static std::string benchmark_root;
+
+    void set_benchmark_directory(const std::string &test_directory) {
+        benchmark_root = test_directory;
+    }
+
+    const std::string &get_benchmark_directory() {
+        return benchmark_root;
+    }
+}  // namespace goose
+
 using namespace goose;
+
+
 
 void BenchmarkRunner::RegisterBenchmark(Benchmark *benchmark) {
     GetInstance().benchmarks.push_back(benchmark);
@@ -269,7 +284,7 @@ string parse_root_dir_or_default(const int arg_counter, char const *const *arg_v
         }
     }
     // default root directory is the duckdb root directory
-    return GOOSE_ROOT_DIRECTORY;
+    return get_benchmark_directory();
 }
 
 /**
@@ -424,6 +439,7 @@ void print_error_message(const ConfigurationError &error) {
 }
 
 int main(int argc, char **argv) {
+    init_goose_benchmark();
     goose::unique_ptr<FileSystem> fs = FileSystem::CreateLocal();
     // Set the working directory. We need to scan this before loading the benchmarks or parsing the other arguments
     string root_dir = parse_root_dir_or_default(argc, argv, *fs);

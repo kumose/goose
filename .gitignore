@@ -358,5 +358,9 @@ extension_external
 
 tests/sql/sql/pragma/output.json
 tools/pythonpkg/goose_build/
-goose/version.h
+goose/include/goose/version.h
+benchmark/config.h
 1.txt
+integers.csv
+__pycache__
+

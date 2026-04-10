@@ -8,7 +8,9 @@
 #include <goose/testing/test_config.h>
 #include <goose/testing/scripts_runner.h>
 #include <goose/testing/goose_testing_main.h>
-#include  <goose/extension/vss/vss_extension.h>
+#include <goose/extension/vss/vss_extension.h>
+#include <goose/extension/tpch/tpch_extension.h>
+#include <goose/extension/tpcds/tpcds_extension.h>
 
 namespace goose {
     std::vector<std::string> enable_verification_excludes = {
@@ -100,6 +102,16 @@ namespace goose {
         goose::set_test_directory({"tests/scripts"});
         auto rs = enable_extension_autoload("vss", [](Goose &db) {
                 db.LoadStaticExtension<VssExtension>();
+                return ExtensionLoadResult::LOADED_EXTENSION;
+            });
+        TURBO_UNUSED(rs);
+        rs = enable_extension_autoload("tpch", [](Goose &db) {
+                db.LoadStaticExtension<TpchExtension>();
+                return ExtensionLoadResult::LOADED_EXTENSION;
+            });
+        TURBO_UNUSED(rs);
+        rs = enable_extension_autoload("tpcds", [](Goose &db) {
+                db.LoadStaticExtension<TpcdsExtension>();
                 return ExtensionLoadResult::LOADED_EXTENSION;
             });
         TURBO_UNUSED(rs);

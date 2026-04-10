@@ -114,6 +114,7 @@ namespace goose {
                 case LogicalOperatorType::LOGICAL_COMPARISON_JOIN: {
                     const auto &join = op->Cast<LogicalComparisonJoin>();
                     D_ASSERT(!join.right_projection_map.empty());
+                    TURBO_UNUSED(join);
                     const auto child_bindings = op->GetColumnBindings();
                     return child_bindings[child_bindings.size() - 1];
                 }

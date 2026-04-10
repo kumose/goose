@@ -160,11 +160,28 @@ kmcmake_cc_library(
         PUBLIC
 )
 
+file(GLOB_RECURSE benchmark_SRC "benchmark/*.cc")
+kmcmake_cc_library(
+        NAMESPACE ${PROJECT_NAME}
+        NAME goose_benchmark
+        SOURCES
+        ${benchmark_SRC}
+        CXXOPTS
+        ${KMCMAKE_CXX_OPTIONS}
+        SHARE
+        ${ENABLE_SHARE_LIB}
+        PLINKS
+        ${KMCMAKE_DEPS_LINK}
+        PUBLIC
+)
+
 #######################################################
 # other extensions
 add_subdirectory(extension/autocomplete)
 add_subdirectory(extension/vss)
 add_subdirectory(extension/httpfs)
+add_subdirectory(extension/tpch)
+add_subdirectory(extension/tpcds)
 
 kmcmake_cc_binary(
         NAMESPACE ${PROJECT_NAME}

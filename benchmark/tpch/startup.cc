@@ -1,6 +1,6 @@
 #include <goose/benchmark/benchmark_runner.h>
 #include <goose/testing/compare_result.h>
-#include "goose_benchmark_macro.hpp"
+#include <goose/benchmark/goose_benchmark_macro.h>
 
 using namespace goose;
 

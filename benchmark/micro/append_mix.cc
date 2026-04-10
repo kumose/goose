@@ -1,5 +1,5 @@
 #include <goose/benchmark/benchmark_runner.h>
-#include "goose_benchmark_macro.hpp"
+#include <goose/benchmark/goose_benchmark_macro.h>
 #include <goose/main/appender.h>
 #include <goose/common/random_engine.h>
 #include <goose/common/types/cast_helpers.h>
